@@ -1,15 +1,9 @@
-:root {
-  --bg: #0e0e10;
-  --default-color: #efeff1;
-  --accent-color: #fab4ff;
-}
-
 #site-title {
   text-align: center;
 }
 
 html {
-  font-family: sans-serif;
+  font-family: Roobert, sans-serif;
   background-color: var(--bg);
   color: var(--default-color);
 }
@@ -49,6 +43,7 @@ a {
 }
 
 .pet-label {
+  font-size: 1em;
   font-weight: bold;
 }
 
@@ -56,4 +51,8 @@ a {
   width: 100%;
   max-width: 128px;
   height: auto;
+}
+
+.pet-killcount, .pet-date, .pet-clip {
+  font-size: 0.8em;
 }

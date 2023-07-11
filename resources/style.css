@@ -1,0 +1,11 @@
+@font-face {
+  font-family: Roobert;
+  src: url(./Roobert-Regular.ttf);
+}
+
+:root {
+  --bg: #0e0e10;
+  --bg-light: #18181b;
+  --default-color: #efeff1;
+  --accent-color: #fab4ff;
+}
