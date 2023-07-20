@@ -1,6 +1,6 @@
 html {
-  background-color: var(--panel-bg);
-  color: var(--panel-text);
+  background-color: var(--bg);
+  color: var(--default-color);
   font-family: Helvetica, Arial, sans-serif;
 }
 
@@ -13,7 +13,7 @@ body {
 }
 
 .link a, .link a:link, .link a:visited {
-  color: var(--panel-c1);
+  color: var(--accent-color);
   font-size: 1.2em;
 }
 
