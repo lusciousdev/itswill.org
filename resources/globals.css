@@ -1,0 +1,16 @@
+@font-face {
+  font-family: Roobert;
+  src: url(./Roobert-Regular.ttf);
+}
+
+:root {
+  --bg: #0e0e10;
+  --bg-light: #18181b;
+  --default-color: #efeff1;
+  --accent-color: #fab4ff;
+
+  --panel-bg: #0b0f2a;
+  --panel-c1: #d90001;
+  --panel-c2: #4901d6;
+  --panel-text: white;
+}

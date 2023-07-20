@@ -1,11 +1,19 @@
-@font-face {
-  font-family: Roobert;
-  src: url(./Roobert-Regular.ttf);
+html {
+  background-color: var(--panel-bg);
+  color: var(--panel-text);
+  font-family: Helvetica, Arial, sans-serif;
 }
 
-:root {
-  --bg: #0e0e10;
-  --bg-light: #18181b;
-  --default-color: #efeff1;
-  --accent-color: #fab4ff;
+body {
+  margin: 2em;
 }
+
+#site-title {
+  font-size: 3em;
+}
+
+.link a, .link a:link, .link a:visited {
+  color: var(--panel-c1);
+  font-size: 1.2em;
+}
+
