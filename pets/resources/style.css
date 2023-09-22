@@ -1,11 +1,8 @@
-#site-title {
-  text-align: center;
-}
-
 html {
   font-family: Roobert, sans-serif;
   background-color: var(--bg);
   color: var(--default-color);
+  text-align: center;
 }
 
 #site-title {
@@ -16,12 +13,13 @@ a {
   color: var(--accent-color);
 }
 
-#pet-list {
+.pet-list {
   display: flex;
   flex-flow: row wrap;
   max-width: 950px;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 75px;
   justify-content: center;
 }
 
@@ -52,6 +50,7 @@ a {
   max-width: 128px;
   height: auto;
 }
+
 
 .pet-killcount, .pet-date, .pet-clip {
   font-size: 0.8em;
