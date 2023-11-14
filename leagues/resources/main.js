@@ -36,8 +36,6 @@ function populateValueList()
 {
   for (const key in choices)
   {
-    console.log(key);
-
     var listId = "{0}-list".format(key);
     $("#value-list").append("<li>{0}</li>".format(key));
     $("#value-list").append("<ul class='tutorial-sublist' id='{0}'></ul>".format(listId));
