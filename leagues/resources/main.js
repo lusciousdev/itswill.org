@@ -57,11 +57,11 @@ function nextSection(sectionList, sectionIndex, speed = 1000)
   sectionList.each(function(index, obj) {
     if (index == sectionIndex)
     {
-      $(obj).fadeIn(speed);
+      $(obj).css('visibility', 'visible');
     }
     else
     {
-      $(obj).hide();
+      $(obj).css('visibility', 'hidden');
     }
   });
 }
@@ -101,9 +101,24 @@ $(window).on('load', function () {
 
   if (urlParams.has("carousel"))
   {
+    $(".section-wrap").css({
+      'display': 'grid',
+      'grid-template': '1fr / 1fr',
+      'place-items': 'center left'
+    });
+    $(".section-wrap > *").css({
+      "grid-column": "1 / 1",
+      "grid-row": "1 / 1"
+    });
+
     nextSection(sectionList, 0, 0);
     var sectionIndex = 1;
-    var sectionInterval = setInterval(function() { nextSection(sectionList, sectionIndex); sectionIndex++; sectionIndex = sectionIndex % sectionList.length; }, 5 * 1000);
+    var sectionInterval = setInterval(function() 
+    { 
+      nextSection(sectionList, sectionIndex); 
+      sectionIndex++; 
+      sectionIndex = sectionIndex % sectionList.length; 
+    }, 7.5 * 1000);
   }
 
   if (urlParams.has("username"))
@@ -112,7 +127,7 @@ $(window).on('load', function () {
 
     getUser(username);
 
-    var choicesInterval = setInterval(function() { getUser(username); }, 1000);
+    var choicesInterval = setInterval(function() { getUser(username); }, 5 * 1000);
   }
 
   populateValueList();
