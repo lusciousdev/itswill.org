@@ -1,0 +1,33 @@
+<html lang="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <title>Leagues Display Registration</title>
+    <link rel="icon" href="../../resources/favicon.ico">
+  </head>
+  <body>
+    <form class="registration-form" action="https://leagues.itswill.org/api/v1/register">
+      <div class="registration-title">Register</div>
+      <div class="registration-entry-container" id="username-entry-container">
+        <span class="registration-entry-label" id="username-entry-label">Username:</span>
+        <input type="text" class="registration-entry-text" name="username" id="username-entry-text">
+      </div>
+      <div class="registration-entry-container" id="password-entry-container">
+        <span class="registration-entry-label" id="password-entry-label">Password:</span>
+        <input type="text" class="registration-entry-text" name="password" id="password-entry-text">
+      </div>
+      <input type="submit" class="registration-button" id="registration-submit" value="Register">
+    </form>
+    <div class="info-container">
+      <b>Save your username and password!! There is no way to reset it!!</b>
+      <br>
+      The passwords are in a database unencrypted. 
+      <br>
+      DO NOT USE A PASSWORD YOU USE FOR OTHER STUFF. 
+      <br>
+      This should not be considered a secure piece of software.
+    </div>
+  </body>
+  <link rel="stylesheet" type="text/css" href="./resources/style.css">
+  <script src="../../resources/jquery-3.7.0.min.js"></script>
+  <script src="./resources/main.js"></script>
+</html>

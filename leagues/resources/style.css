@@ -1,0 +1,96 @@
+@font-face {
+  font-family: 'Runescape';
+  src: url('Runescape.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  font-family: 'Runescape';
+  background-color: #FFFFFF00;
+}
+
+.content {
+  min-height: 500px;
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #CEBD9A;
+}
+
+.section-wrap {
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.choice {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin: 5px 0px 5px 0px;
+}
+
+.choice-img {
+  width: auto;
+  height: 32px;
+  margin: 0px 10px 0px 10px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.choice-label {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.choice-name {
+  font-size: 24px;
+}
+
+.tutorial {
+  font-size: 20px;
+  padding: 10px;
+  margin: 10px;
+}
+
+.tutorial-title {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.tutorial-list {
+  margin-top: 5pt;
+}
+
+.tutorial-subtitle {
+  margin-bottom: -5pt;
+  font-weight: bold;
+  margin-left: 15px;
+}
+
+.italic-mono {
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.value-img {
+  height: 24px;
+  width: auto;
+  margin: 0 5px 0 5px;
+}
+
+.tutorial-sublist li {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: flex-start;
+}
