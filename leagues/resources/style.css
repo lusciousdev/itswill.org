@@ -94,3 +94,19 @@ body {
   justify-content: left;
   align-items: flex-start;
 }
+
+.tutorial-table {
+  margin-top: 10px;
+  margin-left: 25px;
+  border-collapse: collapse;
+}
+
+.tutorial-table, .tutorial-table th, .tutorial-table td {
+  border: 1px solid;
+}
+
+.tutorial-table th, .tutorial-table td {
+  text-align: left;
+  min-width: 50px;
+  padding: 5px;
+}

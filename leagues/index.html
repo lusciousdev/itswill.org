@@ -22,7 +22,7 @@
             <span class="choice-name" id="region3-name">Locked</span>
           </div>
         </div>
-        <div class="section" id="tiers1to3">
+        <div class="section" id="tiers1to4">
           <div class="choice" id="tier1">
             <span class="choice-label" id="tier1-label">Tier 1: </span>
             <img class="choice-img" id="tier1-img" src="./resources/locked.png" title="Locked">
@@ -38,13 +38,13 @@
             <img class="choice-img" id="tier3-img" src="./resources/locked.png" title="Locked">
             <span class="choice-name" id="tier3-name">Locked</span>
           </div>
-        </div>
-        <div class="section" id="tiers4to7">
           <div class="choice" id="tier4">
             <span class="choice-label" id="tier4-label">Tier 4: </span>
             <img class="choice-img" id="tier4-img" src="./resources/locked.png" title="Locked">
             <span class="choice-name" id="tier4-name">Locked</span>
           </div>
+        </div>
+        <div class="section" id="tiers5to8">
           <div class="choice" id="tier5">
             <span class="choice-label" id="tier5-label">Tier 5: </span>
             <img class="choice-img" id="tier5-img" src="./resources/locked.png" title="Locked">
@@ -59,6 +59,11 @@
             <span class="choice-label" id="tier7-label">Tier 7: </span>
             <img class="choice-img" id="tier7-img" src="./resources/locked.png" title="Locked">
             <span class="choice-name" id="tier7-name">Locked</span>
+          </div>
+          <div class="choice" id="tier8">
+            <span class="choice-label" id="tier8-label">Tier 8: </span>
+            <img class="choice-img" id="tier8-img" src="./resources/locked.png" title="Locked">
+            <span class="choice-name" id="tier8-name">Locked</span>
           </div>
         </div>
       </div>
@@ -97,23 +102,18 @@
         </li>
       </ul>
       <div class="tutorial-title" id="params-title">Command Parameters</div>
-      <div class="tutorial-subtitle" id="column-title">The &lt;column&gt; parameter.</div>
-      <ul class="tutorial-list" id="column-list">
-        <li>region1</li>
-        <li>region2</li>
-        <li>region3</li>
-        <li>tier1</li>
-        <li>tier2</li>
-        <li>tier3</li>
-        <li>tier4</li>
-        <li>tier5</li>
-        <li>tier6</li>
-        <li>tier7</li>
-      </ul>
-      <div class="tutorial-subtitle" id="value-title">The &lt;value&gt; parameter.</div>
-      <ul class="tutorial-list" id="value-list">
-        
-      </ul>
+      <div class="tutorial-text" id="value-text">
+        Find the &lt;column&gt; you want to edit along the top of the table. Whichever option in that column you want to set it to you will use the value from the first column.
+        <br>
+        For example, to set region 3 to Kourend, you would type in chat:
+        <br>
+        <i lass="italic-mono">!&lt;command-name&gt; region3 8</i>
+      </div>
+      <table class="tutorial-table" id="value-table">
+        <tr id="value-headers">
+          <th class="value-header">value</th>
+        </tr>
+      </table>
     </div>
   </body>
   <link rel="stylesheet" type="text/css" href="./resources/style.css">

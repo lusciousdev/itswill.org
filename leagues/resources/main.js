@@ -34,15 +34,41 @@ function xmlHttpRequestAsync(method, theUrl, callback, errorcb)
 
 function populateValueList()
 {
+  choiceIndex = 0;
+  var tableId = "value-table"
   for (const key in choices)
   {
-    var listId = "{0}-list".format(key);
-    $("#value-list").append("<li>{0}</li>".format(key));
-    $("#value-list").append("<ul class='tutorial-sublist' id='{0}'></ul>".format(listId));
+    if (key != "regions")
+    {
+      $("#value-headers").append("<th class='value-header'>{0}</th>".format(key));
+    }
+    else
+    {
+      $("#value-headers").append("<th class='value-header'>{0}</th>".format("region1, region2, region3"));
+    }
+  }
 
+  for (const key in choices)
+  {
     choices[key].choices.forEach(function(obj, index) {
-      $("#{0}".format(listId)).append("<li><b>{0}</b> - <img class='value-img' src='{1}'> {2}</li>".format(index, obj.image, obj.name));
+      var rowId = "value-row{0}".format(index)
+
+      if ($("#{0}".format(rowId)).length < 1)
+      {
+        $("#{0}".format(tableId)).append("<tr id='{0}'></tr>".format(rowId));
+
+        
+        $("#{0}".format(rowId)).append("<td>{0}</td>".format(index));
+        for (var i = 0; i < $(".value-header").length - 1; i++)
+        {
+          $("#{0}".format(rowId)).append("<td></td>");
+        }
+      }
+
+      $($("#{0} td".format(rowId))[choiceIndex + 1]).append("<img class='value-img' src='{1}'> {2}".format(index, obj.image, obj.name));
     });
+
+    choiceIndex++;
   }
 }
 
