@@ -107,6 +107,7 @@ function handleGetUserResponse(text)
   setChoice("tier5", choices.tier5.choices[respJson["tier5"]])
   setChoice("tier6", choices.tier6.choices[respJson["tier6"]])
   setChoice("tier7", choices.tier7.choices[respJson["tier7"]])
+  setChoice("tier8", choices.tier7.choices[respJson["tier8"]])
 }
 
 function handleGetUserError(text)
