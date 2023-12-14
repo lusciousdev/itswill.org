@@ -67,8 +67,8 @@ html {
 
 #first-msg {
   display: block;
-  margin: 5px 0px 5px 0px;
-  max-width: 400px;
+  padding: 5px 5px 5px 5px;
+  max-width: 480px;
 }
 
 #first-msg-value {
