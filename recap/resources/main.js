@@ -75,7 +75,7 @@ function handleGetUserError(text)
 
 function getUser(username)
 {
-  var reqUrl = apiUrl + "/api/v1/get?username=" + username
+  var reqUrl = apiUrl + "/api/v1/get?username=" + encodeURIComponent(username);
   xmlHttpRequestAsync("GET", reqUrl, handleGetUserResponse, handleGetUserError);
 }
 
