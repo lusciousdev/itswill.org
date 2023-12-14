@@ -1,0 +1,110 @@
+var apiUrl = "http://localho.st:8989"
+
+// First, checks if it isn't implemented yet.
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) { 
+      return typeof args[number] != 'undefined'
+        ? args[number]
+        : match
+      ;
+    });
+  };
+}
+
+function xmlHttpRequestAsync(method, theUrl, callback, errorcb)
+{
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.onreadystatechange = function() {
+    if (xmlHttp.readyState == 4 && (xmlHttp.status >= 200 && xmlHttp.status < 300))
+    {
+      callback(xmlHttp.responseText);
+    }
+    else if(xmlHttp.readyState == 4)
+    {
+      errorcb(xmlHttp.responseText);
+    }
+  }
+  xmlHttp.open(method, theUrl, true);
+  xmlHttp.send(null);
+}
+
+function setStat(statid, statvalue)
+{
+  $("#{0}-value".format(statid)).html(statvalue)
+}
+
+function handleGetUserResponse(text)
+{
+  var respJson = JSON.parse(text);
+
+  if (respJson["userid"] == -1)
+  {
+    $("#stat-title").html("Overall statistics");
+    $("#first-msg").hide();
+  }
+  else
+  {
+    $("#stat-title").html("{0}'s statistics".format(respJson["display_name"]));
+  }
+
+  setStat("msg-count",    new Intl.NumberFormat().format(respJson["total_messages"]));
+  setStat("clip-count",   new Intl.NumberFormat().format(respJson["total_clips"]));
+  setStat("first-msg",    "\"{0}\"".format(respJson["first_message"]));
+  setStat("itswill7",     new Intl.NumberFormat().format(respJson["itswill7"]));
+  setStat("itswillPound", new Intl.NumberFormat().format(respJson["itswillPound"]));
+  setStat("etsmg",        new Intl.NumberFormat().format(respJson["itswillEndTheStreamMyGuy"]));
+  setStat("ksmg",         new Intl.NumberFormat().format(respJson["itswillKeepStreamingMyGuy"]));
+  setStat("itswillSneak", new Intl.NumberFormat().format(respJson["itswillSneak"]));
+  setStat("itswillSit",   new Intl.NumberFormat().format(respJson["itswillSit"]));
+  setStat("itswillL",     new Intl.NumberFormat().format(respJson["itswillL"]));
+  setStat("pog",          new Intl.NumberFormat().format(respJson["Pog"]));
+  setStat("mmylc",        new Intl.NumberFormat().format(respJson["MusicMakeYouLoseControl"]));
+  setStat("giggle",       new Intl.NumberFormat().format(respJson["x0r6ztGiggle"]));
+  setStat("vvkool",       new Intl.NumberFormat().format(respJson["VVKool"]));
+  setStat("gasp",         new Intl.NumberFormat().format(respJson["GASP"]));
+  setStat("monka",        new Intl.NumberFormat().format(respJson["monkaS"]));
+  setStat("pogo",         new Intl.NumberFormat().format(respJson["PogO"]));
+}
+
+function handleGetUserError(text)
+{
+  console.log("API Error: " + text);
+}
+
+function getUser(username)
+{
+  var reqUrl = apiUrl + "/api/v1/get?username=" + username
+  xmlHttpRequestAsync("GET", reqUrl, handleGetUserResponse, handleGetUserError);
+}
+
+function getOverall()
+{
+  var reqUrl = apiUrl + "/api/v1/get"
+  xmlHttpRequestAsync("GET", reqUrl, handleGetUserResponse, handleGetUserError);
+}
+
+$(window).on('load', function () {
+  var queryString = window.location.search;
+  var urlParams = new URLSearchParams(queryString);
+
+  if (urlParams.has("username"))
+  {
+    username = urlParams.get("username");
+
+    if (username == "")
+    {
+      getOverall();
+    }
+    else
+    {
+      getUser(username);
+    }
+  }
+  else
+  {
+    getOverall();
+  }
+
+});

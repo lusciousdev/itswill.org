@@ -1,0 +1,67 @@
+html {
+  background-color: var(--bg);
+  color: var(--default-color);
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.section-wrap {
+  width: 640px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+#lookup-form {
+  margin: 10px 0px 10px 0px;
+}
+
+#stats-wrap {
+  min-height: 640px;
+  background-color: var(--bg-light);
+}
+
+#stats {
+  margin: 48px 0px 48px 0px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px 0px 5px 0px;
+  width: 480px;
+}
+
+.stat-label {
+  margin-right: 25px;
+}
+
+.stat-value {
+  color: var(--accent-color);
+}
+
+#first-msg {
+  display: block;
+  margin: 5px 0px 5px 0px;
+  max-width: 400px;
+}
+
+#first-msg-value {
+  color: var(--accent-color);
+  margin: 5px;
+}
