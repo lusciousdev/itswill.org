@@ -49,8 +49,12 @@ html {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 5px 0px 5px 0px;
+  padding: 5px 5px 5px 5px;
   width: 480px;
+}
+
+.stat-item:hover {
+  background-color: #ffffff20;
 }
 
 .stat-label {
