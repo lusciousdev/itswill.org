@@ -1,4 +1,4 @@
-var apiUrl = "http://localho.st:8989"
+var apiUrl = "https://recap.itswill.org"
 
 // First, checks if it isn't implemented yet.
 if (!String.prototype.format) {
