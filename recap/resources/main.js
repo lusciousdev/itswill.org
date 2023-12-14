@@ -41,12 +41,12 @@ function handleGetUserResponse(text)
 
   if (respJson["userid"] == -1)
   {
-    $("#stat-title").html("Overall statistics");
+    $("#stat-title").html("Overall statistics for 2023");
     $("#first-msg").hide();
   }
   else
   {
-    $("#stat-title").html("{0}'s statistics".format(respJson["display_name"]));
+    $("#stat-title").html("{0}'s statistics for 2023".format(respJson["display_name"]));
   }
 
   setStat("msg-count",    new Intl.NumberFormat().format(respJson["total_messages"]));
