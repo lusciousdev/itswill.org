@@ -51,6 +51,7 @@ function handleGetUserResponse(text)
 
   setStat("msg-count",    new Intl.NumberFormat().format(respJson["total_messages"]));
   setStat("clip-count",   new Intl.NumberFormat().format(respJson["total_clips"]));
+  setStat("clip-views",   new Intl.NumberFormat().format(respJson["clip_views"]));
   setStat("first-msg",    "\"{0}\"".format(respJson["first_message"]));
   setStat("itswill7",     new Intl.NumberFormat().format(respJson["itswill7"]));
   setStat("itswillPound", new Intl.NumberFormat().format(respJson["itswillPound"]));
@@ -60,12 +61,15 @@ function handleGetUserResponse(text)
   setStat("itswillSit",   new Intl.NumberFormat().format(respJson["itswillSit"]));
   setStat("itswillL",     new Intl.NumberFormat().format(respJson["itswillL"]));
   setStat("pog",          new Intl.NumberFormat().format(respJson["Pog"]));
+  setStat("shoop",          new Intl.NumberFormat().format(respJson["ShoopDaWhoop"]));
   setStat("mmylc",        new Intl.NumberFormat().format(respJson["MusicMakeYouLoseControl"]));
   setStat("giggle",       new Intl.NumberFormat().format(respJson["x0r6ztGiggle"]));
   setStat("vvkool",       new Intl.NumberFormat().format(respJson["VVKool"]));
   setStat("gasp",         new Intl.NumberFormat().format(respJson["GASP"]));
   setStat("monka",        new Intl.NumberFormat().format(respJson["monkaS"]));
   setStat("pogo",         new Intl.NumberFormat().format(respJson["PogO"]));
+  setStat("spin",         new Intl.NumberFormat().format(respJson["spin"]));
+  setStat("cum",         new Intl.NumberFormat().format(respJson["cum"]));
 }
 
 function handleGetUserError(text)

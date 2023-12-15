@@ -8,7 +8,7 @@
     <div class="content">
       <div class="section-wrap" id="lookup-form-wrap">
         <div class="section" id="lookup-form">
-          <form class="recap-form" action="./index.html">
+          <form class="recap-form" action="">
             <span class="entry-label" id="username-entry-label">Username:</span>
             <input type="text" class="entry-text" name="username" id="username-entry-text">
             <input type="submit" class="form-button" id="lookup-submit" value="Find user">
@@ -26,65 +26,135 @@
             <span class="stat-label" id="clip-count-label">Clips created:</span>
             <span class="stat-value" id="clip-count-value"></span>
           </div>
+          <div class="stat-item" id="clip-views">
+            <span class="stat-label" id="clip-views-label">Views on those clips:</span>
+            <span class="stat-value" id="clip-views-value"></span>
+          </div>
           <div class="stat-item" id="first-msg">
-            <span class="stat-label" id="first-msg-label">First message:</span>
+            <span class="stat-label" id="first-msg-label">First message this year:</span>
             <div class="stat-value" id="first-msg-value"></div>
           </div>
           <div class="stat-item" id="itswill7">
-            <span class="stat-label" id="itswill7-label">Number of itswill7s:</span>
+            <span class="stat-label" id="itswill7-label">
+              <img class="emote-img" id="itswill7-img" src="./resources/emotes/itswill7.webp" title="itswill7">
+            </span>
             <span class="stat-value" id="itswill7-value"></span>
           </div>
           <div class="stat-item" id="itswillPound">
-            <span class="stat-label" id="itswillPound-label">Number of itswillPounds:</span>
+            <span class="stat-label" id="itswillPound-label">
+              <img class="emote-img" id="itswillPound-img" src="./resources/emotes/itswillPound.webp" title="itswillPound">
+            </span>
             <span class="stat-value" id="itswillPound-value"></span>
           </div>
           <div class="stat-item" id="etsmg">
-            <span class="stat-label" id="etsmg-label">Number of itswillEndTheStreamMyGuys:</span>
+            <span class="stat-label" id="etsmg-label">
+              <img class="emote-img" id="etsmg-img" src="./resources/emotes/itswillEndTheStreamMyGuy.webp" title="itswillEndTheStreamMyGuy">
+            </span>
             <span class="stat-value" id="etsmg-value"></span>
           </div>
           <div class="stat-item" id="ksmg">
-            <span class="stat-label" id="ksmg-label">Number of itswillKeepStreamingMyGuys:</span>
+            <span class="stat-label" id="ksmg-label">
+              <img class="emote-img" id="ksmg-img" src="./resources/emotes/itswillKeepStreamingMyGuy.webp" title="itswillKeepStreamingMyGuy">
+            </span>
             <span class="stat-value" id="ksmg-value"></span>
           </div>
           <div class="stat-item" id="itswillSneak">
-            <span class="stat-label" id="itswillSneak-label">Number of itswillSneaks (and itswillFollows):</span>
+            <span class="stat-label" id="itswillSneak-label">
+              <img class="emote-img" id="itswillSneak-img" src="./resources/emotes/itswillSneak.gif" title="itswillSneak">
+              <img class="emote-img" id="itswillFollow-img" src="./resources/emotes/itswillFollow.gif" title="itswillFollow">
+            </span>
             <span class="stat-value" id="itswillSneak-value"></span>
           </div>
           <div class="stat-item" id="itswillSit">
-            <span class="stat-label" id="itswillSit-label">Number of itswillSits:</span>
+            <span class="stat-label" id="itswillSit-label">
+              <img class="emote-img" id="itswillSit-img" src="./resources/emotes/itswillSit.webp" title="itswillSit">
+            </span>
             <span class="stat-value" id="itswillSit-value"></span>
           </div>
           <div class="stat-item" id="itswillL">
-            <span class="stat-label" id="itswillL-label">Number of itswillLs:</span>
+            <span class="stat-label" id="itswillL-label">
+              <img class="emote-img" id="ksmg-img" src="./resources/emotes/itswillL.webp" title="itswillL">
+            </span>
             <span class="stat-value" id="itswillL-value"></span>
           </div>
           <div class="stat-item" id="pog">
-            <span class="stat-label" id="pog-label">Number of Pogs:</span>
+            <span class="stat-label" id="pog-label">
+              <img class="emote-img" id="itswillPog-img" src="./resources/emotes/itswillPog.png" title="itswillPog">
+              <img class="emote-img" id="PogChamp-img" src="./resources/emotes/PogChamp.png" title="PogChamp">
+              <img class="emote-img" id="POGCHAMP-img" src="./resources/emotes/POGCHAMP2.png" title="POGCHAMP">
+              <img class="emote-img" id="Pog-img" src="./resources/emotes/Pog.png" title="Pog">
+              <img class="emote-img" id="POGGIES-img" src="./resources/emotes/POGGIES.png" title="POGGIES">
+              <img class="emote-img" id="POGGERS-img" src="./resources/emotes/POGGERS.webp" title="POGGERS">
+            </span>
             <span class="stat-value" id="pog-value"></span>
           </div>
+          <div class="stat-item" id="shoop">
+            <span class="stat-label" id="shoop-label">
+              <img class="emote-img" id="shoop-img" src="./resources/emotes/ShoopDaWhoop.webp" title="ShoopDaWhoop">
+            </span>
+            <span class="stat-value" id="shoop-value"></span>
+          </div>
           <div class="stat-item" id="mmylc">
-            <span class="stat-label" id="mmylc-label">Number of MusicMakeYouLoseControls:</span>
+            <span class="stat-label" id="mmylc-label">
+              <img class="emote-img" id="mmylc-img" src="./resources/emotes/MusicMakeYouLoseControl.gif" title="MusicMakeYouLoseControl">
+            </span>
             <span class="stat-value" id="mmylc-value"></span>
           </div>
           <div class="stat-item" id="giggle">
-            <span class="stat-label" id="giggle-label">Number of giggles:</span>
+            <span class="stat-label" id="giggle-label">
+              <img class="emote-img" id="itswillGiggle-img" src="./resources/emotes/itswillGiggle.webp" title="itswillGiggle">
+              <img class="emote-img" id="x0r6ztGiggle-img" src="./resources/emotes/x0r6ztGiggle.webp" title="x0r6ztGiggle">
+              <img class="emote-img" id="willGiggle-img" src="./resources/emotes/willGiggle.gif" title="willGiggle">
+            </span>
             <span class="stat-value" id="giggle-value"></span>
           </div>
           <div class="stat-item" id="vvkool">
-            <span class="stat-label" id="vvkool-label">Number of VVKools:</span>
+            <span class="stat-label" id="vvkool-label">
+              <img class="emote-img" id="VVKool-img" src="./resources/emotes/VVKool.gif" title="VVKool">
+              <img class="emote-img" id="VVKoolMini-img" src="./resources/emotes/VVKoolMini.gif" title="VVKoolMini">
+              <img class="emote-img" id="VVotate-img" src="./resources/emotes/VVotate.webp" title="VVotate">
+            </span>
             <span class="stat-value" id="vvkool-value"></span>
           </div>
           <div class="stat-item" id="gasp">
-            <span class="stat-label" id="gasp-label">Number of gasps:</span>
+            <span class="stat-label" id="gasp-label">
+              <img class="emote-img" id="gasp-img" src="./resources/emotes/GASP.webp" title="D:">
+            </span>
             <span class="stat-value" id="gasp-value"></span>
           </div>
           <div class="stat-item" id="monka">
-            <span class="stat-label" id="monka-label">Number of monkas:</span>
+            <span class="stat-label" id="monka-label">
+              <img class="emote-img" id="monkaS-img" src="./resources/emotes/monkaS.webp" title="monkaS">
+              <img class="emote-img" id="monkaW-img" src="./resources/emotes/monkaW.webp" title="monkaW">
+              <img class="emote-img" id="monkaEyes-img" src="./resources/emotes/monkaEyes.png" title="monkaEyes">
+              <img class="emote-img" id="monkaGun-img" src="./resources/emotes/monkaGun.png" title="monkaGun">
+              <img class="emote-img" id="monkaSTEER-img" src="./resources/emotes/monkaSTEER.webp" title="monkaSTEER">
+              <img class="emote-img" id="monkaH-img" src="./resources/emotes/monkaH.png" title="monkaH">
+            </span>
             <span class="stat-value" id="monka-value"></span>
           </div>
           <div class="stat-item" id="pogo">
-            <span class="stat-label" id="pogo-label">Number of PogOs:</span>
+            <span class="stat-label" id="pogo-label">
+              <img class="emote-img" id="PogO-img" src="./resources/emotes/PogO.webp" title="PogO">
+              <img class="emote-img" id="itswillO-img" src="./resources/emotes/itswillO.webp" title="itswillO">
+              <img class="emote-img" id="itswillWeird-img" src="./resources/emotes/itswillWeird.webp" title="itswillWeird">
+              <img class="emote-img" id="WeirdChamp-img" src="./resources/emotes/WeirdChamp.webp" title="WeirdChamp">
+              <img class="emote-img" id="WeirdPause-img" src="./resources/emotes/WeirdPause.webp" title="WeirdPause">
+            </span>
             <span class="stat-value" id="pogo-value"></span>
+          </div>
+          <div class="stat-item" id="spin">
+            <span class="stat-label" id="spin-label">
+              <img class="emote-img" id="borpaSpin-img" src="./resources/emotes/borpaSpin.gif" title="borpaSpin">
+              <img class="emote-img" id="itswillSpin-img" src="./resources/emotes/itswillSpin.gif" title="itswillSpin">
+              <img class="emote-img" id="willSpin-img" src="./resources/emotes/willSpin.gif" title="willSpin">
+              <img class="emote-img" id="YourMom-img" src="./resources/emotes/YourMom.gif" title="YourMom">
+            </span>
+            <span class="stat-value" id="spin-value"></span>
+          </div>
+          <div class="stat-item" id="cum">
+            <span class="stat-label" id="cum-label">Number of cum mentions:</span>
+            <span class="stat-value" id="cum-value"></span>
           </div>
         </div>
       </div>

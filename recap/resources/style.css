@@ -75,3 +75,9 @@ html {
   color: var(--accent-color);
   margin: 5px;
 }
+
+.emote-img {
+  height: 28px;
+  width: auto;
+  margin: 0 1px 0 1px;
+}
