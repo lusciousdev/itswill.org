@@ -103,6 +103,7 @@ $(window).on('load', function () {
     }
     else
     {
+      $("input[name='username']").val(username);
       getUser(username);
     }
   }
