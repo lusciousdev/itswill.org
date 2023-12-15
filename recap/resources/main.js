@@ -75,6 +75,7 @@ function handleGetUserResponse(text)
   setStat("lul",          new Intl.NumberFormat().format(respJson["lul"]));
   setStat("stsmg",        new Intl.NumberFormat().format(respJson["stsmg"]));
   setStat("dance",        new Intl.NumberFormat().format(respJson["dance"]));
+  setStat("dankies",        new Intl.NumberFormat().format(respJson["dankies"]));
 }
 
 function handleGetUserError(text)
