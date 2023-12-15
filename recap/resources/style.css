@@ -13,7 +13,8 @@ html {
 }
 
 .section-wrap {
-  width: 640px;
+  width: 90vw;
+  max-width: 640px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -24,7 +25,8 @@ html {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
+  width: 100%;
 }
 
 #lookup-form {
@@ -50,7 +52,7 @@ html {
   justify-content: space-between;
   align-items: center;
   padding: 5px 5px 5px 5px;
-  width: 480px;
+  width: 75%;
 }
 
 .stat-item:hover {
@@ -68,7 +70,7 @@ html {
 #first-msg {
   display: block;
   padding: 5px 5px 5px 5px;
-  max-width: 480px;
+  max-width: 75%;
 }
 
 #first-msg-value {
