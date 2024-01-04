@@ -47,6 +47,14 @@ html {
   margin-bottom: 12px;
 }
 
+.section-subtitle {
+  font-size: 10pt;
+}
+
+a, a:visited {
+  color: var(--accent-color);
+}
+
 .stat-item {
   display: flex;
   justify-content: space-between;
