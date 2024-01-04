@@ -34,9 +34,17 @@ html {
 
 .section-title {
   font-size: 18pt;
-  margin-bottom: 24px;
   flex-basis: 100%;
   text-align: center;
+}
+
+.section-subtitle {
+  font-size: 10pt;
+  margin-bottom: 24px;
+}
+
+a, a:visited {
+  color: var(--accent-color);
 }
 
 #leaderboards-wrap {
