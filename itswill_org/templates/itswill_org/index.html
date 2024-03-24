@@ -1,0 +1,41 @@
+{% extends "itswill_org/base.html" %}
+
+{% load static %}
+
+{% block body %}
+<div id="content">
+  <div id="site-title">itswill.</div>
+</div>
+<div id="links">
+  <div id="twitch" class="link">
+    <div id="twitch-title" class="link-title"><a href="https://twitch.tv/itswill">twitch channel</a></div>
+  </div>
+  <div id="youtube" class="link">
+    <div id="youtube-title" class="link-title"><a href="https://www.youtube.com/@williesuede">youtube channel</a></div>
+  </div>
+  <div id="twitter" class="link">
+    <div id="twitter-title" class="link-title"><a href="https://twitter.com/WILLIESUEDE">twitter</a></div>
+  </div>
+  <div id="instagram" class="link">
+    <div id="instagram-title" class="link-title"><a href="https://www.instagram.com/williesuede">instagram</a></div>
+  </div>
+  <div id="youtube-vods" class="link">
+    <div id="vods-title" class="link-title"><a href="https://www.youtube.com/@itswillvodarchive3990">vod channel</a></div>
+  </div>
+  <div id="pets" class="link">
+    <div id="pets-title" class="link-title"><a href="{% url "itswill_org:pets" %}">will's pets</a></div>
+  </div>
+  <div id="clips" class="link">
+    <div id="clips-title" class="link-title"><a href="https://clips.itswill.org">the clip archive</a></div>
+  </div>
+  <div id="petdle" class="link">
+    <div id="petdle-title" class="link-title"><a href="https://itswill.org/petdle/">petdle</a></div>
+  </div>
+  <div id="laf" class="link">
+    <div id="laf-title" class="link-title"><a href="https://liveatfive.net">live at five</a></div>
+  </div>
+  <div id="recaps" class="link">
+    <div id="recaps-title" class="link-title"><a href="{% url "itswill_org:month_list" %}">monthly recaps</a></div>
+  </div>
+</div>
+{% endblock %}

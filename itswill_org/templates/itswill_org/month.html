@@ -1,0 +1,57 @@
+{% extends "itswill_org/base.html" %}
+
+{% load static %}
+{% load humanize %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'itswill_org/month.css' %}">
+{% endblock %}
+
+{% block title %}itswill Stream Recap{% endblock %}
+
+{% block body %}
+<header>
+  <h1>itswill Stream Recap</h1>
+  <h2>{{ start_date }} through {{ end_date }}</h2>
+</header>
+<article>
+  <div>
+    <h3>Top Chatters (most messages)</h3>
+    <ol>
+      {% for chatter in top_chatters %}
+      <li>{{ chatter.twitch_user.display_name }} - {{ chatter.message_count|intcomma }} messages sent</li>
+      {% endfor %}
+    </ol>
+  </div>
+  <div>
+    <h3>Top Clippers (most clips)</h3>
+    <ol>
+      {% for clipper in top_clippers %}
+      <li>{{ clipper.twitch_user.display_name }} - {{ clipper.clip_count|intcomma }} clips</li>
+      {% endfor %}
+    </ol>
+  </div>
+  <div>
+    <h3>Top Clips (by views)</h3>
+    <ol>
+      {% for clip in top_clips %}
+      <li>
+        <i><a href='{{ clip.url }}'>{{ clip.title }}</a></i> by {{ clip.creator.display_name }} - {{ clip.view_count|intcomma }} views
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+  <div>
+    <h3>Other stats</h3>
+    <ul>
+      <li>{{ chatter_count|intcomma }} chatters</li>
+      <li>{{ message_count|intcomma }} messages sent</li>
+      <br>
+      <li>{{ clip_count|intcomma }} clips created</li>
+      <li>{{ clip_views|intcomma }} clip views</li>
+      <br>
+      <li>{{ vod_count|intcomma }} stream vods</li>
+    </ul>
+  </div>
+</article>
+{% endblock %}

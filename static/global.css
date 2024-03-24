@@ -1,0 +1,31 @@
+@font-face {
+  font-family: Roobert;
+  src: url(./Roobert-Regular.ttf);
+}
+
+:root {
+  --bg: #0e0e10;
+  --bg-light: #18181b;
+  --default-color: #efeff1;
+  --accent-color: #fab4ff;
+  --twitch-purple: #bf94ff;
+}
+
+html {
+  background-color: var(--bg);
+  color: var(--default-color);
+  font-family: Roobert, Helvetica, Arial, sans-serif;
+}
+
+body {
+  margin: 2em;
+}
+
+#site-title {
+  font-size: 3em;
+}
+
+.link a, .link a:link, .link a:visited {
+  color: var(--accent-color);
+  font-size: 1.2em;
+}

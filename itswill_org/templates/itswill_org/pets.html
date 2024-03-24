@@ -1,0 +1,66 @@
+{% extends 'itswill_org/base.html' %}
+
+{% load static %}
+{% load humanize %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'itswill_org/pets.css' %}">
+{% endblock %}
+
+{% block title %}itswill's pets{% endblock %}
+
+{% block body %}
+<header>
+  <h1 id="site-title">itswill's pets</h1>
+</header>
+<h2 class="section-title">{{ acquired_pets.count }}/{{ total_pets }} pets</h2>
+<div id="acquired-pets" class="pet-list">
+  {% for pet in acquired_pets %}
+  <div class="pet-card">
+    {% if pet.image %}
+    <img class="pet-image" src="{{ pet.image.url }}" alt="{{ pet.name }} image">
+    {% endif %}
+
+    <div class="pet-label">{{ pet.name }}</div>
+
+    {% if pet.killcount_known %}
+    <div class="pet-killcount">
+      {{ pet.killcount|intcomma }} {{ pet.kill_term }}{{ pet.killcount|pluralize:pet.kill_term_pluralize }}
+      {% if pet.secondary_killcount_needed %}
+      + {{ pet.secondary_killcount|intcomma }} {{ pet.secondary_kill_term }}{{ pet.secondary_killcount|pluralize:pet.secondary_kill_term_pluralize }}
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="pet-killcount">{{ pet.kill_term|capfirst }} unknown</div>
+    {% endif %}
+
+    {% if pet.date_known %}
+    <div class="pet-date">{{ pet.date|date:"F d, Y" }}</div>
+    {% else %}
+    <div class="pet-date">Date unknown</div>
+    {% endif %}
+
+    {% if pet.clip_url == "" and pet.tweet_url == "" %}
+    <div class="pet-clip">No footage</div>
+    {% elif pet.clip_url == "" and pet.tweet_url != "" %}
+    <div class="pet-clip"><a href="{{ pet.tweet_url }}">Tweet</a></div>
+    {% elif pet.clip_url != "" and pet.tweet_url == "" %}
+    <div class="pet-clip"><a href="{{ pet.clip_url }}">Clip</a></div>
+    {% else %}
+    <div class="pet-clip"><a href="{{ pet.clip_url }}">Clip, <a href="{{ pet.tweet_url }}">Tweet</a></a></div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+<h2 class="section-title">Pets left</h2>
+<div id="missing-pets" class="pet-list">
+  {% for pet in unacquired_pets %}
+  <div class="pet-card">
+    <div class="pet-label">{{ pet.name }}</div>
+    <div class="pet-killcount">{{ pet.kill_term|capfirst }}{{ 2|pluralize:pet.kill_term_pluralize }} TBD</div>
+    <div class="pet-date">Date TBD</div>
+    <div class="pet-clip">Clip TBD</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

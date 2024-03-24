@@ -1,0 +1,41 @@
+html, body {
+  background: var(--bg-light);
+  color: var(--default-color);
+  font-family: Roobert, sans-serif;
+  padding: 1vh 2vw;
+}
+
+h2 {
+  color: var(--accent-color);
+}
+
+ul,ol {
+  color: var(--accent-color);
+}
+
+a, a:link, a:visited {
+  color: var(--default-color);
+  font-family: monospace;
+  text-decoration: none;
+}
+
+.month-link a, a:link, a:visited {
+  color: var(--default-color);
+  font-family: Roobert, sans-serif;
+}
+
+#month-title {
+  font-size: 18pt;
+}
+
+#month-page-title {
+  color: var(--accent-color);
+}
+
+#month-list {
+  font-size: 16pt;
+}
+
+a:hover {
+  text-decoration: underline;
+}

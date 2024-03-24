@@ -1,0 +1,28 @@
+{% extends 'itswill_org/base.html' %}
+
+{% load static %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'itswill_org/month.css' %}">
+{% endblock %}
+
+{% block title %}itswill Monthly Stream Recaps{% endblock %}
+
+{% block body %}
+<header>
+  <h1 id="month-page-title">Monthly Recaps</h1>
+</header>
+<article>
+  <div>
+    {% for year, month_list in monthly_recaps.items %}
+      <h3 id="month-title">{{ year }}</h3>
+      <ul id="month-list">
+        {% for month, recap in month_list.items %}
+        {% url 'itswill_org:month' year=year month=month as recapurl %}
+        <li><a class="month-link" href="{{ recapurl }}">{{ recap.month_name }}</a></li>
+        {% endfor %}
+      </ul>
+    {% endfor %}
+  </div>
+</article>
+{% endblock %}
