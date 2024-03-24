@@ -98,6 +98,13 @@ DATABASES = {
     }
 }
 
+CACHES = {
+  "default": {
+    "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+    "LOCATION": "itswill_org_cache_table",
+  }
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -172,9 +179,4 @@ CELERY_BROKER_URL     = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}
 CELERY_RESULT_BACKEND = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/{CELERY_DATABASE}"
 
 CELERY_BEAT_SCHEDULE = {
-  "calculate_monthly_stats": {
-    "task": "itswill_org.tasks.calculate_monthly_stats",
-    "schedule": 36000.0,
-    "args": (2024, 1,),
-  },
 }
