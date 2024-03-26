@@ -5,15 +5,124 @@ DEFAULT_DATETIME = datetime.datetime(1971, 1, 1, 0, 0, 1, tzinfo = datetime.time
 
 # Create your models here.
   
-class MonthlyRecap(models.Model):
+class OverallRecapData(models.Model):
   year = models.IntegerField(default = 1971)
   month = models.IntegerField(default = 1)
   
-  total_messages = models.IntegerField(default = 0)
-  total_clips = models.IntegerField(default = 0)
-  total_clip_views = models.IntegerField(default = 0)
-  total_chatters = models.IntegerField(default = 0)
-  total_videos = models.IntegerField(default = 0)
+  count_messages = models.IntegerField(default = 0)
+  count_clips = models.IntegerField(default = 0)
+  count_clip_views = models.IntegerField(default = 0)
+  count_chatters = models.IntegerField(default = 0)
+  count_videos = models.IntegerField(default = 0)
+  
+  first_message = models.CharField(max_length = 1024, default = "")
+  
+  count_seven   = models.IntegerField(default = 0)
+  count_pound   = models.IntegerField(default = 0)
+  count_love    = models.IntegerField(default = 0)
+  
+  count_etsmg   = models.IntegerField(default = 0)
+  count_ksmg    = models.IntegerField(default = 0)
+  count_stsmg   = models.IntegerField(default = 0)
+  
+  count_pog     = models.IntegerField(default = 0)
+  count_shoop   = models.IntegerField(default = 0)
+  count_gasp    = models.IntegerField(default = 0)
+  count_pogo    = models.IntegerField(default = 0)
+  count_monka   = models.IntegerField(default = 0)
+  
+  count_giggle  = models.IntegerField(default = 0)
+  count_lul     = models.IntegerField(default = 0)
+  
+  count_sneak   = models.IntegerField(default = 0)
+  count_sit     = models.IntegerField(default = 0)
+  
+  count_mmylc   = models.IntegerField(default = 0)
+  count_dance   = models.IntegerField(default = 0)
+  count_vvkool  = models.IntegerField(default = 0)
+  
+  count_spin    = models.IntegerField(default = 0)
+  count_chicken = models.IntegerField(default = 0)
+  count_sonic   = models.IntegerField(default = 0)
+  count_dankies = models.IntegerField(default = 0)
+  
+  count_cum     = models.IntegerField(default = 0)
+  
+  def zero(self):
+    self.count_messages   = 0
+    self.count_clips      = 0
+    self.count_clip_views = 0
+    self.count_chatters   = 0
+    self.count_videos     = 0
+    
+    self.count_seven   = 0
+    self.count_pound   = 0
+    self.count_love    = 0
+    
+    self.count_etsmg   = 0
+    self.count_ksmg    = 0
+    self.count_stsmg   = 0
+    
+    self.count_pog     = 0
+    self.count_shoop   = 0
+    self.count_gasp    = 0
+    self.count_pogo    = 0
+    self.count_monka   = 0
+    
+    self.count_giggle  = 0
+    self.count_lul     = 0
+    
+    self.count_sneak   = 0
+    self.count_sit     = 0
+    
+    self.count_mmylc   = 0
+    self.count_dance   = 0
+    self.count_vvkool  = 0
+    
+    self.count_spin    = 0
+    self.count_chicken = 0
+    self.count_sonic   = 0
+    self.count_dankies = 0
+    
+    self.count_cum     = 0
+  
+  def add(self, other_recap : "OverallRecapData"):
+    self.count_messages   += other_recap.count_messages
+    self.count_clips      += other_recap.count_clips
+    self.count_clip_views += other_recap.count_clip_views
+    self.count_chatters   += other_recap.count_chatters
+    self.count_videos     += other_recap.count_videos
+    
+    self.count_seven   += other_recap.count_seven
+    self.count_pound   += other_recap.count_pound
+    self.count_love    += other_recap.count_love
+    
+    self.count_etsmg   += other_recap.count_etsmg
+    self.count_ksmg    += other_recap.count_ksmg
+    self.count_stsmg   += other_recap.count_stsmg
+    
+    self.count_pog     += other_recap.count_pog
+    self.count_shoop   += other_recap.count_shoop
+    self.count_gasp    += other_recap.count_gasp
+    self.count_pogo    += other_recap.count_pogo
+    self.count_monka   += other_recap.count_monka
+    
+    self.count_giggle  += other_recap.count_giggle
+    self.count_lul     += other_recap.count_lul
+    
+    self.count_sneak   += other_recap.count_sneak
+    self.count_sit     += other_recap.count_sit
+    
+    self.count_mmylc   += other_recap.count_mmylc
+    self.count_dance   += other_recap.count_dance
+    self.count_vvkool  += other_recap.count_vvkool
+    
+    self.count_spin    += other_recap.count_spin
+    self.count_chicken += other_recap.count_chicken
+    self.count_sonic   += other_recap.count_sonic
+    self.count_dankies += other_recap.count_dankies
+    
+    self.count_cum     += other_recap.count_cum
   
   class Meta:
     unique_together = ('year', 'month')
@@ -30,16 +139,121 @@ class TwitchUser(models.Model):
   offline_image_url = models.CharField(max_length = 512, default = "missing offline image url")
   created_at = models.DateTimeField("created at", default = DEFAULT_DATETIME)
     
-class MonthlyUserData(models.Model):
-  monthly_recap = models.ForeignKey(MonthlyRecap, on_delete = models.CASCADE)
+class UserRecapData(models.Model):
+  overall_recap = models.ForeignKey(OverallRecapData, on_delete = models.CASCADE)
   twitch_user = models.ForeignKey(TwitchUser, on_delete = models.DO_NOTHING)
   
-  message_count = models.IntegerField(default = 0)
-  clip_count = models.IntegerField(default = 0)
-  clip_views = models.IntegerField(default = 0)
+  count_messages   = models.IntegerField(default = 0)
+  count_clips      = models.IntegerField(default = 0)
+  count_clip_views = models.IntegerField(default = 0)
+  
+  first_message = models.CharField(max_length = 1024, default = "")
+  
+  count_seven   = models.IntegerField(default = 0)
+  count_pound   = models.IntegerField(default = 0)
+  count_love    = models.IntegerField(default = 0)
+  
+  count_etsmg   = models.IntegerField(default = 0)
+  count_ksmg    = models.IntegerField(default = 0)
+  count_stsmg   = models.IntegerField(default = 0)
+  
+  count_pog     = models.IntegerField(default = 0)
+  count_shoop   = models.IntegerField(default = 0)
+  count_gasp    = models.IntegerField(default = 0)
+  count_pogo    = models.IntegerField(default = 0)
+  count_monka   = models.IntegerField(default = 0)
+  
+  count_giggle  = models.IntegerField(default = 0)
+  count_lul     = models.IntegerField(default = 0)
+  
+  count_sneak   = models.IntegerField(default = 0)
+  count_sit     = models.IntegerField(default = 0)
+  
+  count_mmylc   = models.IntegerField(default = 0)
+  count_dance   = models.IntegerField(default = 0)
+  count_vvkool  = models.IntegerField(default = 0)
+  
+  count_spin    = models.IntegerField(default = 0)
+  count_chicken = models.IntegerField(default = 0)
+  count_sonic   = models.IntegerField(default = 0)
+  count_dankies = models.IntegerField(default = 0)
+  
+  count_cum     = models.IntegerField(default = 0)
+  
+  def zero(self):
+    self.count_messages   = 0
+    self.count_clips      = 0
+    self.count_clip_views = 0
+    
+    self.count_seven   = 0
+    self.count_pound   = 0
+    self.count_love    = 0
+    
+    self.count_etsmg   = 0
+    self.count_ksmg    = 0
+    self.count_stsmg   = 0
+    
+    self.count_pog     = 0
+    self.count_shoop   = 0
+    self.count_gasp    = 0
+    self.count_pogo    = 0
+    self.count_monka   = 0
+    
+    self.count_giggle  = 0
+    self.count_lul     = 0
+    
+    self.count_sneak   = 0
+    self.count_sit     = 0
+    
+    self.count_mmylc   = 0
+    self.count_dance   = 0
+    self.count_vvkool  = 0
+    
+    self.count_spin    = 0
+    self.count_chicken = 0
+    self.count_sonic   = 0
+    self.count_dankies = 0
+    
+    self.count_cum     = 0
+  
+  def add(self, other_recap : "UserRecapData"):
+    self.count_messages   += other_recap.count_messages
+    self.count_clips      += other_recap.count_clips
+    self.count_clip_views += other_recap.count_clip_views
+    
+    self.count_seven   += other_recap.count_seven
+    self.count_pound   += other_recap.count_pound
+    self.count_love    += other_recap.count_love
+    
+    self.count_etsmg   += other_recap.count_etsmg
+    self.count_ksmg    += other_recap.count_ksmg
+    self.count_stsmg   += other_recap.count_stsmg
+    
+    self.count_pog     += other_recap.count_pog
+    self.count_shoop   += other_recap.count_shoop
+    self.count_gasp    += other_recap.count_gasp
+    self.count_pogo    += other_recap.count_pogo
+    self.count_monka   += other_recap.count_monka
+    
+    self.count_giggle  += other_recap.count_giggle
+    self.count_lul     += other_recap.count_lul
+    
+    self.count_sneak   += other_recap.count_sneak
+    self.count_sit     += other_recap.count_sit
+    
+    self.count_mmylc   += other_recap.count_mmylc
+    self.count_dance   += other_recap.count_dance
+    self.count_vvkool  += other_recap.count_vvkool
+    
+    self.count_spin    += other_recap.count_spin
+    self.count_chicken += other_recap.count_chicken
+    self.count_sonic   += other_recap.count_sonic
+    self.count_dankies += other_recap.count_dankies
+    
+    self.count_cum     += other_recap.count_cum
   
   class Meta:
-    unique_together = ('monthly_recap', 'twitch_user')
+    unique_together = ('overall_recap', 'twitch_user')
   
   
 class ChatMessage(models.Model):

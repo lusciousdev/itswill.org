@@ -1,0 +1,139 @@
+html {
+  background-color: var(--bg);
+  color: var(--default-color);
+  font-family: Roobert, Helvetica, Arial, sans-serif;
+  font-size: 1em;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.section-wrap {
+  width: 90vw;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+#lookup-form {
+  margin: 10px 0px 10px 0px;
+}
+
+#links-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+}
+
+.link-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.link-section-title {
+  font-size: 1.05em;
+  font-weight: bold;
+}
+
+.main-link {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.sublink {
+  font-size: 0.8em;
+}
+
+#stats-wrap {
+  min-height: 640px;
+  background-color: var(--bg-light);
+}
+
+#stats {
+  margin: 24px 0px 24px 0px;
+}
+
+#links-wrap {
+  margin: 10px 0px 10px 0px;
+  background-color: var(--bg-light);
+}
+
+#links {
+  margin: 24px 0px 24px 0px;
+}
+
+.full-section-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-size: 1.5em;
+}
+
+.section-subtitle {
+  font-size: 1.15em;
+  margin-bottom: 12px;
+}
+
+a, a:visited {
+  color: var(--accent-color);
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 5px 5px 5px;
+  width: 75%;
+}
+
+.stat-item:hover {
+  background-color: #ffffff20;
+}
+
+.stat-label {
+  margin-right: 25px;
+}
+
+.stat-value {
+  color: var(--accent-color);
+}
+
+#first-msg {
+  display: block;
+  padding: 5px 5px 5px 5px;
+  max-width: 75%;
+}
+
+#first-msg-value {
+  color: var(--accent-color);
+  margin: 5px;
+}
+
+.emote-img {
+  height: 28px;
+  width: auto;
+  margin: 0 1px 0 1px;
+}

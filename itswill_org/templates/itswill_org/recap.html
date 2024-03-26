@@ -1,0 +1,300 @@
+{% extends 'itswill_org/base.html' %}
+
+{% load static %}
+{% load index %}
+{% load humanize %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'itswill_org/recap.css' %}">
+{% endblock %}
+
+{% block title %}The itswill Recap{% endblock %}
+    
+{% block body %}
+<div class="content">
+  <div class="section-wrap" id="lookup-form-wrap">
+    <div class="section" id="lookup-form">
+      <form class="recap-form" action="{% url 'itswill_org:recap_redirect' %}" method="post">
+        {% csrf_token %}
+        {% if overall_recap %}
+        <input type="hidden" name="year" value="{{ recap_data.year }}">
+        <input type="hidden" name="month" value="{{ recap_data.month }}">
+        {% else %}
+        <input type="hidden" name="year" value="{{ recap_data.overall_recap.year }}">
+        <input type="hidden" name="month" value="{{ recap_data.overall_recap.month }}">
+        {% endif %}
+        <label class="entry-label" id="username-entry-label" for="id_username">Username:</span>
+        <input type="text" id="id_username" name="username">
+        <input type="submit" class="form-button" id="lookup-submit" value="Find user">
+      </form>
+    </div>
+  </div>
+  <div class="section-wrap" id="stats-wrap">
+    <div class="section" id="stats">
+      <div class="full-section-title">
+        <div class="section-title" id="stat-title">
+          {% if overall_recap %}
+            Overall statistics
+          {% else %}
+            {{ twitchuser.display_name }}'s statistics
+          {% endif %}
+        </div>
+        <div class="section-subtitle" id="range-subtitle">
+          {% if overall_recap %}
+            {% if recap_data.month == -1 %}
+            {{ recap_data.year }}
+            {% else %}
+            {{ month_abbr|index:recap_data.month }} {{ recap_data.year }}
+            {% endif %}
+          {% else %}
+            {% if recap_data.overall_recap.month == -1 %}
+            {{ recap_data.overall_recap.year }}
+            {% else %}
+            {{ month_abbr|index:recap_data.overall_recap.month }} {{ recap_data.overall_recap.year }}
+            {% endif %}
+          {% endif %}
+        </div>
+        <!--<div class="section-subtitle" id="stat-subtitle">(<a href='./leaderboards'>Click to see the leaderboards</a>)</div>-->
+      </div>
+      <div class="stat-item" id="msg-count">
+        <span class="stat-label" id="msg-count-label">Messages sent:</span>
+        <span class="stat-value" id="msg-count-value">{{ recap_data.count_messages|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="clip-count">
+        <span class="stat-label" id="clip-count-label">Clips created:</span>
+        <span class="stat-value" id="clip-count-value">{{ recap_data.count_clips|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="clip-views">
+        <span class="stat-label" id="clip-views-label">Views on those clips:</span>
+        <span class="stat-value" id="clip-views-value">{{ recap_data.count_clip_views|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="first-msg">
+        <span class="stat-label" id="first-msg-label">First message this year:</span>
+        <div class="stat-value" id="first-msg-value">"{{ recap_data.first_message }}"</div>
+      </div>
+      <div class="stat-item" id="itswill7">
+        <span class="stat-label" id="itswill7-label">
+          <img class="emote-img" id="itswill7-img" src="{% static 'itswill_org/recap_img/itswill7.webp' %}" title="itswill7">
+          <img class="emote-img" id="itswillFreeTrial-img" src="{% static 'itswill_org/recap_img/itswillFreeTrial.png' %}" title="itswillFreeTrial">
+        </span>
+        <span class="stat-value" id="itswill7-value">{{ recap_data.count_seven|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="itswillPound">
+        <span class="stat-label" id="itswillPound-label">
+          <img class="emote-img" id="itswillPound-img" src="{% static 'itswill_org/recap_img/itswillPound.webp' %}" title="itswillPound">
+        </span>
+        <span class="stat-value" id="itswillPound-value">{{ recap_data.count_pound|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="stsmg">
+        <span class="stat-label" id="stsmg-label">
+          <img class="emote-img" id="stsmg-img" src="{% static 'itswill_org/recap_img/StartTheStreamMyGuy.webp' %}" title="StartTheStreamMyGuy">
+        </span>
+        <span class="stat-value" id="stsmg-value">{{ recap_data.count_stsmg|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="ksmg">
+        <span class="stat-label" id="ksmg-label">
+          <img class="emote-img" id="ksmg-img" src="{% static 'itswill_org/recap_img/itswillKeepStreamingMyGuy.webp' %}" title="itswillKeepStreamingMyGuy">
+        </span>
+        <span class="stat-value" id="ksmg-value">{{ recap_data.count_ksmg|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="etsmg">
+        <span class="stat-label" id="etsmg-label">
+          <img class="emote-img" id="etsmg-img" src="{% static 'itswill_org/recap_img/itswillEndTheStreamMyGuy.webp' %}" title="itswillEndTheStreamMyGuy">
+        </span>
+        <span class="stat-value" id="etsmg-value">{{ recap_data.count_etsmg|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="itswillSneak">
+        <span class="stat-label" id="itswillSneak-label">
+          <img class="emote-img" id="itswillSneak-img" src="{% static 'itswill_org/recap_img/itswillSneak.gif' %}" title="itswillSneak">
+          <img class="emote-img" id="itswillFollow-img" src="{% static 'itswill_org/recap_img/itswillFollow.gif' %}" title="itswillFollow">
+          <img class="emote-img" id="Sneak-img" src="{% static 'itswill_org/recap_img/Sneak.webp' %}" title="Sneak">
+        </span>
+        <span class="stat-value" id="itswillSneak-value">{{ recap_data.count_sneak|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="itswillSit">
+        <span class="stat-label" id="itswillSit-label">
+          <img class="emote-img" id="itswillSit-img" src="{% static 'itswill_org/recap_img/itswillSit.webp' %}" title="itswillSit">
+        </span>
+        <span class="stat-value" id="itswillSit-value">{{ recap_data.count_sit|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="itswillL">
+        <span class="stat-label" id="itswillL-label">
+          <img class="emote-img" id="itswillL-img" src="{% static 'itswill_org/recap_img/itswillL.webp' %}" title="itswillL">
+          <img class="emote-img" id="hannLOVE-img" src="{% static 'itswill_org/recap_img/hannLOVE.png' %}" title="hannLOVE">
+          <img class="emote-img" id="peepoLove-img" src="{% static 'itswill_org/recap_img/peepoLove.webp' %}" title="peepoLove">
+        </span>
+        <span class="stat-value" id="itswillL-value">{{ recap_data.count_love|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="pog">
+        <span class="stat-label" id="pog-label">
+          <img class="emote-img" id="itswillPog-img" src="{% static 'itswill_org/recap_img/itswillPog.png' %}" title="itswillPog">
+          <img class="emote-img" id="PogChamp-img" src="{% static 'itswill_org/recap_img/PogChamp.png' %}" title="PogChamp">
+          <img class="emote-img" id="POGCHAMP-img" src="{% static 'itswill_org/recap_img/POGCHAMP2.png' %}" title="POGCHAMP">
+          <img class="emote-img" id="Pog-img" src="{% static 'itswill_org/recap_img/Pog.png' %}" title="Pog">
+          <img class="emote-img" id="POGGIES-img" src="{% static 'itswill_org/recap_img/POGGIES.png' %}" title="POGGIES">
+          <img class="emote-img" id="POGGERS-img" src="{% static 'itswill_org/recap_img/POGGERS.webp' %}" title="POGGERS">
+          <img class="emote-img" id="PagU-img" src="{% static 'itswill_org/recap_img/PagU.webp' %}" title="PagU">
+          <img class="emote-img" id="PagMan-img" src="{% static 'itswill_org/recap_img/PagMan.webp' %}" title="PagMan">
+        </span>
+        <span class="stat-value" id="pog-value">{{ recap_data.count_pog|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="dankies">
+        <span class="stat-label" id="dankies-label">
+          <img class="emote-img" id="DANKIES-img" src="{% static 'itswill_org/recap_img/DANKIES.webp' %}" title="DANKIES">
+          <img class="emote-img" id="HYPERS-img" src="{% static 'itswill_org/recap_img/HYPERS.webp' %}" title="HYPERS">
+        </span>
+        <span class="stat-value" id="dankies-value">{{ recap_data.count_dankies|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="shoop">
+        <span class="stat-label" id="shoop-label">
+          <img class="emote-img" id="shoop-img" src="{% static 'itswill_org/recap_img/ShoopDaWhoop.webp' %}" title="ShoopDaWhoop">
+        </span>
+        <span class="stat-value" id="shoop-value">{{ recap_data.count_shoop|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="pogo">
+        <span class="stat-label" id="pogo-label">
+          <img class="emote-img" id="PogO-img" src="{% static 'itswill_org/recap_img/PogO.webp' %}" title="PogO">
+          <img class="emote-img" id="itswillO-img" src="{% static 'itswill_org/recap_img/itswillO.webp' %}" title="itswillO">
+          <img class="emote-img" id="itswillWeird-img" src="{% static 'itswill_org/recap_img/itswillWeird.webp' %}" title="itswillWeird">
+          <img class="emote-img" id="WeirdChamp-img" src="{% static 'itswill_org/recap_img/WeirdChamp.webp' %}" title="WeirdChamp">
+          <img class="emote-img" id="WeirdPause-img" src="{% static 'itswill_org/recap_img/WeirdPause.webp' %}" title="WeirdPause">
+        </span>
+        <span class="stat-value" id="pogo-value">{{ recap_data.count_pogo|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="monka">
+        <span class="stat-label" id="monka-label">
+          <img class="emote-img" id="monkaS-img" src="{% static 'itswill_org/recap_img/monkaS.webp' %}" title="monkaS">
+          <img class="emote-img" id="monkaW-img" src="{% static 'itswill_org/recap_img/monkaW.webp' %}" title="monkaW">
+          <img class="emote-img" id="monkaEyes-img" src="{% static 'itswill_org/recap_img/monkaEyes.png' %}" title="monkaEyes">
+          <img class="emote-img" id="monkaGun-img" src="{% static 'itswill_org/recap_img/monkaGun.png' %}" title="monkaGun">
+          <img class="emote-img" id="monkaSTEER-img" src="{% static 'itswill_org/recap_img/monkaSTEER.webp' %}" title="monkaSTEER">
+          <img class="emote-img" id="monkaH-img" src="{% static 'itswill_org/recap_img/monkaH.png' %}" title="monkaH">
+        </span>
+        <span class="stat-value" id="monka-value">{{ recap_data.count_monka|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="gasp">
+        <span class="stat-label" id="gasp-label">
+          <img class="emote-img" id="gasp-img" src="{% static 'itswill_org/recap_img/GASP.webp' %}" title="D:">
+        </span>
+        <span class="stat-value" id="gasp-value">{{ recap_data.count_gasp|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="mmylc">
+        <span class="stat-label" id="mmylc-label">
+          <img class="emote-img" id="mmylc-img" src="{% static 'itswill_org/recap_img/MusicMakeYouLoseControl.gif' %}" title="MusicMakeYouLoseControl">
+        </span>
+        <span class="stat-value" id="mmylc-value">{{ recap_data.count_mmylc|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="dance">
+        <span class="stat-label" id="dance-label">
+          <img class="emote-img" id="itswillPls-img" src="{% static 'itswill_org/recap_img/itswillPls.gif' %}" title="itswillPls">
+          <img class="emote-img" id="pepeD-img" src="{% static 'itswill_org/recap_img/pepeD.webp' %}" title="pepeD">
+          <img class="emote-img" id="PepePls-img" src="{% static 'itswill_org/recap_img/PepePls.webp' %}" title="PepePls">
+          <img class="emote-img" id="daemonDj-img" src="{% static 'itswill_org/recap_img/daemonDj.webp' %}" title="daemonDj">
+          <img class="emote-img" id="willDJ-img" src="{% static 'itswill_org/recap_img/willDJ.webp' %}" title="willDJ">
+          <img class="emote-img" id="nessiePls-img" src="{% static 'itswill_org/recap_img/nessiePls.webp' %}" title="nessiePls">
+          <img class="emote-img" id="SourPls-img" src="{% static 'itswill_org/recap_img/SourPls.webp' %}" title="SourPls">
+          <img class="emote-img" id="Happi-img" src="{% static 'itswill_org/recap_img/Happi.webp' %}" title="Happi">
+          <img class="emote-img" id="GoodBoy-img" src="{% static 'itswill_org/recap_img/GoodBoy.webp' %}" title="GoodBoy">
+        </span>
+        <span class="stat-value" id="dance-value">{{ recap_data.count_dance|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="vvkool">
+        <span class="stat-label" id="vvkool-label">
+          <img class="emote-img" id="VVKool-img" src="{% static 'itswill_org/recap_img/VVKool.gif' %}" title="VVKool">
+          <img class="emote-img" id="VVKoolMini-img" src="{% static 'itswill_org/recap_img/VVKoolMini.gif' %}" title="VVKoolMini">
+          <img class="emote-img" id="VVotate-img" src="{% static 'itswill_org/recap_img/VVotate.webp' %}" title="VVotate">
+        </span>
+        <span class="stat-value" id="vvkool-value">{{ recap_data.count_vvkool|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="spin">
+        <span class="stat-label" id="spin-label">
+          <img class="emote-img" id="borpaSpin-img" src="{% static 'itswill_org/recap_img/borpaSpin.gif' %}" title="borpaSpin">
+          <img class="emote-img" id="itswillSpin-img" src="{% static 'itswill_org/recap_img/itswillSpin.gif' %}" title="itswillSpin">
+          <img class="emote-img" id="willSpin-img" src="{% static 'itswill_org/recap_img/willSpin.gif' %}" title="willSpin">
+          <img class="emote-img" id="YourMom-img" src="{% static 'itswill_org/recap_img/YourMom.gif' %}" title="YourMom">
+        </span>
+        <span class="stat-value" id="spin-value">{{ recap_data.count_spin|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="chicken">
+        <span class="stat-label" id="chicken-label">
+          <img class="emote-img" id="chicken-img" src="{% static 'itswill_org/recap_img/chickenWalk.webp' %}" title="chickenWalk">
+        </span>
+        <span class="stat-value" id="chicken-value">{{ recap_data.count_chicken|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="giggle">
+        <span class="stat-label" id="giggle-label">
+          <img class="emote-img" id="itswillGiggle-img" src="{% static 'itswill_org/recap_img/itswillGiggle.webp' %}" title="itswillGiggle">
+          <img class="emote-img" id="x0r6ztGiggle-img" src="{% static 'itswill_org/recap_img/x0r6ztGiggle.webp' %}" title="x0r6ztGiggle">
+          <img class="emote-img" id="willGiggle-img" src="{% static 'itswill_org/recap_img/willGiggle.gif' %}" title="willGiggle">
+        </span>
+        <span class="stat-value" id="giggle-value">{{ recap_data.count_giggle|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="lul">
+        <span class="stat-label" id="lul-label">
+          <img class="emote-img" id="LUL-img" src="{% static 'itswill_org/recap_img/LUL.png' %}" title="LUL">
+          <img class="emote-img" id="LULW-img" src="{% static 'itswill_org/recap_img/LULW.png' %}" title="LULW">
+          <img class="emote-img" id="OMEGALUL-img" src="{% static 'itswill_org/recap_img/OMEGALUL.webp' %}" title="OMEGALUL">
+          <img class="emote-img" id="OMEGADANCE-img" src="{% static 'itswill_org/recap_img/OMEGADANCE.gif' %}" title="OMEGADANCE">
+        </span>
+        <span class="stat-value" id="lul-value">{{ recap_data.count_lul|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="sonic">
+        <span class="stat-label" id="sonic-label">
+          <img class="emote-img" id="sonic-img" src="{% static 'itswill_org/recap_img/CoolSonic.webp' %}" title="CoolSonic">
+        </span>
+        <span class="stat-value" id="sonic-value">{{ recap_data.count_sonic|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="cum">
+        <span class="stat-label" id="cum-label">Number of cum mentions:</span>
+        <span class="stat-value" id="cum-value">{{ recap_data.count_cum|intcomma }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="section-wrap" id="links-wrap">
+    <div class="section" id="links">
+      <div class="full-section-title">
+        <div class="section-title" id="links-title">
+          QUICK LINKS
+        </div>
+      </div>
+      <div class="link-section">
+        <div class="link-section-title">
+          Overall Recaps
+        </div>
+      {% for year, year_recap in all_recaps.items %}
+        <div class="main-link">
+          <a href="{% url 'itswill_org:recap_year' year_recap.recap.year %}">{{ year_recap.recap.year }}</a>
+        </div>
+
+        <div class="sublinks-section">
+        {% for month, month_recap in year_recap.month_recaps.items %}
+          <span class="sublink">
+            <a href="{% url 'itswill_org:recap_month' month_recap.recap.year month_recap.recap.month %}">{{ month_recap.month_name }}</a>
+          </span>
+        {% endfor %}
+        </div>
+      {% endfor %}
+      </div>
+      {% if not overall_recap %}
+      <div class="link-section">
+        <div class="link-section-title">
+          {{ twitchuser.display_name}}'s Recaps
+        </div>
+        {% for year, year_recap in all_recaps.items %}
+        <div class="main-link">
+          <a href="{% url 'itswill_org:recap_year_user' year_recap.recap.year twitchuser.login %}">{{ year_recap.recap.year }}</a>
+        </div>
+        <div class="sublinks-section">
+          {% for month, month_recap in year_recap.month_recaps.items %}
+          <span class="sublink">
+            <a href="{% url 'itswill_org:recap_month_user' month_recap.recap.year month_recap.recap.month twitchuser.login %}">{{ month_recap.month_name }}</a>
+          </span>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
