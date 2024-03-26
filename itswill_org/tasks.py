@@ -22,7 +22,7 @@ def get_all_first_messages():
   localtz = pytz.timezone("America/Los_Angeles")
   
   for overallrecap in OverallRecapData.objects.all():
-    if overallrecap.month == -1:
+    if overallrecap.month == 0:
       start_date = datetime.datetime(overallrecap.year, 1, 1, 0, 0, 0, 1, localtz)
       end_date   = datetime.datetime(overallrecap.year, 12, 31, 23, 59, 59, 999, localtz)
     else:
@@ -35,7 +35,7 @@ def get_all_first_messages():
     overallrecap.save()
     
   for userrecap in UserRecapData.objects.all():
-    if userrecap.overall_recap.month == -1:
+    if userrecap.overall_recap.month == 0:
       start_date = datetime.datetime(userrecap.overall_recap.year, 1, 1, 0, 0, 0, 1, localtz)
       end_date   = datetime.datetime(userrecap.overall_recap.year, 12, 31, 23, 59, 59, 999, localtz)
     else:
@@ -50,9 +50,9 @@ def get_all_first_messages():
 @shared_task
 def set_yearly_stat_user_count(year):
   try:
-    yearrecap = OverallRecapData.objects.get(year = year, month = -1)
+    yearrecap = OverallRecapData.objects.get(year = year, month = 0)
   except OverallRecapData.DoesNotExist:
-    yearrecap = OverallRecapData(year = year, month = -1)
+    yearrecap = OverallRecapData(year = year, month = 0)
     yearrecap.save()
       
   yearrecap.count_chatters = yearrecap.userrecapdata_set.all().count()
@@ -61,9 +61,9 @@ def set_yearly_stat_user_count(year):
 @shared_task
 def calculate_yearly_stats(year):
   try:
-    yearrecap = OverallRecapData.objects.get(year = year, month = -1)
+    yearrecap = OverallRecapData.objects.get(year = year, month = 0)
   except OverallRecapData.DoesNotExist:
-    yearrecap = OverallRecapData(year = year, month = -1)
+    yearrecap = OverallRecapData(year = year, month = 0)
     yearrecap.save()
     
   yearrecap.zero()

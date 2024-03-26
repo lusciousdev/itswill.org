@@ -112,7 +112,7 @@ class RecapView(generic.TemplateView):
     data["month_abbr"] = calendar.month_abbr
     data["all_recaps"] = {}
     
-    for yearrecap in OverallRecapData.objects.filter(month = -1).order_by("year").all():
+    for yearrecap in OverallRecapData.objects.filter(month = 0).order_by("year").all():
       data["all_recaps"][yearrecap.year] = {
         "recap": yearrecap,
         "month_recaps": {}
@@ -151,8 +151,8 @@ class RecapView(generic.TemplateView):
       return data
     
 def get_recap(request):
-  year = datetime.datetime.now().year
-  month = -1
+  year = str(datetime.datetime.now().year)
+  month = str(0)
   username = None
   if request.method == 'POST':
     year     = request.POST.get("year", year)
@@ -164,6 +164,15 @@ def get_recap(request):
     username = request.GET.get("username", username)
     
   username = None if username == "" else username
+  try:
+    year = int(year)
+  except:
+    year = datetime.datetime.now().year
+    
+  try:
+    month = int(month)
+  except:
+    month = 0
   
   if username is None:
     return HttpResponseRedirect(reverse("itswill_org:recap_month", kwargs = { 'year': year, 'month': month }))
