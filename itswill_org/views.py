@@ -175,7 +175,13 @@ def get_recap(request):
     month = 0
   
   if username is None:
-    return HttpResponseRedirect(reverse("itswill_org:recap_month", kwargs = { 'year': year, 'month': month }))
+    if month > 0:
+      return HttpResponseRedirect(reverse("itswill_org:recap_month", kwargs = { 'year': year, 'month': month }))
+    else:
+      return HttpResponseRedirect(reverse("itswill_org:recap_year", kwargs = { 'year': year }))
   else:
-    return HttpResponseRedirect(reverse("itswill_org:recap_month_user", kwargs = { 'year': year, 'month': month, 'username': username }))
+    if month > 0:
+      return HttpResponseRedirect(reverse("itswill_org:recap_month_user", kwargs = { 'year': year, 'month': month, 'username': username }))
+    else:
+      return HttpResponseRedirect(reverse("itswill_org:recap_year_user", kwargs = { 'year': year, 'username': username }))
     
