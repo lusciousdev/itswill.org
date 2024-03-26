@@ -19,7 +19,7 @@
     <h3>Top Chatters (most messages)</h3>
     <ol>
       {% for chatter in top_chatters %}
-      <li>{{ chatter.twitch_user.display_name }} - {{ chatter.message_count|intcomma }} messages sent</li>
+      <li>{{ chatter.twitch_user.display_name }} - {{ chatter.count_messages|intcomma }} messages sent</li>
       {% endfor %}
     </ol>
   </div>
@@ -27,7 +27,7 @@
     <h3>Top Clippers (most clips)</h3>
     <ol>
       {% for clipper in top_clippers %}
-      <li>{{ clipper.twitch_user.display_name }} - {{ clipper.clip_count|intcomma }} clips</li>
+      <li>{{ clipper.twitch_user.display_name }} - {{ clipper.count_clips|intcomma }} clips</li>
       {% endfor %}
     </ol>
   </div>

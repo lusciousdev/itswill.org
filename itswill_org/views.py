@@ -25,7 +25,7 @@ class MonthListView(generic.TemplateView):
     
     data["monthly_recaps"] = {}
     
-    for recap in OverallRecapData.objects.all():
+    for recap in OverallRecapData.objects.filter(month__gte = 1).all():
       if recap.year not in data["monthly_recaps"]:
         data["monthly_recaps"][recap.year] = {}
         
@@ -70,7 +70,7 @@ class MonthView(generic.TemplateView):
     data["start_date"] = start_date.strftime("%Y/%m/%d")
     data["end_date"] = end_date.strftime("%Y/%m/%d")
     
-    monthlychatters = monthlyrecap.monthlyuserdata_set
+    monthlychatters = monthlyrecap.userrecapdata_set
     
     clips = Clip.objects.filter(created_at__range = (start_date, end_date)).order_by("-view_count")
     
@@ -82,8 +82,8 @@ class MonthView(generic.TemplateView):
     data["chatter_count"] = monthlyrecap.count_chatters
     data["vod_count"] = monthlyrecap.count_videos
     
-    chatter_list = monthlychatters.order_by("-message_count")
-    clipper_list = monthlychatters.order_by("-clip_count")
+    chatter_list = monthlychatters.order_by("-count_messages")
+    clipper_list = monthlychatters.order_by("-count_clips")
     
     data['top_chatters'] = chatter_list[:10]
     data['top_clippers'] = clipper_list[:10]
