@@ -262,7 +262,12 @@ class ChatMessage(models.Model):
   message_id = models.CharField(max_length = 255, primary_key = True, editable = False)
   content_offset = models.IntegerField(default = 0)
   created_at = models.DateTimeField("created at", default = DEFAULT_DATETIME)
-  message = models.TextField(default = "")
+  message = models.CharField(max_length = 1024, default = "")
+  
+  def __str__(self):
+    timestr = self.created_at.strftime("%Y-%m-%d %H:%M:%S")
+    
+    return f"[{timestr}] {self.commenter.display_name}: {self.message}"
   
 class Clip(models.Model):
   clip_id = models.CharField(max_length = 255, primary_key = True, editable = False)

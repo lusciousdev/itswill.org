@@ -4,6 +4,7 @@ from django.views.decorators.cache import cache_page
 import datetime
 
 from . import views
+from . import api
 
 app_name = 'itswill_org'
 urlpatterns = [
@@ -21,4 +22,6 @@ urlpatterns = [
   path("recap/<int:year>/<int:month>/<str:username>/", views.RecapView.as_view(), name = "recap_month_user"),
   
   path("recap/redirect/", views.get_recap, name = "recap_redirect"),
+  
+  path("api/v1/randmsg", api.get_random_message, name = "api_random_message"),
 ]
