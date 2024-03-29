@@ -39,4 +39,9 @@ def get_random_message(request):
   user_message_count = user_message_set.count()
   random_message = user_message_set.all()[randint(0, user_message_count - 1)]
   
-  return HttpResponse(str(random_message), 200)
+  response_str = str(random_message)
+  
+  if len(response_str) > 400:
+    response_str = response_str[:395] + "..."
+  
+  return HttpResponse(response_str, 200)
