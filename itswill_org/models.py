@@ -1,6 +1,8 @@
 from django.db import models
 import datetime
 
+from .util.timeutil import *
+
 DEFAULT_DATETIME = datetime.datetime(1971, 1, 1, 0, 0, 1, tzinfo = datetime.timezone.utc)
 
 # Create your models here.
@@ -266,6 +268,12 @@ class ChatMessage(models.Model):
   
   def __str__(self):
     timestr = self.created_at.strftime("%Y-%m-%d %H:%M:%S")
+    
+    return f"[{timestr}] {self.commenter.display_name}: {self.message}"
+  
+  def localtz_str(self, localtz = TIMEZONE):
+    local_created_at = utc_to_local(self.created_at, localtz)
+    timestr = local_created_at.strftime("%Y-%m-%d %H:%M:%S")
     
     return f"[{timestr}] {self.commenter.display_name}: {self.message}"
   

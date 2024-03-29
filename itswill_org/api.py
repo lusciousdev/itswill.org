@@ -39,7 +39,7 @@ def get_random_message(request):
   user_message_count = user_message_set.count()
   random_message = user_message_set.all()[randint(0, user_message_count - 1)]
   
-  response_str = str(random_message)
+  response_str = random_message.localtz_str()
   
   if len(response_str) > 400:
     response_str = response_str[:395] + "..."
