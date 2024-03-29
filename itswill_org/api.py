@@ -15,6 +15,8 @@ def get_random_message(request):
   altuser = request.GET.get("otheruser", "")
   user_id = request.GET.get("userid", "43246220")
   
+  altuser = altuser.strip("@")
+  
   try:
     user_id = int(user_id)
   except ValueError:
