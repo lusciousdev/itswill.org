@@ -20,6 +20,7 @@ from .secrets import *
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+USER_ID = 43246220
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -179,4 +180,22 @@ CELERY_BROKER_URL     = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}
 CELERY_RESULT_BACKEND = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/{CELERY_DATABASE}"
 
 CELERY_BEAT_SCHEDULE = {
+  "get_recent_chat_messages": {
+    "task": "itswill_org.tasks.get_recent_chat_messages",
+    "schedule": crontab(minute = 0, hour = 6),
+    "args": (5, False,),
+  },
+  "get_recent_clips": {
+    "task": "itswill_org.tasks.get_recent_clips",
+    "schedule": crontab(minute = 30, hour = 6),
+    "args": (21,),
+  },
+  "recalculate_previous_month": {
+    "task": "itswill_org.tasks.calculate_monthly_stats",
+    "schedule": crontab(minute = 0, hour = 7),
+  },
+  "recalculate_year": {
+    "task": "itswill_org.tasks.calculate_yearly_stats",
+    "schedule": crontab(minute = 30, hour = 7),
+  },
 }

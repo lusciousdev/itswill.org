@@ -2,12 +2,14 @@ from django.conf import settings
 from celery import Celery, shared_task
 from celery.schedules import crontab
 import luscioustwitch
+from django.core.exceptions import ValidationError
 
 import datetime
 import pytz
 import calendar
 import re
 
+from .util.timeutil import *
 from .models import *
 
 def get_word_count(text : str, word : str) -> int:
@@ -16,6 +18,220 @@ def get_word_count(text : str, word : str) -> int:
 
 def get_mult_word_count(text : str, words : list) -> int:
   return get_word_count(text, "|".join(words))
+
+@shared_task
+def get_recent_clips(max_days = 31):
+  twitch_api = luscioustwitch.TwitchAPI({ "CLIENT_ID" : settings.TWITCH_API_CLIENT_ID, "CLIENT_SECRET": settings.TWITCH_API_CLIENT_SECRET })
+  
+  if max_days > 0:
+    start_date = datetime.datetime.combine(datetime.datetime.now().date(), datetime.time(0, 0, 0, 1)) - datetime.timedelta(days = max_days)
+  else:
+    start_date = datetime.datetime(1971, 1, 1, 0, 0, 0, 1, tzinfo = datetime.timezone.utc)
+    
+  end_date = datetime.datetime.now()
+  
+  clip_params = {
+    "first": 50,
+    "broadcaster_id": settings.USER_ID,
+    "started_at": start_date.astimezone(pytz.utc).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT),
+    "ended_at": end_date.astimezone(pytz.utc).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT)
+  }
+
+  continue_fetching = True
+  while continue_fetching:
+    clips, cursor = twitch_api.get_clips(params=clip_params)
+
+    if cursor != "":
+      clip_params["after"] = cursor
+    else:
+      continue_fetching = False
+      
+    most_recent_clip_view_count = 0
+
+    for clip in clips:
+      clip_id = clip["id"]
+      creator_id = int(clip["creator_id"])
+        
+      try:
+        creator = TwitchUser.objects.get(user_id = creator_id)
+      except TwitchUser.DoesNotExist:
+        try:
+          userdata = twitch_api.get_user_info(id = creator_id)
+        
+          creator = TwitchUser(
+            user_id = creator_id,
+            login = userdata['login'],
+            display_name = userdata['display_name'],
+            user_type = userdata['type'],
+            broadcaster_type = userdata['broadcaster_type'],
+            description = userdata['description'],
+            profile_image_url = userdata['profile_image_url'],
+            offline_image_url = userdata['offline_image_url'],
+            created_at = datetime.datetime.strptime(userdata['created_at'], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
+          )
+        except:
+          creator = TwitchUser(
+            user_id = creator_id,
+            login = clip["creator_name"],
+            display_name = clip["creator_name"]
+          )
+        
+        creator.save()
+        
+      try:
+        clip_inst = Clip(
+          clip_id = clip_id,
+          creator = creator,
+          url = clip["url"],
+          embed_url = clip["embed_url"],
+          broadcaster_id = int(clip["broadcaster_id"]),
+          broadcaster_name = clip["broadcaster_name"],
+          video_id = clip["video_id"],
+          game_id = clip["game_id"],
+          language = clip["language"],
+          title = clip["title"],
+          view_count = int(clip["view_count"]),
+          created_at = datetime.datetime.strptime(clip["created_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
+          thumbnail_url = clip["thumbnail_url"],
+          duration = float(clip["duration"]),
+          vod_offset = -1 if (clip["vod_offset"] == "null" or clip["vod_offset"] is None) else int(clip["vod_offset"])
+        )
+        
+        clip_inst.save()
+      except ValidationError as e:
+        print(e)
+
+      most_recent_clip_view_count = int(clip["view_count"])
+      if most_recent_clip_view_count < 1:
+        continue_fetching = False
+        break
+      
+    print(f"Most recent clip view count: {most_recent_clip_view_count}")
+  
+
+@shared_task
+def get_recent_chat_messages(max_days = -1, skip_known_vods = True):
+  twitch_api = luscioustwitch.TwitchAPI({ "CLIENT_ID" : settings.TWITCH_API_CLIENT_ID, "CLIENT_SECRET": settings.TWITCH_API_CLIENT_SECRET })
+  gql_api    = luscioustwitch.TwitchGQL_API()
+  
+  video_params = {
+    "user_id": settings.USER_ID,
+    "period": "all",
+    "sort": "time",
+    "type": "archive"
+  }
+  
+  if max_days > 0:
+    start_date = datetime.datetime.combine(datetime.datetime.now().date(), datetime.time(0, 0, 0, 1)) - datetime.timedelta(days = max_days)
+  
+  videos = twitch_api.get_all_videos(video_params)
+  
+  for video in videos:
+    vod_date = pytz.utc.localize(datetime.datetime.strptime(video['published_at'], luscioustwitch.TWITCH_API_TIME_FORMAT), is_dst = None)
+    
+    if max_days > 0 and vod_date < start_date:
+      continue
+    
+    videofound = False
+    try:
+      videoinstance = Video.objects.get(vod_id = video['id'])
+      print(f"Skipping {video['id']} as it's in our database already.")
+      videofound = True
+      continue
+    except Video.DoesNotExist:
+      None
+      
+    if skip_known_vods and videofound:
+      continue
+
+    print(f'{video["id"]} - {utc_to_local(vod_date, TIMEZONE).strftime("%Y-%m-%d %H:%M:%S")}')
+    
+    vid_chat = gql_api.get_chat_messages(video['id'])
+    
+    for chatmsg in vid_chat:
+      try:
+        commenterid = int(chatmsg["commenter"]["id"])
+      except:
+        continue
+      
+      try:
+        frags = chatmsg["message"]["fragments"]
+        if len(frags) == 0:
+          continue
+      except:
+        continue
+      
+      msgtext = ""
+      for frag in frags:
+        msgtext += frag["text"]
+        
+      try:
+        commenter = TwitchUser.objects.get(user_id = commenterid)
+        
+      except TwitchUser.DoesNotExist:
+        try:
+          userdata = twitch_api.get_user_info(id = commenterid)
+        
+          commenter = TwitchUser(
+            user_id = commenterid,
+            login = userdata['login'],
+            display_name = userdata['display_name'],
+            user_type = userdata['type'],
+            broadcaster_type = userdata['broadcaster_type'],
+            description = userdata['description'],
+            profile_image_url = userdata['profile_image_url'],
+            offline_image_url = userdata['offline_image_url'],
+            created_at = datetime.datetime.strptime(userdata['created_at'], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
+          )
+        except:
+          commenter = TwitchUser(
+            user_id = commenterid,
+            login = chatmsg["commenter"]["login"],
+            display_name = chatmsg["commenter"]["displayName"],
+            created_at = datetime.datetime(1971, 1, 1, 0, 0, 1).replace(tzinfo = datetime.timezone.utc)
+          )
+        
+        commenter.save()
+      
+      chatmsgtime = None
+      try:
+        chatmsgtime = datetime.datetime.strptime(chatmsg["createdAt"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo = datetime.timezone.utc)
+      except ValueError:
+        chatmsgtime = datetime.datetime.strptime(chatmsg["createdAt"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc)
+      
+      try:
+        chatmsgmodel = ChatMessage(
+          commenter = commenter,
+          message_id = chatmsg["id"],
+          content_offset = chatmsg["contentOffsetSeconds"],
+          created_at = chatmsgtime,
+          message = msgtext,
+        )
+        
+        chatmsgmodel.save()
+      except ValidationError as e:
+        print(e)
+        
+    if not videofound:
+      videoinstance = Video(
+        vod_id = video['id'],
+        stream_id = video["stream_id"],
+        user_id = video["user_id"],
+        user_login = video["user_login"],
+        user_name = video["user_name"],
+        title = video["title"],
+        description = video["description"],
+        created_at = datetime.datetime.strptime(video["created_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
+        published_at = datetime.datetime.strptime(video["published_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
+        url = video["url"],
+        thumbnail_url = video["thumbnail_url"],
+        viewable = video["viewable"],
+        view_count = video["view_count"],
+        language = video["language"],
+        vod_type = video["type"],
+        duration = video["duration"],
+      )
+      videoinstance.save()
 
 @shared_task
 def get_all_first_messages():

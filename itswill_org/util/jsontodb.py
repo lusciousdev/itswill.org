@@ -50,6 +50,7 @@ for chatfile in chatlogfiles:
     i += 1
     if (i % 500 == 0):
       print(f"{i}/{chatcount}")
+      
     try:
       commenterid = int(chatmsg["commenter"]["id"])
     except:
