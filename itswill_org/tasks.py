@@ -370,11 +370,13 @@ def calculate_monthly_stats(year = None, month = None):
       
       try:
         chatter_recap = UserRecapData.objects.get(overall_recap = monthrecap, twitch_user = chatter)
+        chatter_recap.zero()
       except UserRecapData.DoesNotExist:
         chatter_recap = UserRecapData(
           overall_recap = monthrecap,
           twitch_user = chatter
         )
+        chatter_recap.zero()
         chatter_recap.save()
         
       chatter_recap.count_messages   = chatter_msg_count

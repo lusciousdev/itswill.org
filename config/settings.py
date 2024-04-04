@@ -187,15 +187,15 @@ CELERY_BEAT_SCHEDULE = {
   },
   "get_recent_clips": {
     "task": "itswill_org.tasks.get_recent_clips",
-    "schedule": crontab(minute = 30, hour = 6),
+    "schedule": crontab(minute = 0, hour = 8),
     "args": (21,),
   },
   "recalculate_previous_month": {
     "task": "itswill_org.tasks.calculate_monthly_stats",
-    "schedule": crontab(minute = 0, hour = 7),
+    "schedule": crontab(minute = 30, hour = 8),
   },
   "recalculate_year": {
     "task": "itswill_org.tasks.calculate_yearly_stats",
-    "schedule": crontab(minute = 30, hour = 7),
+    "schedule": crontab(minute = 30, hour = 10),
   },
 }
