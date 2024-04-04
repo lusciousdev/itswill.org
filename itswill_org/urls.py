@@ -24,4 +24,5 @@ urlpatterns = [
   path("recap/redirect/", views.get_recap, name = "recap_redirect"),
   
   path("api/v1/randmsg", api.get_random_message, name = "api_random_message"),
+  path("api/v1/pets", api.get_pets_message, name="api_pets_message"),
 ]

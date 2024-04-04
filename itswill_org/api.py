@@ -45,3 +45,10 @@ def get_random_message(request):
     response_str = response_str[:395] + "..."
   
   return HttpResponse(response_str, 200)
+
+@csrf_exempt
+def get_pets_message(request):
+  total_pet_count = Pet.objects.all().count()
+  acquired_pet_count = Pet.objects.filter(acquired = True).count()
+  
+  return HttpResponse(f"{acquired_pet_count}/{total_pet_count} https://itswill.org/pets", 200)
