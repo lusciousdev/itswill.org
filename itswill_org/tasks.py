@@ -122,7 +122,7 @@ def get_recent_chat_messages(max_days = -1, skip_known_vods = True):
   }
   
   if max_days > 0:
-    start_date = datetime.datetime.combine(datetime.datetime.now().date(), datetime.time(0, 0, 0, 1)) - datetime.timedelta(days = max_days)
+    start_date = datetime.datetime.combine(datetime.datetime.now(TIMEZONE).date(), datetime.time(0, 0, 0, 1), TIMEZONE) - datetime.timedelta(days = max_days)
   
   videos = twitch_api.get_all_videos(video_params)
   
@@ -135,13 +135,12 @@ def get_recent_chat_messages(max_days = -1, skip_known_vods = True):
     videofound = False
     try:
       videoinstance = Video.objects.get(vod_id = video['id'])
-      print(f"Skipping {video['id']} as it's in our database already.")
       videofound = True
-      continue
     except Video.DoesNotExist:
       None
       
     if skip_known_vods and videofound:
+      print(f"Skipping {video['id']} as it's in our database already.")
       continue
 
     print(f'{video["id"]} - {utc_to_local(vod_date, TIMEZONE).strftime("%Y-%m-%d %H:%M:%S")}')
@@ -275,7 +274,10 @@ def set_yearly_stat_user_count(year):
   yearrecap.save()
 
 @shared_task
-def calculate_yearly_stats(year):
+def calculate_yearly_stats(year = None):
+  if year is None:
+    year = datetime.datetime.now(TIMEZONE).year
+  
   try:
     yearrecap = OverallRecapData.objects.get(year = year, month = 0)
   except OverallRecapData.DoesNotExist:
@@ -320,7 +322,12 @@ def calculate_yearly_stats(year):
         
 
 @shared_task
-def calculate_monthly_stats(year, month):
+def calculate_monthly_stats(year = None, month = None):
+  if year is None:
+    year = datetime.datetime.now(TIMEZONE).year
+  if month is None:
+    month = datetime.datetime.now(TIMEZONE).month
+  
   localtz = pytz.timezone("America/Los_Angeles")
   monthrange = calendar.monthrange(year, month)
   
