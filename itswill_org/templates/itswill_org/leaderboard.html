@@ -1,0 +1,450 @@
+{% extends 'itswill_org/base.html' %}
+
+{% load static %}
+{% load index %}
+{% load humanize %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'itswill_org/recap.css' %}">
+{% endblock %}
+
+{% block title %}The itswill Recap{% endblock %}
+    
+{% block body %}
+<div class="content">
+  <div class="row-wrap-section-wrap" id="leaderboards-wrap">
+    <div class="row-wrap-section" id="leaderboards">
+      <div class="row-wrap-section-title" id="leaderboards-title">Leaderboards</div>
+      {% if recap_data.month == 0 %}
+      <div class="row-wrap-section-note" id="recap-link">(<a href="{% url 'itswill_org:recap_year' recap_data.year %}">Click to go back to the recap</a>)</div>
+      {% else %}
+      <div class="row-wrap-section-note" id="recap-link">(<a href="{% url 'itswill_org:recap_month' recap_data.year recap_data.month %}">Click to go back to the recap</a>)</div>
+      {% endif %}
+      <div id="msg-count-wrap">
+        <div class="leaderboard-item" id="msg-count">
+          <div class="leaderboard-label" id="msg-count-label">Messages sent:</div>
+          <table class="stat-leaderboard" id="msg-count-leaderboard">
+            {% for entry in top_messages %}
+              <tr class='leaderboard-table'>
+                <td>{{ forloop.counter }}.</td>
+                <td>{{ entry.twitch_user.display_name }}</td>
+                <td>{{ entry.count_messages|intcomma }}</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+      <div class="leaderboard-item" id="clip-count">
+        <div class="leaderboard-label" id="clip-count-label">Clips created:</div>
+        <table class="stat-leaderboard" id="clip-count-leaderboard">
+          {% for entry in top_clips %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_clips|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="clip-views">
+        <div class="leaderboard-label" id="clip-views-label">Views on those clips:</div>
+        <table class="stat-leaderboard" id="clip-views-leaderboard">
+          {% for entry in top_views %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_clip_views|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="itswill7">
+        <div class="leaderboard-label" id="itswill7-label">
+          <img class="emote-img" id="itswill7-img" src="{% static 'itswill_org/recap_img/itswill7.webp' %}" title="itswill7">
+          <img class="emote-img" id="itswillFreeTrial-img" src="{% static 'itswill_org/recap_img/itswillFreeTrial.png' %}" title="itswillFreeTrial">
+        </div>
+        <table class="stat-leaderboard" id="itswill7-leaderboard">
+          {% for entry in top_seven %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_seven|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="itswillPound">
+        <div class="leaderboard-label" id="itswillPound-label">
+          <img class="emote-img" id="itswillPound-img" src="{% static 'itswill_org/recap_img/itswillPound.webp' %}" title="itswillPound">
+        </div>
+        <table class="stat-leaderboard" id="itswillPound-leaderboard">
+          {% for entry in top_pound %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_pound|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="stsmg">
+        <div class="leaderboard-label" id="stsmg-label">
+          <img class="emote-img" id="stsmg-img" src="{% static 'itswill_org/recap_img/StartTheStreamMyGuy.webp' %}" title="StartTheStreamMyGuy">
+        </div>
+        <table class="stat-leaderboard" id="stsmg-leaderboard">
+          {% for entry in top_stsmg %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_stsmg|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="ksmg">
+        <div class="leaderboard-label" id="ksmg-label">
+          <img class="emote-img" id="ksmg-img" src="{% static 'itswill_org/recap_img/itswillKeepStreamingMyGuy.webp' %}" title="itswillKeepStreamingMyGuy">
+        </div>
+        <table class="stat-leaderboard" id="ksmg-leaderboard">
+          {% for entry in top_ksmg %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_ksmg|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="etsmg">
+        <div class="leaderboard-label" id="etsmg-label">
+          <img class="emote-img" id="etsmg-img" src="{% static 'itswill_org/recap_img/itswillEndTheStreamMyGuy.webp' %}" title="itswillEndTheStreamMyGuy">
+        </div>
+        <table class="stat-leaderboard" id="etsmg-leaderboard">
+          {% for entry in top_etsmg %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_etsmg|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="itswillSneak">
+        <div class="leaderboard-label" id="itswillSneak-label">
+          <img class="emote-img" id="itswillSneak-img" src="{% static 'itswill_org/recap_img/itswillSneak.gif' %}" title="itswillSneak">
+          <img class="emote-img" id="itswillFollow-img" src="{% static 'itswill_org/recap_img/itswillFollow.gif' %}" title="itswillFollow">
+          <img class="emote-img" id="itswillFollow-img" src="{% static 'itswill_org/recap_img/Sneak.webp' %}" title="Sneak">
+        </div>
+        <table class="stat-leaderboard" id="itswillSneak-leaderboard">
+          {% for entry in top_sneak %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_sneak|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="itswillSit">
+        <div class="leaderboard-label" id="itswillSit-label">
+          <img class="emote-img" id="itswillSit-img" src="{% static 'itswill_org/recap_img/itswillSit.webp' %}" title="itswillSit">
+        </div>
+        <table class="stat-leaderboard" id="itswillSit-leaderboard">
+          {% for entry in top_sit %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_sit|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="itswillL">
+        <div class="leaderboard-label" id="itswillL-label">
+          <img class="emote-img" id="itswillL-img" src="{% static 'itswill_org/recap_img/itswillL.webp' %}" title="itswillL">
+          <img class="emote-img" id="hannLOVE-img" src="{% static 'itswill_org/recap_img/hannLOVE.png' %}" title="hannLOVE">
+          <img class="emote-img" id="peepoLove-img" src="{% static 'itswill_org/recap_img/peepoLove.webp' %}" title="peepoLove">
+        </div>
+        <table class="stat-leaderboard" id="itswillL-leaderboard">
+          {% for entry in top_love %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_love|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="pog">
+        <div class="leaderboard-label" id="pog-label">
+          <img class="emote-img" id="itswillPog-img" src="{% static 'itswill_org/recap_img/itswillPog.png' %}" title="itswillPog">
+          <img class="emote-img" id="PogChamp-img" src="{% static 'itswill_org/recap_img/PogChamp.png' %}" title="PogChamp">
+          <img class="emote-img" id="POGCHAMP-img" src="{% static 'itswill_org/recap_img/POGCHAMP2.png' %}" title="POGCHAMP">
+          <img class="emote-img" id="Pog-img" src="{% static 'itswill_org/recap_img/Pog.png' %}" title="Pog">
+          <img class="emote-img" id="POGGIES-img" src="{% static 'itswill_org/recap_img/POGGIES.png' %}" title="POGGIES">
+          <img class="emote-img" id="POGGERS-img" src="{% static 'itswill_org/recap_img/POGGERS.webp' %}" title="POGGERS">
+          <img class="emote-img" id="PagU-img" src="{% static 'itswill_org/recap_img/PagU.webp' %}" title="PagU">
+          <img class="emote-img" id="PagMan-img" src="{% static 'itswill_org/recap_img/PagMan.webp' %}" title="PagMan">
+        </div>
+        <table class="stat-leaderboard" id="pog-leaderboard">
+          {% for entry in top_pog %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_pog|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="dankies">
+        <div class="leaderboard-label" id="dankies-label">
+          <img class="emote-img" id="DANKIES-img" src="{% static 'itswill_org/recap_img/DANKIES.webp' %}" title="DANKIES">
+          <img class="emote-img" id="HYPERS-img" src="{% static 'itswill_org/recap_img/HYPERS.webp' %}" title="HYPERS">
+        </div>
+        <table class="stat-leaderboard" id="dankies-leaderboard">
+          {% for entry in top_dankies %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_dankies|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="shoop">
+        <div class="leaderboard-label" id="shoop-label">
+          <img class="emote-img" id="shoop-img" src="{% static 'itswill_org/recap_img/ShoopDaWhoop.webp' %}" title="ShoopDaWhoop">
+        </div>
+        <table class="stat-leaderboard" id="shoop-leaderboard">
+          {% for entry in top_shoop %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_shoop|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="pogo">
+        <div class="leaderboard-label" id="pogo-label">
+          <img class="emote-img" id="PogO-img" src="{% static 'itswill_org/recap_img/PogO.webp' %}" title="PogO">
+          <img class="emote-img" id="itswillO-img" src="{% static 'itswill_org/recap_img/itswillO.webp' %}" title="itswillO">
+          <img class="emote-img" id="itswillWeird-img" src="{% static 'itswill_org/recap_img/itswillWeird.webp' %}" title="itswillWeird">
+          <img class="emote-img" id="WeirdChamp-img" src="{% static 'itswill_org/recap_img/WeirdChamp.webp' %}" title="WeirdChamp">
+          <img class="emote-img" id="WeirdPause-img" src="{% static 'itswill_org/recap_img/WeirdPause.webp' %}" title="WeirdPause">
+        </div>
+        <table class="stat-leaderboard" id="pogo-leaderboard">
+          {% for entry in top_pogo %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_pogo|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="monka">
+        <div class="leaderboard-label" id="monka-label">
+          <img class="emote-img" id="monkaS-img" src="{% static 'itswill_org/recap_img/monkaS.webp' %}" title="monkaS">
+          <img class="emote-img" id="monkaW-img" src="{% static 'itswill_org/recap_img/monkaW.webp' %}" title="monkaW">
+          <img class="emote-img" id="monkaEyes-img" src="{% static 'itswill_org/recap_img/monkaEyes.png' %}" title="monkaEyes">
+          <img class="emote-img" id="monkaGun-img" src="{% static 'itswill_org/recap_img/monkaGun.png' %}" title="monkaGun">
+          <img class="emote-img" id="monkaSTEER-img" src="{% static 'itswill_org/recap_img/monkaSTEER.webp' %}" title="monkaSTEER">
+          <img class="emote-img" id="monkaH-img" src="{% static 'itswill_org/recap_img/monkaH.png' %}" title="monkaH">
+        </div>
+        <table class="stat-leaderboard" id="monka-leaderboard">
+          {% for entry in top_monka %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_monka|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="gasp">
+        <div class="leaderboard-label" id="gasp-label">
+          <img class="emote-img" id="gasp-img" src="{% static 'itswill_org/recap_img/GASP.webp' %}" title="D:">
+        </div>
+        <table class="stat-leaderboard" id="gasp-leaderboard">
+          {% for entry in top_gasp %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_gasp|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="mmylc">
+        <div class="leaderboard-label" id="mmylc-label">
+          <img class="emote-img" id="mmylc-img" src="{% static 'itswill_org/recap_img/MusicMakeYouLoseControl.gif' %}" title="MusicMakeYouLoseControl">
+        </div>
+        <table class="stat-leaderboard" id="mmylc-leaderboard">
+          {% for entry in top_mmylc %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_mmylc|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="dance">
+        <div class="leaderboard-label" id="dance-label">
+          <img class="emote-img" id="itswillPls-img" src="{% static 'itswill_org/recap_img/itswillPls.gif' %}" title="itswillPls">
+          <img class="emote-img" id="pepeD-img" src="{% static 'itswill_org/recap_img/pepeD.webp' %}" title="pepeD">
+          <img class="emote-img" id="PepePls-img" src="{% static 'itswill_org/recap_img/PepePls.webp' %}" title="PepePls">
+          <img class="emote-img" id="daemonDj-img" src="{% static 'itswill_org/recap_img/daemonDj.webp' %}" title="daemonDj">
+          <img class="emote-img" id="willDJ-img" src="{% static 'itswill_org/recap_img/willDJ.webp' %}" title="willDJ">
+          <img class="emote-img" id="nessiePls-img" src="{% static 'itswill_org/recap_img/nessiePls.webp' %}" title="nessiePls">
+          <img class="emote-img" id="SourPls-img" src="{% static 'itswill_org/recap_img/SourPls.webp' %}" title="SourPls">
+          <img class="emote-img" id="Happi-img" src="{% static 'itswill_org/recap_img/Happi.webp' %}" title="Happi">
+          <img class="emote-img" id="GoodBoy-img" src="{% static 'itswill_org/recap_img/GoodBoy.webp' %}" title="GoodBoy">
+        </div>
+        <table class="stat-leaderboard" id="dance-leaderboard">
+          {% for entry in top_dance %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_dance|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="vvkool">
+        <div class="leaderboard-label" id="vvkool-label">
+          <img class="emote-img" id="VVKool-img" src="{% static 'itswill_org/recap_img/VVKool.gif' %}" title="VVKool">
+          <img class="emote-img" id="VVKoolMini-img" src="{% static 'itswill_org/recap_img/VVKoolMini.gif' %}" title="VVKoolMini">
+          <img class="emote-img" id="VVotate-img" src="{% static 'itswill_org/recap_img/VVotate.webp' %}" title="VVotate">
+        </div>
+        <table class="stat-leaderboard" id="vvkool-leaderboard">
+          {% for entry in top_vvkool %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_vvkool|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="spin">
+        <div class="leaderboard-label" id="spin-label">
+          <img class="emote-img" id="borpaSpin-img" src="{% static 'itswill_org/recap_img/borpaSpin.gif' %}" title="borpaSpin">
+          <img class="emote-img" id="itswillSpin-img" src="{% static 'itswill_org/recap_img/itswillSpin.gif' %}" title="itswillSpin">
+          <img class="emote-img" id="willSpin-img" src="{% static 'itswill_org/recap_img/willSpin.gif' %}" title="willSpin">
+          <img class="emote-img" id="YourMom-img" src="{% static 'itswill_org/recap_img/YourMom.gif' %}" title="YourMom">
+        </div>
+        <table class="stat-leaderboard" id="spin-leaderboard">
+          {% for entry in top_spin %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_spin|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="chicken">
+        <div class="leaderboard-label" id="chicken-label">
+          <img class="emote-img" id="chicken-img" src="{% static 'itswill_org/recap_img/chickenWalk.webp' %}" title="chickenWalk">
+        </div>
+        <table class="stat-leaderboard" id="chicken-leaderboard">
+          {% for entry in top_chicken %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_chicken|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="giggle">
+        <div class="leaderboard-label" id="giggle-label">
+          <img class="emote-img" id="itswillGiggle-img" src="{% static 'itswill_org/recap_img/itswillGiggle.webp' %}" title="itswillGiggle">
+          <img class="emote-img" id="x0r6ztGiggle-img" src="{% static 'itswill_org/recap_img/x0r6ztGiggle.webp' %}" title="x0r6ztGiggle">
+          <img class="emote-img" id="willGiggle-img" src="{% static 'itswill_org/recap_img/willGiggle.gif' %}" title="willGiggle">
+        </div>
+        <table class="stat-leaderboard" id="giggle-leaderboard">
+          {% for entry in top_giggle %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_giggle|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="lul">
+        <div class="leaderboard-label" id="lul-label">
+          <img class="emote-img" id="LUL-img" src="{% static 'itswill_org/recap_img/LUL.png' %}" title="LUL">
+          <img class="emote-img" id="LULW-img" src="{% static 'itswill_org/recap_img/LULW.png' %}" title="LULW">
+          <img class="emote-img" id="OMEGALUL-img" src="{% static 'itswill_org/recap_img/OMEGALUL.webp' %}" title="OMEGALUL">
+          <img class="emote-img" id="OMEGADANCE-img" src="{% static 'itswill_org/recap_img/OMEGADANCE.gif' %}" title="OMEGADANCE">
+        </div>
+        <table class="stat-leaderboard" id="lul-leaderboard">
+          {% for entry in top_lul %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_lul|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="sonic">
+        <div class="leaderboard-label" id="sonic-label">
+          <img class="emote-img" id="sonic-img" src="{% static 'itswill_org/recap_img/CoolSonic.webp' %}" title="CoolSonic">
+        </div>
+        <table class="stat-leaderboard" id="sonic-leaderboard">
+          {% for entry in top_sonic %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_sonic|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="leaderboard-item" id="cum">
+        <div class="leaderboard-label" id="cum-label">Number of cum mentions:</div>
+        <table class="stat-leaderboard" id="cum-leaderboard">
+          {% for entry in top_cum %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.twitch_user.display_name }}</td>
+              <td>{{ entry.count_cum|intcomma }}</td>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="section-wrap" id="links-wrap">
+    <div class="section" id="links">
+      <div class="full-section-title">
+        <div class="section-title" id="links-title">
+          QUICK LINKS
+        </div>
+      </div>
+      <div class="link-section">
+        <div class="link-section-title">
+          All Leaderboards
+        </div>
+      {% for year, year_recap in all_recaps.items %}
+        <div class="main-link">
+          <a href="{% url 'itswill_org:leaderboard_year' year_recap.recap.year %}">{{ year_recap.recap.year }}</a>
+        </div>
+
+        <div class="sublinks-section">
+        {% for month, month_recap in year_recap.month_recaps.items %}
+          <span class="sublink">
+            <a href="{% url 'itswill_org:leaderboard_month' month_recap.recap.year month_recap.recap.month %}">{{ month_recap.month_name }}</a>
+          </span>
+        {% endfor %}
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

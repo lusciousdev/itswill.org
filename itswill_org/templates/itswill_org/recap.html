@@ -41,20 +41,32 @@
         </div>
         <div class="section-subtitle" id="range-subtitle">
           {% if overall_recap %}
-            {% if recap_data.month == -1 %}
-            {{ recap_data.year }}
+            {% if recap_data.month == 0 %}
+            All of {{ recap_data.year }}
             {% else %}
             {{ month_abbr|index:recap_data.month }} {{ recap_data.year }}
             {% endif %}
           {% else %}
-            {% if recap_data.overall_recap.month == -1 %}
-            {{ recap_data.overall_recap.year }}
+            {% if recap_data.overall_recap.month == 0 %}
+            All of {{ recap_data.overall_recap.year }}
             {% else %}
             {{ month_abbr|index:recap_data.overall_recap.month }} {{ recap_data.overall_recap.year }}
             {% endif %}
           {% endif %}
         </div>
-        <!--<div class="section-subtitle" id="stat-subtitle">(<a href='./leaderboards'>Click to see the leaderboards</a>)</div>-->
+        {% if overall_recap %}
+        {% if recap_data.month == 0 %}
+        <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_year' recap_data.year %}">Click to see the leaderboards</a>)</div>
+        {% else %}
+        <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_month' recap_data.year recap_data.month %}">Click to see the leaderboards</a>)</div>
+        {% endif %}
+        {% else %}
+        {% if recap_data.overall_recap.month == 0 %}
+        <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_year' recap_data.overall_recap.year %}">Click to see the leaderboards</a>)</div>
+        {% else %}
+        <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_month' recap_data.overall_recap.year recap_data.overall_recap.month %}">Click to see the leaderboards</a>)</div>
+        {% endif %}
+        {% endif %}
       </div>
       <div class="stat-item" id="msg-count">
         <span class="stat-label" id="msg-count-label">Messages sent:</span>

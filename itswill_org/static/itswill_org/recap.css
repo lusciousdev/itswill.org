@@ -19,6 +19,7 @@ html {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: var(--bg-light);
 }
 
 .section {
@@ -27,6 +28,27 @@ html {
   justify-content: center;
   align-items: center;
   width: 100%;
+}
+
+.row-wrap-section-wrap {
+  width: 80vw;
+  max-width: 1600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-x: scroll;
+  background-color: var(--bg-light);
+}
+
+.row-wrap-section {
+  display: flex;
+  flex-flow: row wrap;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 75px;
+  justify-content: space-around;
 }
 
 #lookup-form {
@@ -64,7 +86,6 @@ html {
 
 #stats-wrap {
   min-height: 640px;
-  background-color: var(--bg-light);
 }
 
 #stats {
@@ -73,11 +94,14 @@ html {
 
 #links-wrap {
   margin: 10px 0px 10px 0px;
-  background-color: var(--bg-light);
 }
 
 #links {
   margin: 24px 0px 24px 0px;
+}
+
+#leaderboards {
+  margin: 48px 0px 48px 0px;
 }
 
 .full-section-title {
@@ -88,13 +112,33 @@ html {
   margin-bottom: 10px;
 }
 
-.section-title {
+.section-title, .row-wrap-section-title {
   font-size: 1.5em;
 }
 
-.section-subtitle {
+.row-wrap-section-title {
+  flex-basis: 100%;
+  text-align: center;
+}
+
+.section-subtitle, .row-wrap-section-subtitle {
   font-size: 1.15em;
   margin-bottom: 12px;
+}
+
+.row-wrap-section-subtitle {
+  flex-basis: 100%;
+  text-align: center;
+}
+
+.section-note, .row-wrap-section-note {
+  font-size: 0.9em;
+  margin-bottom: 12px;
+}
+
+.row-wrap-section-note {
+  flex-basis: 100%;
+  text-align: center;
 }
 
 a, a:visited {
@@ -109,7 +153,43 @@ a, a:visited {
   width: 75%;
 }
 
-.stat-item:hover {
+.leaderboard-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.leaderboard-label {
+  padding-top: 16px;
+  padding-left: 16px;
+}
+
+@media screen and ( min-width: 1200px ) {
+  .leaderboard-item { flex-basis: 33%; }                    /* forces three items to a line */
+}
+
+@media screen and ( max-width: 1200px ) {
+  .leaderboard-item { flex-basis: 50%; }                    /* forces three items to a line */
+}
+
+@media screen and ( max-width: 800px ) {
+  .leaderboard-item { 
+    font-size: 10pt; 
+    flex-basis: 100%;  /* forces two items to a line */
+  }
+}
+
+#msg-count-wrap {
+  flex-basis: 100%;
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-bottom: 50px;
+}
+
+.stat-item:hover, .leaderboard-item:hover {
   background-color: #ffffff20;
 }
 

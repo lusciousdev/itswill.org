@@ -13,16 +13,18 @@ urlpatterns = [
   path("month/", views.MonthListView.as_view(), name="month_list"),
   path("month/<int:year>/<int:month>/", cache_page(60 * 60)(views.MonthView.as_view()), name="month"),
   
-  path("recap/", views.RecapView.as_view(), kwargs = { "year": datetime.datetime.now().year, "month": 0, "username": None }, name="recap"),
-  
-  path("recap/<int:year>/", views.RecapView.as_view(), kwargs = { "month": 0, "username": None }, name="recap_year"),
-  path("recap/<int:year>/<int:month>/", views.RecapView.as_view(), kwargs = { "username": None }, name = "recap_month"),
-  
-  path("recap/<int:year>/<str:username>/", views.RecapView.as_view(), kwargs = { "month": 0 }, name = "recap_year_user"),
+  path("recap/",                                       cache_page(60 * 60)(views.RecapView.as_view()), kwargs = { "year": datetime.datetime.now().year, "month": 0, "username": None }, name="recap"),
+  path("recap/<int:year>/",                            cache_page(60 * 60)(views.RecapView.as_view()), kwargs = { "month": 0, "username": None }, name="recap_year"),
+  path("recap/<int:year>/<int:month>/",                cache_page(60 * 60)(views.RecapView.as_view()), kwargs = { "username": None }, name = "recap_month"),
+  path("recap/<int:year>/<str:username>/",             views.RecapView.as_view(), kwargs = { "month": 0 }, name = "recap_year_user"),
   path("recap/<int:year>/<int:month>/<str:username>/", views.RecapView.as_view(), name = "recap_month_user"),
   
   path("recap/redirect/", views.get_recap, name = "recap_redirect"),
   
+  path("leaderboard/",                        cache_page(60 * 60)(views.LeaderboardView.as_view()), kwargs = { "year": datetime.datetime.now().year, "month": 0 }, name="leaderboard"),
+  path("leaderboard/<int:year>/",             cache_page(60 * 60)(views.LeaderboardView.as_view()), kwargs = { "month": 0 }, name="leaderboard_year"),
+  path("leaderboard/<int:year>/<int:month>/", cache_page(60 * 60)(views.LeaderboardView.as_view()), name="leaderboard_month"),
+  
   path("api/v1/randmsg", api.get_random_message, name = "api_random_message"),
-  path("api/v1/pets", api.get_pets_message, name="api_pets_message"),
+  path("api/v1/pets",    api.get_pets_message,   name="api_pets_message"),
 ]

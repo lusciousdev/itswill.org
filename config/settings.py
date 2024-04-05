@@ -99,12 +99,19 @@ DATABASES = {
     }
 }
 
-CACHES = {
-  "default": {
-    "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-    "LOCATION": "itswill_org_cache_table",
+if not DEBUG:
+  CACHES = {
+    "default": {
+      "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+      "LOCATION": "itswill_org_cache_table",
+    }
   }
-}
+else:
+  CACHES = {
+    'default': {
+      'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+  }
 
 
 # Password validation
