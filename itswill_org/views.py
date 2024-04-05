@@ -213,7 +213,7 @@ class LeaderboardView(generic.TemplateView):
     
     data["recap_data"] = overallrecap
     
-    userrecapset = overallrecap.userrecapdata_set
+    userrecapset = overallrecap.userrecapdata_set.all()
     
     data["top_messages"] = userrecapset.order_by("-count_messages")[:10]
     data["top_clips"]    = userrecapset.order_by("-count_clips")[:10]
