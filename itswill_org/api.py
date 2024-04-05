@@ -47,6 +47,18 @@ def get_random_message(request):
   return HttpResponse(response_str, 200)
 
 @csrf_exempt
+def get_random_clip(request):
+  if request.method != "GET":
+    return HttpResponse("Invalid request type.", 501)
+  
+  clips = Clip.objects.filter(view_count__gte = 100)
+    
+  clip_count = clips.count()
+  random_clip = clips.all()[randint(0, clip_count - 1)]
+  
+  return HttpResponse(random_clip.url, 200)
+
+@csrf_exempt
 def get_pets_message(request):
   total_pet_count = Pet.objects.all().count()
   acquired_pet_count = Pet.objects.filter(acquired = True).count()
