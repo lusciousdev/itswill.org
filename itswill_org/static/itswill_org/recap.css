@@ -162,8 +162,34 @@ a, a:visited {
 }
 
 .leaderboard-label {
+  font-size: 1.15em;
   padding-top: 16px;
   padding-left: 16px;
+}
+
+.stat-leaderboard {
+  text-align: right;
+  border-collapse: collapse;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.stat-leaderboard td {
+  padding: 2px 24px;
+  font-size: 1em;
+  font-weight: normal !important;
+}
+
+.stat-leaderboard td:first-child {
+  padding: 2px 16px 2px 8px !important;
+}
+
+.stat-leaderboard td:last-child {
+  padding: 2px 8px 2px 16px !important;
+}
+
+.stat-leaderboard tr:nth-child(odd) {
+  background: #FFFFFF10;
 }
 
 @media screen and ( min-width: 1200px ) {
@@ -189,7 +215,7 @@ a, a:visited {
   margin-bottom: 50px;
 }
 
-.stat-item:hover, .leaderboard-item:hover {
+.stat-item:hover {
   background-color: #ffffff20;
 }
 
