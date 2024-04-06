@@ -41,8 +41,8 @@ def get_random_message(request):
   
   response_str = random_message.localtz_str()
   
-  if len(response_str) > 400:
-    response_str = response_str[:395] + "..."
+  if len(response_str) >= 380:
+    response_str = response_str[:375] + "..."
   
   return HttpResponse(response_str, 200)
 
@@ -64,3 +64,17 @@ def get_pets_message(request):
   acquired_pet_count = Pet.objects.filter(acquired = True).count()
   
   return HttpResponse(f"{acquired_pet_count}/{total_pet_count} https://itswill.org/pets", 200)
+
+@csrf_exempt
+def test_endpoint(request):
+  if request.method != 'GET':
+    return HttpResponse("Invalid request type.", 501)
+  
+  char_count = request.GET.get("characters", 400)
+  
+  try:
+    char_count = int(char_count)
+  except ValueError:
+    char_count = 400
+    
+  return HttpResponse("A" * char_count, 200)
