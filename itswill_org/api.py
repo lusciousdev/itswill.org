@@ -66,6 +66,24 @@ def get_pets_message(request):
   return HttpResponse(f"{acquired_pet_count}/{total_pet_count} https://itswill.org/pets", 200)
 
 @csrf_exempt
+def get_most_recent_pet(request):
+  most_recent_pet = Pet.objects.filter(acquired = True, date_known = True).order_by("-date").first()
+  
+  respstr = ""
+  
+  if most_recent_pet.date_known:
+    respstr += f"{most_recent_pet.date.strftime('[%Y-%m-%d]')} "
+  
+  respstr += f"{ most_recent_pet.name }"
+  
+  if most_recent_pet.killcount_known:
+    respstr += f" ({ most_recent_pet.killcount_str() })"
+  if most_recent_pet.clip_url != "":
+    respstr += f" { most_recent_pet.clip_url }"
+  
+  return HttpResponse(respstr, 200)
+
+@csrf_exempt
 def test_endpoint(request):
   if request.method != 'GET':
     return HttpResponse("Invalid request type.", 501)

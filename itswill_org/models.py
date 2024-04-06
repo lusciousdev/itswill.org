@@ -339,3 +339,11 @@ class Pet(models.Model):
   
   def __str__(self):
     return self.name
+  
+  def killcount_str(self):
+    kcstr = f"{self.killcount:,} {self.kill_term}" + ("" if self.killcount < 1 else self.kill_term_pluralize)
+    
+    if self.secondary_killcount_needed:
+      kcstr += f", {self.secondary_killcount:,} {self.secondary_kill_term}" + ("" if self.secondary_killcount < 1 else self.secondary_kill_term_pluralize)
+      
+    return kcstr
