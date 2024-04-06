@@ -79,28 +79,23 @@ def get_recent_clips(max_days = 31):
         
         creator.save()
         
-      try:
-        clip_inst = Clip(
-          clip_id = clip_id,
-          creator = creator,
-          url = clip["url"],
-          embed_url = clip["embed_url"],
-          broadcaster_id = int(clip["broadcaster_id"]),
-          broadcaster_name = clip["broadcaster_name"],
-          video_id = clip["video_id"],
-          game_id = clip["game_id"],
-          language = clip["language"],
-          title = clip["title"],
-          view_count = int(clip["view_count"]),
-          created_at = datetime.datetime.strptime(clip["created_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
-          thumbnail_url = clip["thumbnail_url"],
-          duration = float(clip["duration"]),
-          vod_offset = -1 if (clip["vod_offset"] == "null" or clip["vod_offset"] is None) else int(clip["vod_offset"])
-        )
-        
-        clip_inst.save()
-      except ValidationError as e:
-        print(e)
+      clip_inst, _ = Clip.objects.update_or_create(
+        clip_id = clip_id,
+        creator = creator,
+        url = clip["url"],
+        embed_url = clip["embed_url"],
+        broadcaster_id = int(clip["broadcaster_id"]),
+        broadcaster_name = clip["broadcaster_name"],
+        video_id = clip["video_id"],
+        game_id = clip["game_id"],
+        language = clip["language"],
+        title = clip["title"],
+        view_count = int(clip["view_count"]),
+        created_at = datetime.datetime.strptime(clip["created_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
+        thumbnail_url = clip["thumbnail_url"],
+        duration = float(clip["duration"]),
+        vod_offset = -1 if (clip["vod_offset"] == "null" or clip["vod_offset"] is None) else int(clip["vod_offset"])
+      )
 
       most_recent_clip_view_count = int(clip["view_count"])
       if most_recent_clip_view_count < 1:
@@ -288,7 +283,7 @@ def calculate_yearly_stats(year = None):
   firstmsg = ChatMessage.objects.filter(created_at__range = (start_date, end_date)).order_by("created_at").first()
   yearrecap.first_message = "" if firstmsg is None else firstmsg.message
 
-  monthrecaps = OverallRecapData.objects.filter(year = year, month__gte = 1).all() # .prefetch_related("userrecapdata_set").all()
+  monthrecaps = OverallRecapData.objects.filter(year = year, month__gte = 1).prefetch_related("userrecapdata_set").all()
   
   for userrecap in yearrecap.userrecapdata_set.all():
     userrecap.zero()
