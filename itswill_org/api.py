@@ -84,6 +84,11 @@ def get_most_recent_pet(request):
   return HttpResponse(respstr, 200)
 
 @csrf_exempt
+def get_pets_left(request):
+  pets_left = Pet.objects.filter(acquired = False).order_by("name").all()
+  return HttpResponse(", ".join([str(pet) for pet in pets_left]), 200)
+
+@csrf_exempt
 def test_endpoint(request):
   if request.method != 'GET':
     return HttpResponse("Invalid request type.", 501)
