@@ -4,6 +4,7 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect, JsonRespons
 from celery import Celery, shared_task
 from celery.schedules import crontab
 from random import randint
+import time
 
 from .models import *
 
@@ -21,6 +22,8 @@ def get_random_message(request):
     user_id = int(user_id)
   except ValueError:
     user_id = 43246220
+    
+  start_time = time.time()
   
   user = None
   if altuser != "" and altuser != "null" and altuser is not None:
@@ -34,15 +37,19 @@ def get_random_message(request):
     except TwitchUser.DoesNotExist:
       return HttpResponse("No messages found for this user.", 404)
     
-  user_message_set = ChatMessage.objects.filter(commenter = user)
+  user_message_set = ChatMessage.objects.filter(commenter = user).all()
   
   user_message_count = user_message_set.count()
-  random_message = user_message_set.all()[randint(0, user_message_count - 1)]
+  random_message = user_message_set[randint(0, user_message_count - 1)]
   
   response_str = random_message.localtz_str()
   
   if len(response_str) >= 380:
     response_str = response_str[:375] + "..."
+  
+  end_time = time.time()
+  
+  print(f"Response time: {end_time - start_time}")
   
   return HttpResponse(response_str, 200)
 
@@ -90,14 +97,48 @@ def get_pets_left(request):
 
 @csrf_exempt
 def test_endpoint(request):
-  if request.method != 'GET':
+  if request.method != "GET":
     return HttpResponse("Invalid request type.", 501)
   
-  char_count = request.GET.get("characters", 400)
+  altuser = request.GET.get("otheruser", "")
+  user_id = request.GET.get("userid", "43246220")
+  
+  altuser = altuser.strip("@")
   
   try:
-    char_count = int(char_count)
+    user_id = int(user_id)
   except ValueError:
-    char_count = 400
+    user_id = 43246220
     
-  return HttpResponse("A" * char_count, 200)
+  start_time = time.time()
+  
+  user = None
+  if altuser != "" and altuser != "null" and altuser is not None:
+    try:
+      user = TwitchUser.objects.prefetch_related("chatmessage_set").get(login = altuser)
+    except TwitchUser.DoesNotExist:
+      return HttpResponse(f"User \"{altuser}\" does not exist.", 404)
+  else:
+    try:
+      user = TwitchUser.objects.prefetch_related("chatmessage_set").get(user_id = user_id)
+    except TwitchUser.DoesNotExist:
+      return HttpResponse("No messages found for this user.", 404)
+  
+  end_prefetch = time.time()
+  print(f"Prefetch time: {end_prefetch - start_time}")
+    
+  user_message_set = user.chatmessage_set.all()
+  
+  user_message_count = len(user_message_set)
+  random_message = user_message_set[randint(0, user_message_count - 1)]
+  
+  response_str = random_message.localtz_str()
+  
+  if len(response_str) >= 380:
+    response_str = response_str[:375] + "..."
+  
+  end_time = time.time()
+  
+  print(f"Response time: {end_time - start_time}")
+  
+  return HttpResponse(response_str, 200)
