@@ -81,20 +81,22 @@ def get_recent_clips(max_days = 31):
         
       clip_inst, _ = Clip.objects.update_or_create(
         clip_id = clip_id,
-        creator = creator,
-        url = clip["url"],
-        embed_url = clip["embed_url"],
-        broadcaster_id = int(clip["broadcaster_id"]),
-        broadcaster_name = clip["broadcaster_name"],
-        video_id = clip["video_id"],
-        game_id = clip["game_id"],
-        language = clip["language"],
-        title = clip["title"],
-        view_count = int(clip["view_count"]),
-        created_at = datetime.datetime.strptime(clip["created_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
-        thumbnail_url = clip["thumbnail_url"],
-        duration = float(clip["duration"]),
-        vod_offset = -1 if (clip["vod_offset"] == "null" or clip["vod_offset"] is None) else int(clip["vod_offset"])
+        defaults = {
+          "creator": creator,
+          "url": clip["url"],
+          "embed_url": clip["embed_url"],
+          "broadcaster_id": int(clip["broadcaster_id"]),
+          "broadcaster_name": clip["broadcaster_name"],
+          "video_id": clip["video_id"],
+          "game_id": clip["game_id"],
+          "language": clip["language"],
+          "title": clip["title"],
+          "view_count": int(clip["view_count"]),
+          "created_at": datetime.datetime.strptime(clip["created_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
+          "thumbnail_url": clip["thumbnail_url"],
+          "duration": float(clip["duration"]),
+          "vod_offset": -1 if (clip["vod_offset"] == "null" or clip["vod_offset"] is None) else int(clip["vod_offset"])
+        }
       )
 
       most_recent_clip_view_count = int(clip["view_count"])
@@ -171,21 +173,25 @@ def get_recent_chat_messages(max_days = -1, skip_known_vods = True):
         
           commenter, _ = TwitchUser.objects.update_or_create(
             user_id = commenterid,
-            login = userdata['login'],
-            display_name = userdata['display_name'],
-            user_type = userdata['type'],
-            broadcaster_type = userdata['broadcaster_type'],
-            description = userdata['description'],
-            profile_image_url = userdata['profile_image_url'],
-            offline_image_url = userdata['offline_image_url'],
-            created_at = datetime.datetime.strptime(userdata['created_at'], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
+            defaults = {
+              "login": userdata['login'],
+              "display_name": userdata['display_name'],
+              "user_type": userdata['type'],
+              "broadcaster_type": userdata['broadcaster_type'],
+              "description": userdata['description'],
+              "profile_image_url": userdata['profile_image_url'],
+              "offline_image_url": userdata['offline_image_url'],
+              "created_at": datetime.datetime.strptime(userdata['created_at'], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
+            },
           )
         except:
           commenter, _ = TwitchUser.objects.update_or_create(
             user_id = commenterid,
-            login = chatmsg["commenter"]["login"],
-            display_name = chatmsg["commenter"]["displayName"],
-            created_at = datetime.datetime(1971, 1, 1, 0, 0, 1).replace(tzinfo = datetime.timezone.utc)
+            defaults = {
+              "login": chatmsg["commenter"]["login"],
+              "display_name": chatmsg["commenter"]["displayName"],
+              "created_at": datetime.datetime(1971, 1, 1, 0, 0, 1).replace(tzinfo = datetime.timezone.utc),
+            },
           )
         
       commenter.save()
@@ -197,11 +203,13 @@ def get_recent_chat_messages(max_days = -1, skip_known_vods = True):
         chatmsgtime = datetime.datetime.strptime(chatmsg["createdAt"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc)
       
       chatmsgmodel, new_msg = ChatMessage.objects.update_or_create(
-        commenter = commenter,
         message_id = chatmsg["id"],
-        content_offset = chatmsg["contentOffsetSeconds"],
-        created_at = chatmsgtime,
-        message = msgtext,
+        defaults = {
+          "commenter": commenter,
+          "content_offset": chatmsg["contentOffsetSeconds"],
+          "created_at": chatmsgtime,
+          "message": msgtext,
+        },
       )
       
       chatmsgmodel.save()
