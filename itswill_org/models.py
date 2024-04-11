@@ -87,6 +87,8 @@ class OverallRecapData(models.Model):
     self.count_dankies = 0
     
     self.count_cum     = 0
+    
+    self.save()
   
   def add(self, other_recap : "OverallRecapData"):
     self.count_messages   += other_recap.count_messages
@@ -125,6 +127,8 @@ class OverallRecapData(models.Model):
     self.count_dankies += other_recap.count_dankies
     
     self.count_cum     += other_recap.count_cum
+    
+    self.save()
   
   class Meta:
     unique_together = ('year', 'month')
@@ -217,6 +221,8 @@ class UserRecapData(models.Model):
     self.count_dankies = 0
     
     self.count_cum     = 0
+    
+    self.save()
   
   def add(self, other_recap : "UserRecapData"):
     self.count_messages   += other_recap.count_messages
@@ -253,6 +259,8 @@ class UserRecapData(models.Model):
     self.count_dankies += other_recap.count_dankies
     
     self.count_cum     += other_recap.count_cum
+    
+    self.save()
   
   class Meta:
     unique_together = ('overall_recap', 'twitch_user')

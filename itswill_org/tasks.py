@@ -293,8 +293,36 @@ def calculate_yearly_stats(year = None):
 
   monthrecaps = OverallRecapData.objects.filter(year = year, month__gte = 1).prefetch_related("userrecapdata_set").all()
   
-  for userrecap in yearrecap.userrecapdata_set.all():
-    userrecap.zero()
+  yearrecap.userrecapdata_set.update(
+    count_messages   = 0,
+    count_clips      = 0,
+    count_clip_views = 0,
+    count_chatters   = 0,
+    count_videos     = 0,
+    count_seven   = 0,
+    count_pound   = 0,
+    count_love    = 0,
+    count_etsmg   = 0,
+    count_ksmg    = 0,
+    count_stsmg   = 0,
+    count_pog     = 0,
+    count_shoop   = 0,
+    count_gasp    = 0,
+    count_pogo    = 0,
+    count_monka   = 0,
+    count_giggle  = 0,
+    count_lul     = 0,
+    count_sneak   = 0,
+    count_sit     = 0,
+    count_mmylc   = 0,
+    count_dance   = 0,
+    count_vvkool  = 0,
+    count_spin    = 0,
+    count_chicken = 0,
+    count_sonic   = 0,
+    count_dankies = 0,
+    count_cum     = 0,
+  )
   
   for recap in monthrecaps:
     yearrecap.add(recap)
@@ -302,7 +330,6 @@ def calculate_yearly_stats(year = None):
     for userrecap in recap.userrecapdata_set.all():
       useryear, _ = UserRecapData.objects.get_or_create(overall_recap = yearrecap, twitch_user = userrecap.twitch_user)
       useryear.add(userrecap)
-      useryear.save()
   
   yearrecap.count_chatters = yearrecap.userrecapdata_set.all().count()
   yearrecap.save()
@@ -331,6 +358,35 @@ def calculate_monthly_stats(year = None, month = None):
   
   monthrecap.first_message = "" if firstmsg is None else firstmsg.message
   
+  monthrecap.userrecapdata_set.update(
+    count_messages   = 0,
+    count_clips      = 0,
+    count_clip_views = 0,
+    count_seven   = 0,
+    count_pound   = 0,
+    count_love    = 0,
+    count_etsmg   = 0,
+    count_ksmg    = 0,
+    count_stsmg   = 0,
+    count_pog     = 0,
+    count_shoop   = 0,
+    count_gasp    = 0,
+    count_pogo    = 0,
+    count_monka   = 0,
+    count_giggle  = 0,
+    count_lul     = 0,
+    count_sneak   = 0,
+    count_sit     = 0,
+    count_mmylc   = 0,
+    count_dance   = 0,
+    count_vvkool  = 0,
+    count_spin    = 0,
+    count_chicken = 0,
+    count_sonic   = 0,
+    count_dankies = 0,
+    count_cum     = 0,
+  )
+  
   for chatter in TwitchUser.objects.prefetch_related("chatmessage_set", "clip_set").all():
     chatter_messages = chatter.chatmessage_set.filter(created_at__range = (start_date, end_date)).order_by("created_at")
     chatter_clips    = chatter.clip_set.filter(created_at__range = (start_date, end_date))
@@ -343,14 +399,12 @@ def calculate_monthly_stats(year = None, month = None):
       chatter_clip_views += clip.view_count
     
     if chatter_msg_count > 0 or chatter_clip_count > 0:
-      monthrecap.count_messages   = F("count_messages")   + chatter_msg_count
-      monthrecap.count_clips      = F("count_clips")      + chatter_clip_count
-      monthrecap.count_clip_views = F("count_clip_views") + chatter_clip_views
-      monthrecap.count_chatters   = F("count_chatters")   + 1
+      monthrecap.count_messages   += chatter_msg_count
+      monthrecap.count_clips      += chatter_clip_count
+      monthrecap.count_clip_views += chatter_clip_views
+      monthrecap.count_chatters   += 1
       
       chatter_recap, _ = UserRecapData.objects.get_or_create(overall_recap = monthrecap, twitch_user = chatter)
-      
-      chatter_recap.zero()
         
       chatter_recap.count_messages   = chatter_msg_count
       chatter_recap.count_clips      = chatter_clip_count
@@ -360,54 +414,54 @@ def calculate_monthly_stats(year = None, month = None):
       chatter_recap.first_message = "" if firstmsg is None else firstmsg.message
       
       for msg in chatter_messages:
-        chatter_recap.count_seven   = F("count_seven")   + get_mult_word_count(msg.message, ["itswill7", "itswillFreeTrial"])
-        chatter_recap.count_pound   = F("count_pound")   + get_mult_word_count(msg.message, ["itswillPound", "itswill4"])
-        chatter_recap.count_etsmg   = F("count_etsmg")   + get_word_count(msg.message, "itswillEndTheStreamMyGuy")
-        chatter_recap.count_ksmg    = F("count_ksmg")    + get_word_count(msg.message, "itswillKeepStreamingMyGuy")
-        chatter_recap.count_sneak   = F("count_sneak")   + get_mult_word_count(msg.message, ["itswillSneak", "itswillFollow", "Sneak"])
-        chatter_recap.count_sit     = F("count_sit")     + get_word_count(msg.message, "itswillSit")
-        chatter_recap.count_love    = F("count_love")    + get_mult_word_count(msg.message, ["itswillL", "hannLOVE", "peepoLove"])
-        chatter_recap.count_pog     = F("count_pog")     + get_mult_word_count(msg.message, ["Pog", "PogChamp", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"])
-        chatter_recap.count_shoop   = F("count_shoop")   + get_word_count(msg.message, "ShoopDaWhoop")
-        chatter_recap.count_mmylc   = F("count_mmylc")   + get_word_count(msg.message, "MusicMakeYouLoseControl")
-        chatter_recap.count_giggle  = F("count_giggle")  + get_mult_word_count(msg.message, ["x0r6ztGiggle", "willGiggle", "itswillGiggle"])
-        chatter_recap.count_vvkool  = F("count_vvkool")  + get_mult_word_count(msg.message, ["VVKool", "VVotate", "VVKoolMini"])
-        chatter_recap.count_gasp    = F("count_gasp")    + get_mult_word_count(msg.message, ["D\\:", "hannD"])
-        chatter_recap.count_monka   = F("count_monka")   + get_mult_word_count(msg.message, ["monkaS", "monkaW", "monkaEyes", "monkaGun", "monkaSTEER", "monkaH"])
-        chatter_recap.count_pogo    = F("count_pogo")    + get_mult_word_count(msg.message, ["PogO", "WeirdChamp", "itswillO", "itswillWeird", "WeirdPause"])
-        chatter_recap.count_cum     = F("count_cum")     + get_mult_word_count(msg.message, ["cum", "cumming", "cumb", "cummies", "cumshot"])
-        chatter_recap.count_spin    = F("count_spin")    + get_mult_word_count(msg.message, ["itswillSpin", "willSpin", "borpaSpin", "YourMom"])
-        chatter_recap.count_chicken = F("count_chicken") + get_word_count(msg.message, "chickenWalk")
-        chatter_recap.count_sonic   = F("count_sonic")   + get_mult_word_count(msg.message, ["itsWillCoolSonic", "CoolSonic"])
-        chatter_recap.count_lul     = F("count_lul")     + get_mult_word_count(msg.message, ["LUL", "LULW", "OMEGALUL", "OMEGADANCE"])
-        chatter_recap.count_stsmg   = F("count_stsmg")   + get_word_count(msg.message, "StartTheStreamMyGuy")
-        chatter_recap.count_dance   = F("count_dance")   + get_mult_word_count(msg.message, ["itswillPls", "pepeD", "PepePls", "daemonDj", "willDJ", "nessiePls", "Happi", "GoodBoy", "SourPls"])
-        chatter_recap.count_dankies = F("count_dankies") + get_mult_word_count(msg.message, ["DANKIES", "HYPERS"])
+        chatter_recap.count_seven   += get_mult_word_count(msg.message, ["itswill7", "itswillFreeTrial"])
+        chatter_recap.count_pound   += get_mult_word_count(msg.message, ["itswillPound", "itswill4"])
+        chatter_recap.count_etsmg   += get_word_count(msg.message, "itswillEndTheStreamMyGuy")
+        chatter_recap.count_ksmg    += get_word_count(msg.message, "itswillKeepStreamingMyGuy")
+        chatter_recap.count_sneak   += get_mult_word_count(msg.message, ["itswillSneak", "itswillFollow", "Sneak"])
+        chatter_recap.count_sit     += get_word_count(msg.message, "itswillSit")
+        chatter_recap.count_love    += get_mult_word_count(msg.message, ["itswillL", "hannLOVE", "peepoLove"])
+        chatter_recap.count_pog     += get_mult_word_count(msg.message, ["Pog", "PogChamp", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"])
+        chatter_recap.count_shoop   += get_word_count(msg.message, "ShoopDaWhoop")
+        chatter_recap.count_mmylc   += get_word_count(msg.message, "MusicMakeYouLoseControl")
+        chatter_recap.count_giggle  += get_mult_word_count(msg.message, ["x0r6ztGiggle", "willGiggle", "itswillGiggle"])
+        chatter_recap.count_vvkool  += get_mult_word_count(msg.message, ["VVKool", "VVotate", "VVKoolMini"])
+        chatter_recap.count_gasp    += get_mult_word_count(msg.message, ["D\\:", "hannD"])
+        chatter_recap.count_monka   += get_mult_word_count(msg.message, ["monkaS", "monkaW", "monkaEyes", "monkaGun", "monkaSTEER", "monkaH"])
+        chatter_recap.count_pogo    += get_mult_word_count(msg.message, ["PogO", "WeirdChamp", "itswillO", "itswillWeird", "WeirdPause"])
+        chatter_recap.count_cum     += get_mult_word_count(msg.message, ["cum", "cumming", "cumb", "cummies", "cumshot"])
+        chatter_recap.count_spin    += get_mult_word_count(msg.message, ["itswillSpin", "willSpin", "borpaSpin", "YourMom"])
+        chatter_recap.count_chicken += get_word_count(msg.message, "chickenWalk")
+        chatter_recap.count_sonic   += get_mult_word_count(msg.message, ["itsWillCoolSonic", "CoolSonic"])
+        chatter_recap.count_lul     += get_mult_word_count(msg.message, ["LUL", "LULW", "OMEGALUL", "OMEGADANCE"])
+        chatter_recap.count_stsmg   += get_word_count(msg.message, "StartTheStreamMyGuy")
+        chatter_recap.count_dance   += get_mult_word_count(msg.message, ["itswillPls", "pepeD", "PepePls", "daemonDj", "willDJ", "nessiePls", "Happi", "GoodBoy", "SourPls"])
+        chatter_recap.count_dankies += get_mult_word_count(msg.message, ["DANKIES", "HYPERS"])
       
       chatter_recap.save()
       
-      monthrecap.count_seven   = F("count_seven")   + chatter_recap.count_seven
-      monthrecap.count_pound   = F("count_pound")   + chatter_recap.count_pound
-      monthrecap.count_etsmg   = F("count_etsmg")   + chatter_recap.count_etsmg
-      monthrecap.count_ksmg    = F("count_ksmg")    + chatter_recap.count_ksmg
-      monthrecap.count_sneak   = F("count_sneak")   + chatter_recap.count_sneak
-      monthrecap.count_sit     = F("count_sit")     + chatter_recap.count_sit
-      monthrecap.count_love    = F("count_love")    + chatter_recap.count_love
-      monthrecap.count_pog     = F("count_pog")     + chatter_recap.count_pog
-      monthrecap.count_shoop   = F("count_shoop")   + chatter_recap.count_shoop
-      monthrecap.count_mmylc   = F("count_mmylc")   + chatter_recap.count_mmylc
-      monthrecap.count_giggle  = F("count_giggle")  + chatter_recap.count_giggle
-      monthrecap.count_vvkool  = F("count_vvkool")  + chatter_recap.count_vvkool
-      monthrecap.count_gasp    = F("count_gasp")    + chatter_recap.count_gasp
-      monthrecap.count_monka   = F("count_monka")   + chatter_recap.count_monka
-      monthrecap.count_pogo    = F("count_pogo")    + chatter_recap.count_pogo
-      monthrecap.count_cum     = F("count_cum")     + chatter_recap.count_cum
-      monthrecap.count_spin    = F("count_spin")    + chatter_recap.count_spin
-      monthrecap.count_chicken = F("count_chicken") + chatter_recap.count_chicken
-      monthrecap.count_sonic   = F("count_sonic")   + chatter_recap.count_sonic
-      monthrecap.count_lul     = F("count_lul")     + chatter_recap.count_lul
-      monthrecap.count_stsmg   = F("count_stsmg")   + chatter_recap.count_stsmg
-      monthrecap.count_dance   = F("count_dance")   + chatter_recap.count_dance
-      monthrecap.count_dankies = F("count_dankies") + chatter_recap.count_dankies
+      monthrecap.count_seven   += chatter_recap.count_seven
+      monthrecap.count_pound   += chatter_recap.count_pound
+      monthrecap.count_etsmg   += chatter_recap.count_etsmg
+      monthrecap.count_ksmg    += chatter_recap.count_ksmg
+      monthrecap.count_sneak   += chatter_recap.count_sneak
+      monthrecap.count_sit     += chatter_recap.count_sit
+      monthrecap.count_love    += chatter_recap.count_love
+      monthrecap.count_pog     += chatter_recap.count_pog
+      monthrecap.count_shoop   += chatter_recap.count_shoop
+      monthrecap.count_mmylc   += chatter_recap.count_mmylc
+      monthrecap.count_giggle  += chatter_recap.count_giggle
+      monthrecap.count_vvkool  += chatter_recap.count_vvkool
+      monthrecap.count_gasp    += chatter_recap.count_gasp
+      monthrecap.count_monka   += chatter_recap.count_monka
+      monthrecap.count_pogo    += chatter_recap.count_pogo
+      monthrecap.count_cum     += chatter_recap.count_cum
+      monthrecap.count_spin    += chatter_recap.count_spin
+      monthrecap.count_chicken += chatter_recap.count_chicken
+      monthrecap.count_sonic   += chatter_recap.count_sonic
+      monthrecap.count_lul     += chatter_recap.count_lul
+      monthrecap.count_stsmg   += chatter_recap.count_stsmg
+      monthrecap.count_dance   += chatter_recap.count_dance
+      monthrecap.count_dankies += chatter_recap.count_dankies
       
   monthrecap.save()
