@@ -255,3 +255,5 @@ class LeaderboardView(generic.TemplateView):
 class CopyPasteView(generic.ListView):
   model = CopyPasteGroup
   template_name = "itswill_org/pasta.html"
+  
+  ordering = ['title']

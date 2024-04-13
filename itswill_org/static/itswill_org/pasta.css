@@ -1,8 +1,13 @@
+* {
+  box-sizing: border-box;
+}
+
 html {
   background-color: var(--bg);
   color: var(--default-color);
   font-family: Roobert, Helvetica, Arial, sans-serif;
   font-size: 1em;
+  scroll-behavior: smooth;
 }
 
 pre {
@@ -13,6 +18,10 @@ pre {
   white-space: -pre-wrap;      /* Opera 4-6 */
   white-space: -o-pre-wrap;    /* Opera 7 */
   word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+#site-title {
+  margin-bottom: 0.667em;
 }
 
 .content {
@@ -99,8 +108,8 @@ a {
 .copy-button {
   background-color: var(--accent-color);
   color: var(--bg);
-  margin: 0.1em;
-  padding: 0.25em 1.5em;
+  margin: 0.6em 0 0 0;
+  padding: 0.25em 1em;
   border-width: 0;
   border-radius: 0.33em;
   cursor: pointer;
@@ -108,4 +117,30 @@ a {
 
 .copy-button:active {
   background-color: var(--twitch-purple);
+}
+
+#quick-links-section {
+  width: 100%;
+  background: var(--bg-light);
+  padding: 0.5em 3em 1.5em 3em;
+  border-radius: 1.5em;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 3em;
+}
+
+.section-title {
+  margin: 0 0 0.5em 0;
+  text-decoration: underline;
+}
+
+#quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  align-items: center;
+}
+
+.quick-link {
+  flex: 0 0 50%;
 }

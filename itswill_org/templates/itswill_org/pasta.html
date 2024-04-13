@@ -21,9 +21,17 @@ async function setClipboard(text) {
   <div class="content">
     <div id="site-title">itswill copy pastas.</div>
     <div class="section-wrap">
+      <div class="section" id="quick-links-section">
+        <h3 class="section-title">Table of contents</h3>
+        <div id="quick-links">
+          {% for group in object_list %}
+          <span class="quick-link"><a href="#{{group.id}}">{{group.title}}</a></span>
+          {% endfor %}
+        </div>
+      </div>
       <div class="section">
       {% for group in object_list %}
-        <div class="pasta-group">
+        <div class="pasta-group" id="{{ group.id }}">
           <h3 class="group-title">{{ group.title }}</h3>
           {% if group.description %}
           <div class="text-block group-description">
@@ -43,6 +51,9 @@ async function setClipboard(text) {
               </div>
             </div>
             {% endfor %}
+          </div>
+          <div class="return-link">
+            <a href="#site-title">Back to top</a>
           </div>
         </div>
       {% endfor %}
