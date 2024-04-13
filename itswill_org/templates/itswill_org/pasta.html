@@ -6,6 +6,14 @@
 <link rel="stylesheet" type="text/css" href="{% static 'itswill_org/pasta.css' %}">
 {% endblock %}
 
+{% block scripts %}
+<script>
+async function setClipboard(text) {
+  await navigator.clipboard.writeText(text);
+};
+</script>
+{% endblock %}
+
 {% block title %}itswill copy pastas{% endblock %}
 
 {% block body %}
@@ -30,6 +38,9 @@
               <h4 class="pasta-title">{{ pasta.title }}</h4>
               {% endif %}
               <pre class="pasta-text">{{ pasta.text }}</pre>
+              <div class="copy-button-wrap">
+                <button class="copy-button" onclick="setClipboard('{{ pasta.text }}');">Copy</button>
+              </div>
             </div>
             {% endfor %}
           </div>

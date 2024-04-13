@@ -44,6 +44,7 @@ pre {
   margin: 0.667em 0 0.667em 0;
   padding: 1em;
   border-radius: 1.5em;
+  width: 100%;
 }
 
 .pasta-group .text-block {
@@ -86,4 +87,25 @@ pre {
 
 a {
   color: var(--accent-color);
+}
+
+.copy-button-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+}
+
+.copy-button {
+  background-color: var(--accent-color);
+  color: var(--bg);
+  margin: 0.1em;
+  padding: 0.25em 1.5em;
+  border-width: 0;
+  border-radius: 0.33em;
+  cursor: pointer;
+}
+
+.copy-button:active {
+  background-color: var(--twitch-purple);
 }
