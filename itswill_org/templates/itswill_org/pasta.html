@@ -1,0 +1,42 @@
+{% extends 'itswill_org/base.html' %}
+
+{% load static %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'itswill_org/pasta.css' %}">
+{% endblock %}
+
+{% block title %}itswill copy pastas{% endblock %}
+
+{% block body %}
+<article>
+  <div class="content">
+    <div id="site-title">itswill copy pastas.</div>
+    <div class="section-wrap">
+      <div class="section">
+      {% for group in object_list %}
+        <div class="pasta-group">
+          <h3 class="group-title">{{ group.title }}</h3>
+          {% if group.description %}
+          <div class="text-block group-description">
+            <h4 class="description-label">Description</h4>
+            <pre class="group-description-text">{{ group.description | urlize }}</pre>
+          </div>
+          {% endif %}
+          <div class="text-block group-pastas">
+            {% for pasta in group.copypaste_set.all %}
+            <div class="pasta-entry">
+              {% if pasta.title %}
+              <h4 class="pasta-title">{{ pasta.title }}</h4>
+              {% endif %}
+              <pre class="pasta-text">{{ pasta.text }}</pre>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+  </div>
+</article>
+{% endblock %}

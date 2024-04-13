@@ -1,4 +1,7 @@
 from django.db import models
+import django.contrib.admin as admin
+from django.db.models.signals import m2m_changed, post_delete, post_save, pre_delete
+from django.dispatch import receiver
 import datetime
 
 from .util.timeutil import *
@@ -355,3 +358,23 @@ class Pet(models.Model):
       kcstr += f", {self.secondary_killcount:,} {self.secondary_kill_term}" + ("" if self.secondary_killcount < 1 else self.secondary_kill_term_pluralize)
       
     return kcstr
+  
+class CopyPasteGroup(models.Model):
+  title = models.CharField(max_length = 256, unique = True)
+  description = models.TextField(blank = True)
+  
+class CopyPaste(models.Model):
+  group = models.ForeignKey(CopyPasteGroup, on_delete = models.CASCADE)
+  
+  title = models.CharField(max_length = 256, blank = True)
+  text = models.TextField(blank = True)
+  
+class CopyPasteInline(admin.TabularInline):
+  model = CopyPaste
+  extra = 1
+  
+class CopyPasteGroupAdmin(admin.ModelAdmin):
+  list_display = ('title', )
+  search_fields = ['title', 'description']
+  inlines = ( CopyPasteInline, )
+  ordering = ( 'title', )

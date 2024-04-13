@@ -251,3 +251,7 @@ class LeaderboardView(generic.TemplateView):
     data["top_cum"] = userrecapset.order_by("-count_cum")[:10]
     
     return data
+  
+class CopyPasteView(generic.ListView):
+  model = CopyPasteGroup
+  template_name = "itswill_org/pasta.html"

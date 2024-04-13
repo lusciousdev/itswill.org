@@ -464,4 +464,4 @@ def calculate_monthly_stats(year = None, month = None):
       monthrecap.count_dance   += chatter_recap.count_dance
       monthrecap.count_dankies += chatter_recap.count_dankies
       
-  monthrecap.save()
+      monthrecap.save()

@@ -1,0 +1,89 @@
+html {
+  background-color: var(--bg);
+  color: var(--default-color);
+  font-family: Roobert, Helvetica, Arial, sans-serif;
+  font-size: 1em;
+}
+
+pre {
+  font-family: inherit;
+  margin: 0;
+  white-space: pre-wrap;       /* Since CSS 2.1 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.section-wrap {
+  width: 90vw;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.pasta-group {
+  background-color: var(--bg-light);
+  margin: 0.667em 0 0.667em 0;
+  padding: 1em;
+  border-radius: 1.5em;
+}
+
+.pasta-group .text-block {
+  margin: 1em 0;
+  padding: 0.667em;
+  border-radius: 1em;
+  background-color: var(--bg-lighter);
+}
+
+.group-title {
+  margin: 0;
+  text-decoration: underline;
+}
+
+.description-label {
+  margin: 0;
+  text-decoration: underline;
+}
+
+.pasta-title {
+  margin: 0;
+  text-decoration: underline;
+}
+
+.pasta-entry {
+  margin: 1em 0;
+}
+
+.pasta-entry:first-child {
+  margin: 0 0 1em 0;
+}
+
+.pasta-entry:last-child {
+  margin: 1em 0 0 0;
+}
+
+.pasta-entry:only-child {
+  margin: 0;
+}
+
+a {
+  color: var(--accent-color);
+}
