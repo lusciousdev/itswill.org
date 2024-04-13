@@ -20,7 +20,10 @@ async function setClipboard(text) {
 {% block body %}
 <article>
   <div class="content">
-    <div id="site-title">itswill asciis.</div>
+    <div id="site-header">
+      <div id="site-title">itswill asciis.</div>
+      <div id="site-subtitle"><a href="{% url "itswill_org:pasta" %}">Take me to the copypastas</a></div>
+    </div>
     <div class="section-wrap">
       <div class="section" id="quick-links-section">
         <h3 class="section-title">Table of contents</h3>

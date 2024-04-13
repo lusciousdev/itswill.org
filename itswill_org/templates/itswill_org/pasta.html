@@ -14,12 +14,15 @@ async function setClipboard(text) {
 </script>
 {% endblock %}
 
-{% block title %}itswill copy pastas.{% endblock %}
+{% block title %}itswill copypastas.{% endblock %}
 
 {% block body %}
 <article>
   <div class="content">
-    <div id="site-title">itswill copy pastas.</div>
+    <div id="site-header">
+      <div id="site-title">itswill copypastas.</div>
+      <div id="site-subtitle"><a href="{% url "itswill_org:ascii" %}">Take me to the ASCIIs</a></div>
+    </div>
     <div class="section-wrap">
       <div class="section" id="quick-links-section">
         <h3 class="section-title">Table of contents</h3>
