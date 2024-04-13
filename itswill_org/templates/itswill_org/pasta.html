@@ -39,7 +39,7 @@ async function setClipboard(text) {
               {% endif %}
               <pre class="pasta-text">{{ pasta.text }}</pre>
               <div class="copy-button-wrap">
-                <button class="copy-button" onclick="setClipboard('{{ pasta.text }}');">Copy</button>
+                <button class="copy-button" onclick="setClipboard(`{{ pasta.text }}`);">Copy</button>
               </div>
             </div>
             {% endfor %}
