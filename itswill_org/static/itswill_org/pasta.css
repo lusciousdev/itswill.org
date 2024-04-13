@@ -56,7 +56,7 @@ pre {
   width: 100%;
 }
 
-.pasta-group .text-block {
+.pasta-group,.ascii-group .text-block {
   margin: 1em 0;
   padding: 0.667em;
   border-radius: 1em;

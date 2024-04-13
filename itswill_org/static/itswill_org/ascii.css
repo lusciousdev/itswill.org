@@ -1,0 +1,12 @@
+.ascii-group {
+  background-color: var(--bg-light);
+  margin: 0.667em 0 0.667em 0;
+  padding: 1em;
+  border-radius: 1.5em;
+}
+
+.group-pastas {
+  font-size: 13px;
+  width: 340px;
+  padding: 0.667em 20px!important;
+}

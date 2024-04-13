@@ -1,0 +1,54 @@
+{% extends 'itswill_org/base.html' %}
+
+{% load static %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'itswill_org/pasta.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'itswill_org/ascii.css' %}">
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function setClipboard(text) {
+  await navigator.clipboard.writeText(text);
+};
+</script>
+{% endblock %}
+
+{% block title %}itswill copy pastas{% endblock %}
+
+{% block body %}
+<article>
+  <div class="content">
+    <div id="site-title">itswill asciis.</div>
+    <div class="section-wrap">
+      <div class="section" id="quick-links-section">
+        <h3 class="section-title">Table of contents</h3>
+        <div id="quick-links">
+          {% for ascii in object_list %}
+          <span class="quick-link"><a href="#{{ascii.id}}">{{ascii.title}}</a></span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="section">
+      {% for ascii in object_list %}
+        <div class="ascii-group" id="{{ ascii.id }}">
+          <h3 class="group-title">{{ ascii.title }}</h3>
+          <div class="text-block group-pastas">
+            <div class="pasta-entry">
+              <pre class="pasta-text">{{ ascii.text }}</pre>
+              <div class="copy-button-wrap">
+                <button class="copy-button" onclick="setClipboard(`{{ ascii.text }}`);">Copy</button>
+              </div>
+            </div>
+          </div>
+          <div class="return-link">
+            <a href="#site-title">Back to top</a>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+  </div>
+</article>
+{% endblock %}

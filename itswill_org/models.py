@@ -378,3 +378,15 @@ class CopyPasteGroupAdmin(admin.ModelAdmin):
   search_fields = ['title', 'description']
   inlines = ( CopyPasteInline, )
   ordering = ( 'title', )
+  
+class Ascii(models.Model):
+  title = models.CharField(max_length = 256, unique = True)
+  text = models.TextField()
+  
+  def __str__(self):
+    return self.title
+  
+class AsciiAdmin(admin.ModelAdmin):
+  list_display = ('title', )
+  search_fields = ['title']
+  ordering = ( 'title', )

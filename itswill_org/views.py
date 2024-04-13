@@ -257,3 +257,9 @@ class CopyPasteView(generic.ListView):
   template_name = "itswill_org/pasta.html"
   
   ordering = ['title']
+  
+class AsciiView(generic.ListView):
+  model = Ascii
+  template_name = "itswill_org/ascii.html"
+  
+  ordering = ['title']

@@ -26,6 +26,7 @@ urlpatterns = [
   path("leaderboard/<int:year>/<int:month>/", cache_page(60 * 60)(views.LeaderboardView.as_view()), name="leaderboard_month"),
   
   path("pasta/", views.CopyPasteView.as_view(), name="pasta"),
+  path("ascii/", views.AsciiView.as_view(), name="ascii"),
   
   path("api/v1/randmsg/",   api.get_random_message,  name = "api_random_message"),
   path("api/v1/randclip/",  api.get_random_clip,     name = "api_random_clip"),
