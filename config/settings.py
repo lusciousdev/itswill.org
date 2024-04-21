@@ -32,9 +32,11 @@ SECRET_KEY = SECRET_SECRET_KEY
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    ".itswill.org",
-    "127.0.0.1",
-    ".localhost"]
+  ".itswill.org",
+  ".itswill.soy",
+  "127.0.0.1",
+  ".localhost",
+]
 
 
 # Application definition
@@ -180,7 +182,16 @@ LOGGING = {
     },
 }
 
-CSRF_TRUSTED_ORIGINS = [ "https://itswill.org", "https://www.itswill.org", "http://itswill.org", "http://www.itswill.org" ]
+CSRF_TRUSTED_ORIGINS = [ 
+  "http://itswill.org",
+  "https://itswill.org",
+  "http://www.itswill.org",
+  "https://www.itswill.org",
+  "http://itswill.soy",
+  "https://itswill.soy",
+  "http://www.itswill.soy",
+  "https://www.itswill.soy",
+]
 
 # Celery
 CELERY_BROKER_URL     = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/{CELERY_DATABASE}"
