@@ -2,6 +2,7 @@
 
 {% load static %}
 {% load index %}
+{% load cache %}
 {% load humanize %}
 
 {% block stylesheets %}
@@ -15,7 +16,6 @@
   <div class="section-wrap" id="lookup-form-wrap">
     <div class="section" id="lookup-form">
       <form class="recap-form" action="{% url 'itswill_org:recap_redirect' %}" method="post">
-        {% csrf_token %}
         {% if overall_recap %}
         <input type="hidden" name="year" value="{{ recap_data.year }}">
         <input type="hidden" name="month" value="{{ recap_data.month }}">
@@ -29,6 +29,7 @@
       </form>
     </div>
   </div>
+  {% cache 300 recap_data %}
   <div class="section-wrap" id="stats-wrap">
     <div class="section" id="stats">
       <div class="full-section-title">

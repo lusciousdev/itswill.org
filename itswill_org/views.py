@@ -2,6 +2,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
+from django.views.decorators.csrf import csrf_exempt
 from django.views import generic
 from django.conf import settings
 
@@ -150,6 +151,7 @@ class RecapView(generic.TemplateView):
       
       return data
     
+@csrf_exempt
 def get_recap(request):
   year = str(datetime.datetime.now().year)
   month = str(0)
