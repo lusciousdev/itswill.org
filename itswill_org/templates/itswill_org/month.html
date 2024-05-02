@@ -36,7 +36,7 @@
     <ol>
       {% for clip in top_clips %}
       <li>
-        <i><a href='{{ clip.url }}'>{{ clip.title }}</a></i> by {{ clip.creator.display_name }} - {{ clip.view_count|intcomma }} views
+        <i><a href='{{ clip.url }}' target="_blank" rel="noopener noreferrer">{{ clip.title }}</a></i> by {{ clip.creator.display_name }} - {{ clip.view_count|intcomma }} views
       </li>
       {% endfor %}
     </ol>

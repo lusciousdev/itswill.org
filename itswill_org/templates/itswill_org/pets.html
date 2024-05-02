@@ -43,11 +43,11 @@
     {% if pet.clip_url == "" and pet.tweet_url == "" %}
     <div class="pet-clip">No footage</div>
     {% elif pet.clip_url == "" and pet.tweet_url != "" %}
-    <div class="pet-clip"><a href="{{ pet.tweet_url }}">Tweet</a></div>
+    <div class="pet-clip"><a href="{{ pet.tweet_url }}" target="_blank" rel="noopener noreferrer">Tweet</a></div>
     {% elif pet.clip_url != "" and pet.tweet_url == "" %}
-    <div class="pet-clip"><a href="{{ pet.clip_url }}">Clip</a></div>
+    <div class="pet-clip"><a href="{{ pet.clip_url }}" target="_blank" rel="noopener noreferrer">Clip</a></div>
     {% else %}
-    <div class="pet-clip"><a href="{{ pet.clip_url }}">Clip, <a href="{{ pet.tweet_url }}">Tweet</a></a></div>
+    <div class="pet-clip"><a href="{{ pet.clip_url }}" target="_blank" rel="noopener noreferrer">Clip, <a href="{{ pet.tweet_url }}" target="_blank" rel="noopener noreferrer">Tweet</a></a></div>
     {% endif %}
   </div>
   {% endfor %}
