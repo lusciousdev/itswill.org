@@ -128,6 +128,6 @@ def test_endpoint(request):
   
   if (nightbot_response_url != ""):
     post_random_message.delay(user.user_id, nightbot_response_url)
-    return HttpResponse("Fetching messages...", 200)
+    return HttpResponse(" ", 200)
   
   return HttpResponse(get_random_message(user), 200)
