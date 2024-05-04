@@ -24,8 +24,6 @@ def get_random_message_api(request):
     user_id = int(user_id)
   except ValueError:
     user_id = 43246220
-    
-  start_time = time.time()
   
   user = None
   if altuser != "" and altuser != "null" and altuser is not None:
@@ -38,22 +36,14 @@ def get_random_message_api(request):
       user = TwitchUser.objects.get(user_id = user_id)
     except TwitchUser.DoesNotExist:
       return HttpResponse("No messages found for this user.", 404)
-    
-  user_message_set = ChatMessage.objects.filter(commenter = user).all()
   
-  user_message_count = user_message_set.count()
-  random_message = user_message_set[randint(0, user_message_count - 1)]
+  nightbot_response_url = request.META.get("HTTP_NIGHTBOT_RESPONSE_URL", "")
   
-  response_str = random_message.localtz_str()
+  if (nightbot_response_url != ""):
+    post_random_message.delay(user.user_id, nightbot_response_url)
+    return HttpResponse(" ", 200)
   
-  if len(response_str) >= 380:
-    response_str = response_str[:375] + "..."
-  
-  end_time = time.time()
-  
-  print(f"Response time: {end_time - start_time}")
-  
-  return HttpResponse(response_str, 200)
+  return HttpResponse(get_random_message(user), 200)
 
 @csrf_exempt
 def get_random_clip(request):
