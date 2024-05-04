@@ -124,7 +124,7 @@ def test_endpoint(request):
     except TwitchUser.DoesNotExist:
       return HttpResponse("No messages found for this user.", 404)
   
-  nightbot_response_url = request.META.get("Nightbot-Response-Url", "")
+  nightbot_response_url = request.META.get("HTTP_NIGHTBOT_RESPONSE_URL", "")
   
   if (nightbot_response_url != ""):
     post_random_message.delay(user, nightbot_response_url)
