@@ -28,7 +28,7 @@ urlpatterns = [
   path("pasta/", views.CopyPasteView.as_view(), name="pasta"),
   path("ascii/", views.AsciiView.as_view(), name="ascii"),
   
-  path("api/v1/randmsg/",   api.get_random_message,  name = "api_random_message"),
+  path("api/v1/randmsg/",   api.get_random_message_api,  name = "api_random_message"),
   path("api/v1/randclip/",  api.get_random_clip,     name = "api_random_clip"),
   path("api/v1/pets/",      api.get_pets_message,    name = "api_pets_message"),
   path("api/v1/recentpet/", api.get_most_recent_pet, name = "api_recent_pet"),

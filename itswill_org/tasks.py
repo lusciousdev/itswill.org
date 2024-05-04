@@ -9,6 +9,9 @@ import datetime
 import pytz
 import calendar
 import re
+import requests
+from random import randint
+import time
 
 from .util.timeutil import *
 from .models import *
@@ -19,6 +22,25 @@ def get_word_count(text : str, word : str) -> int:
 
 def get_mult_word_count(text : str, words : list) -> int:
   return get_word_count(text, "|".join(words))
+
+def get_random_message(user):
+  user_message_set = ChatMessage.objects.filter(commenter = user).all()
+  
+  user_message_count = user_message_set.count()
+  random_message = user_message_set[randint(0, user_message_count - 1)]
+  
+  response_str = random_message.localtz_str()
+  
+  if len(response_str) >= 380:
+    response_str = response_str[:375] + "..."
+    
+  return response_str
+
+@shared_task
+def post_random_message(user, response_url):
+  rndmsg = get_random_message(user)
+  
+  requests.post(response_url, data = { "message": rndmsg })
 
 @shared_task
 def get_recent_clips(max_days = 31):

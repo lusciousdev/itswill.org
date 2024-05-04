@@ -3,13 +3,15 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, Http404, HttpResponseRedirect, JsonResponse
 from celery import Celery, shared_task
 from celery.schedules import crontab
+import requests
 from random import randint
 import time
 
+from .tasks import get_random_message, post_random_message
 from .models import *
 
 @csrf_exempt
-def get_random_message(request):
+def get_random_message_api(request):
   if request.method != "GET":
     return HttpResponse("Invalid request type.", 501)
   
@@ -109,36 +111,23 @@ def test_endpoint(request):
     user_id = int(user_id)
   except ValueError:
     user_id = 43246220
-    
-  start_time = time.time()
   
   user = None
   if altuser != "" and altuser != "null" and altuser is not None:
     try:
-      user = TwitchUser.objects.prefetch_related("chatmessage_set").get(login = altuser)
+      user = TwitchUser.objects.get(login = altuser)
     except TwitchUser.DoesNotExist:
       return HttpResponse(f"User \"{altuser}\" does not exist.", 404)
   else:
     try:
-      user = TwitchUser.objects.prefetch_related("chatmessage_set").get(user_id = user_id)
+      user = TwitchUser.objects.get(user_id = user_id)
     except TwitchUser.DoesNotExist:
       return HttpResponse("No messages found for this user.", 404)
   
-  end_prefetch = time.time()
-  print(f"Prefetch time: {end_prefetch - start_time}")
-    
-  user_message_set = user.chatmessage_set.all()
+  nightbot_response_url = request.META.get("Nightbot-Response-Url", "")
   
-  user_message_count = len(user_message_set)
-  random_message = user_message_set[randint(0, user_message_count - 1)]
+  if (nightbot_response_url != ""):
+    post_random_message.delay(user, nightbot_response_url)
+    return HttpResponse("Fetching messages...", 200)
   
-  response_str = random_message.localtz_str()
-  
-  if len(response_str) >= 380:
-    response_str = response_str[:375] + "..."
-  
-  end_time = time.time()
-  
-  print(f"Response time: {end_time - start_time}")
-  
-  return HttpResponse(response_str, 200)
+  return HttpResponse(get_random_message(user), 200)
