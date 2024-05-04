@@ -127,7 +127,7 @@ def test_endpoint(request):
   nightbot_response_url = request.META.get("HTTP_NIGHTBOT_RESPONSE_URL", "")
   
   if (nightbot_response_url != ""):
-    post_random_message.delay(user, nightbot_response_url)
+    post_random_message.delay(user.user_id, nightbot_response_url)
     return HttpResponse("Fetching messages...", 200)
   
   return HttpResponse(get_random_message(user), 200)

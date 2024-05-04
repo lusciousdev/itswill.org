@@ -37,7 +37,13 @@ def get_random_message(user):
   return response_str
 
 @shared_task
-def post_random_message(user, response_url):
+def post_random_message(user_id, response_url):
+  try:
+    user = TwitchUser.objects.get(user_id = user_id)
+  except TwitchUser.DoesNotExist:
+    requests.post(response_url, data = { "message": "Could not find user." })
+    return
+  
   rndmsg = get_random_message(user)
   
   requests.post(response_url, data = { "message": rndmsg })
