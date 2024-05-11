@@ -85,7 +85,8 @@ def get_most_recent_pet(request):
 @csrf_exempt
 def get_pets_left(request):
   pets_left = Pet.objects.filter(acquired = False).order_by("name").all()
-  return HttpResponse(", ".join([str(pet) for pet in pets_left]), 200)
+  ret = ", ".join([str(pet) for pet in pets_left]) + f" ({len(pets_left)} remaining)"
+  return HttpResponse(ret, 200)
 
 @csrf_exempt
 def test_endpoint(request):
