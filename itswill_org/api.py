@@ -26,8 +26,9 @@ def get_random_message_api(request):
     user_id = 43246220
 
   user = None
-  
-  if altuser != "?" and altuser != "" and altuser != "null" and altuser is not None:
+  if altuser == "?":
+    user = None
+  elif altuser != "" and altuser != "null" and altuser is not None:
     try:
       user = TwitchUser.objects.get(login = altuser)
     except TwitchUser.DoesNotExist:
@@ -41,10 +42,10 @@ def get_random_message_api(request):
   nightbot_response_url = request.META.get("HTTP_NIGHTBOT_RESPONSE_URL", "")
   
   if (nightbot_response_url != ""):
-    post_random_message.delay(-1 if altuser == "?" else user.user_id, nightbot_response_url)
+    post_random_message.delay(-1 if user == None else user.user_id, nightbot_response_url)
     return HttpResponse(" ", 200)
   
-  return HttpResponse(get_random_message(None if altuser == "?" else user), 200)
+  return HttpResponse(get_random_message(user), 200)
 
 @csrf_exempt
 def get_random_clip(request):
