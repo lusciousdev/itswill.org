@@ -24,8 +24,11 @@ def get_mult_word_count(text : str, words : list) -> int:
   return get_word_count(text, "|".join(words))
 
 def get_random_message(user):
-  user_message_set = ChatMessage.objects.filter(commenter = user).all()
-  
+  if user != None:
+    user_message_set = ChatMessage.objects.filter(commenter = user).all()
+  else:
+    user_message_set = ChatMessage.objects.all()
+    
   user_message_count = user_message_set.count()
   random_message = user_message_set[randint(0, user_message_count - 1)]
   
@@ -38,11 +41,14 @@ def get_random_message(user):
 
 @shared_task
 def post_random_message(user_id, response_url):
-  try:
-    user = TwitchUser.objects.get(user_id = user_id)
-  except TwitchUser.DoesNotExist:
-    requests.post(response_url, data = { "message": "Could not find user." })
-    return
+  if user_id != -1:
+    try:
+      user = TwitchUser.objects.get(user_id = user_id)
+    except TwitchUser.DoesNotExist:
+      requests.post(response_url, data = { "message": "Could not find user." })
+      return
+  else:
+    user = None
   
   rndmsg = get_random_message(user)
   
