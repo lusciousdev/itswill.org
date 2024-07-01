@@ -91,6 +91,19 @@ def get_pets_left(request):
   return HttpResponse(ret, 200)
 
 @csrf_exempt
+def get_random_garfield(request):
+  if request.method != "GET":
+    return HttpResponse("Invalid request type.", 501)
+  
+  garf_asciis = Ascii.objects.filter(is_garf = True)
+    
+  ascii_count = garf_asciis.count()
+  random_garf = garf_asciis.all()[randint(0, ascii_count - 1)]
+  
+  return HttpResponse(random_garf.text, content_type = "charset=utf-8")
+  
+
+@csrf_exempt
 def test_endpoint(request):
   if request.method != "GET":
     return HttpResponse("Invalid request type.", 501)
