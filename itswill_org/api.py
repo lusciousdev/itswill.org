@@ -101,7 +101,6 @@ def get_random_garfield(request):
   random_garf = garf_asciis.all()[randint(0, ascii_count - 1)]
   
   return HttpResponse(random_garf.text, content_type = "charset=utf-8")
-  
 
 @csrf_exempt
 def test_endpoint(request):
