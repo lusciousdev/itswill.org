@@ -133,7 +133,6 @@ class RecapView(generic.TemplateView):
     if username is None:
       data["overall_recap"] = True
       data["recap_data"] = overallrecap
-      return data
     else:
       try:
         twitchuser = TwitchUser.objects.get(display_name__iexact = username)
@@ -148,8 +147,20 @@ class RecapView(generic.TemplateView):
       data["overall_recap"] = False
       data["recap_data"] = userrecap
       data["twitchuser"] = twitchuser
+    
+    data["counters"] = {}
+    for field in data["recap_data"]._meta.get_fields():
+      if (field.get_internal_type() == "IntegerField"):
+        if (type(field) == CountField):
+          data["counters"][field.name] = {}
+          data["counters"][field.name]["label"] = field.verbose_name
+          data["counters"][field.name]["count"] = getattr(data["recap_data"], field.name)
+          if field.use_images:
+            data["counters"][field.name]["image_list"] = field.emote_list
+          else:
+            data["counters"][field.name]["image_list"] = None
       
-      return data
+    return data
     
 @csrf_exempt
 def get_recap(request):
@@ -214,43 +225,18 @@ class LeaderboardView(generic.TemplateView):
       raise Http404("That recap does not exist (yet?).")
     
     data["recap_data"] = overallrecap
+    data["limit"] = 10
     
-    userrecapset = overallrecap.userrecapdata_set.all()
+    data["labels"] = {}
     
-    data["top_messages"] = userrecapset.order_by("-count_messages")[:10]
-    data["top_clips"]    = userrecapset.order_by("-count_clips")[:10]
-    data["top_views"]    = userrecapset.order_by("-count_clip_views")[:10]
-    
-    data["top_seven"] = userrecapset.order_by("-count_seven")[:10]
-    data["top_pound"] = userrecapset.order_by("-count_pound")[:10]
-    data["top_love"]  = userrecapset.order_by("-count_love")[:10]
-    
-    data["top_etsmg"] = userrecapset.order_by("-count_etsmg")[:10]
-    data["top_ksmg"]  = userrecapset.order_by("-count_ksmg")[:10]
-    data["top_stsmg"] = userrecapset.order_by("-count_stsmg")[:10]
-    
-    data["top_pog"]   = userrecapset.order_by("-count_pog")[:10]
-    data["top_shoop"] = userrecapset.order_by("-count_shoop")[:10]
-    data["top_gasp"]  = userrecapset.order_by("-count_gasp")[:10]
-    data["top_pogo"]  = userrecapset.order_by("-count_pogo")[:10]
-    data["top_monka"] = userrecapset.order_by("-count_monka")[:10]
-    
-    data["top_giggle"] = userrecapset.order_by("-count_giggle")[:10]
-    data["top_lul"]    = userrecapset.order_by("-count_lul")[:10]
-    
-    data["top_sneak"] = userrecapset.order_by("-count_sneak")[:10]
-    data["top_sit"]   = userrecapset.order_by("-count_sit")[:10]
-    
-    data["top_mmylc"]  = userrecapset.order_by("-count_mmylc")[:10]
-    data["top_dance"]  = userrecapset.order_by("-count_dance")[:10]
-    data["top_vvkool"] = userrecapset.order_by("-count_vvkool")[:10]
-    
-    data["top_spin"]    = userrecapset.order_by("-count_spin")[:10]
-    data["top_chicken"] = userrecapset.order_by("-count_chicken")[:10]
-    data["top_sonic"]   = userrecapset.order_by("-count_sonic")[:10]
-    data["top_dankies"] = userrecapset.order_by("-count_dankies")[:10]
-    
-    data["top_cum"] = userrecapset.order_by("-count_cum")[:10]
+    for field in overallrecap._meta.get_fields():
+      if (field.get_internal_type() == "IntegerField"):
+        data["labels"][field.name] = {}
+        data["labels"][field.name]["label"] = field.verbose_name
+        if (type(field) == CountField and field.use_images):
+          data["labels"][field.name]["image_list"] = field.emote_list
+        else:
+          data["labels"][field.name]["image_list"] = None
     
     return data
   

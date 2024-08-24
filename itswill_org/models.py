@@ -3,138 +3,130 @@ import django.contrib.admin as admin
 from django.db.models.signals import m2m_changed, post_delete, post_save, pre_delete
 from django.dispatch import receiver
 import datetime
+import re
+import typing
+import json
 
 from .util.timeutil import *
 
 DEFAULT_DATETIME = datetime.datetime(1971, 1, 1, 0, 0, 1, tzinfo = datetime.timezone.utc)
 
 # Create your models here.
+
+class CountField(models.IntegerField):
+  match_list : typing.List[str] = []
+  match_regex : re.Pattern = None
+  use_images : bool = True
   
-class OverallRecapData(models.Model):
+  def __init__(self, match_list = [], emote_list = None, use_images = True, *args, **kwargs):
+    self.match_list = match_list
+    self.match_regex = re.compile(re.compile(fr"(?<![^\s_-]){'|'.join(self.match_list)}(?![^\s_-])", re.IGNORECASE))
+    self.emote_list = self.match_list if emote_list is None else emote_list
+    self.use_images = use_images
+    
+    super().__init__(*args, **kwargs)
+    
+  @property
+  def non_db_attrs(self):
+    return super().non_db_attrs + ("match_list", "match_regex", "use_matches_as_images")
+
+class RecapDataMixin(models.Model):
+  class Meta:
+    abstract = True
+  
+  count_messages = models.IntegerField(verbose_name = "Messages sent:", default = 0)
+  count_clips = models.IntegerField(verbose_name = "Clips created:", default = 0)
+  count_clip_views = models.IntegerField(verbose_name = "Views on those clips:", default = 0)
+  count_chatters = models.IntegerField(verbose_name = "Number of chatters:", default = 0)
+  count_videos = models.IntegerField(verbose_name = "Number of videos:", default = 0)
+  
+  first_message = models.CharField(verbose_name = "First message:", max_length = 1024, default = "")
+  
+  count_seven   = CountField(match_list = ["itswill7", "itswillFreeTrial"], default = 0)
+  count_pound   = CountField(match_list = ["itswillPound", "itswill4"], default = 0)
+  count_love    = CountField(match_list = ["itswillL", "hannLOVE", "peepoLove", "itswillLove"], default = 0)
+  count_sad     = CountField(match_list = ["itswillSad", "Sadge", "widepeepoSad", "hannSadge", "peepoSad"], default = 0)
+  count_mad     = CountField(match_list = ["UltraMad", "ReallyGun", "MadgeLate"], default = 0)
+  
+  count_etsmg   = CountField(match_list = ["itswillEndTheStreamMyGuy"], default = 0)
+  count_ksmg    = CountField(match_list = ["itswillEndTheStreamMyGuy"], default = 0)
+  count_stsmg   = CountField(match_list = ["itswillKeepStreamingMyGuy"], default = 0)
+  
+  count_pog     = CountField(match_list = ["Pog", "PogChamp", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"], emote_list = ["Pog", "PogChamp", "POGCHAMP2", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"], default = 0)
+  count_shoop   = CountField(match_list = ["ShoopDaWhoop"], default = 0)
+  count_gasp    = CountField(match_list = ["D\\:", "hannD"], emote_list = ["GASP", "hannD"], default = 0)
+  count_pogo    = CountField(match_list = ["PogO", "WeirdChamp", "itswillO", "itswillWeird", "WeirdPause", "UHM"], default = 0)
+  count_monka   = CountField(match_list = ["monkaS", "monkaW", "monkaEyes", "monkaGun", "monkaSTEER", "monkaH", "MONKA"], default = 0)
+  
+  count_ijbol   = CountField(match_list = ["IJBOL"], default = 0)
+  count_lmao    = CountField(match_list = ["LMAO"], default = 0)
+  count_hehe    = CountField(match_list = ["hehe"], default = 0)
+  count_giggle  = CountField(match_list = ["x0r6ztGiggle", "willGiggle", "itswillGiggle"], default = 0)
+  count_lul     = CountField(match_list = ["LUL", "LULW", "OMEGALUL", "OMEGADANCE", "OMEGALULftCloudWizard"], default = 0)
+  
+  count_sneak   = CountField(match_list = ["itswillSneak", "itswillFollow", "Sneak"], default = 0)
+  count_sit     = CountField(match_list = ["itswillSit"], default = 0)
+  
+  count_sludge  = CountField(match_list = ["SLUDGE"], default = 0)
+  count_gludge  = CountField(match_list = ["GLUDGE"], default = 0)
+  
+  count_mmylc   = CountField(match_list = ["MusicMakeYouLoseControl"], default = 0)
+  count_nessie  = CountField(match_list = ["nessiePls"], default = 0)
+  count_happi   = CountField(match_list = ["Happi"], default = 0)
+  count_goodboy = CountField(match_list = ["GoodBoy"], default = 0)
+  count_dance   = CountField(match_list = ["itswillPls", "pepeD", "PepePls", "daemonDj", "willDJ", "SourPls"], default = 0)
+  count_vvkool  = CountField(match_list = ["VVKool", "VVotate", "VVKoolMini"], default = 0)
+  
+  count_spin    = CountField(match_list = ["itswillSpin", "willSpin", "borpaSpin", "YourMom"], default = 0)
+  count_chicken = CountField(match_list = ["chickenWalk"], default = 0)
+  count_sonic   = CountField(match_list = ["itsWillCoolSonic", "CoolSonic"], emote_list = ["CoolSonic"], default = 0)
+  count_chedda  = CountField(match_list = ["MrChedda"], default = 0)
+  count_glorp   = CountField(match_list = ["glorp"], default = 0)
+  count_wlorp   = CountField(match_list = ["Wlorp"], default = 0)
+  count_joel    = CountField(match_list = ["Joel", "EvilJoel", "Joelver", "Jlorp"], default = 0)
+  count_cinema  = CountField(match_list = ["Cinema", "Cheddama"], default = 0)
+  count_lift    = CountField(match_list = ["antLift", "WillLift"], default = 0)
+  count_dankies = CountField(match_list = ["DANKIES", "HYPERS"], default = 0)
+  
+  count_cum     = CountField(match_list = ["cum", "cumming", "cumb", "cummies", "cumshot"], use_images = False, verbose_name = "Number of cum mentions:", default = 0)
+  
+  def zero(self, exclude = [], save = True):
+    for f in self._meta.get_fields():
+      if (f.get_internal_type() == "IntegerField") and (f.name not in exclude):
+        setattr(self, f.name, 0)
+    
+    if save:
+      self.save()
+  
+  def add(self, other_recap : "RecapDataMixin", exclude = [], save = True):
+    for f in self._meta.get_fields():
+      if (f.get_internal_type() == "IntegerField") and (f.name not in exclude):
+        setattr(self, f.name, getattr(self, f.name) + getattr(other_recap, f.name));
+    
+    if save:
+      self.save()
+    
+  def process_message(self, message : str, save = True):
+    self.count_messages += 1
+    
+    for f in self._meta.get_fields():
+      if (type(f) == CountField):
+        setattr(self, f.name, getattr(self, f.name) + len(f.match_regex.findall(message)))
+    
+    if save:
+      self.save()
+  
+class OverallRecapData(RecapDataMixin):
   year = models.IntegerField(default = 1971)
   month = models.IntegerField(default = 1)
   
-  count_messages = models.IntegerField(default = 0)
-  count_clips = models.IntegerField(default = 0)
-  count_clip_views = models.IntegerField(default = 0)
-  count_chatters = models.IntegerField(default = 0)
-  count_videos = models.IntegerField(default = 0)
-  
-  first_message = models.CharField(max_length = 1024, default = "")
-  
-  count_seven   = models.IntegerField(default = 0)
-  count_pound   = models.IntegerField(default = 0)
-  count_love    = models.IntegerField(default = 0)
-  
-  count_etsmg   = models.IntegerField(default = 0)
-  count_ksmg    = models.IntegerField(default = 0)
-  count_stsmg   = models.IntegerField(default = 0)
-  
-  count_pog     = models.IntegerField(default = 0)
-  count_shoop   = models.IntegerField(default = 0)
-  count_gasp    = models.IntegerField(default = 0)
-  count_pogo    = models.IntegerField(default = 0)
-  count_monka   = models.IntegerField(default = 0)
-  
-  count_giggle  = models.IntegerField(default = 0)
-  count_lul     = models.IntegerField(default = 0)
-  
-  count_sneak   = models.IntegerField(default = 0)
-  count_sit     = models.IntegerField(default = 0)
-  
-  count_mmylc   = models.IntegerField(default = 0)
-  count_dance   = models.IntegerField(default = 0)
-  count_vvkool  = models.IntegerField(default = 0)
-  
-  count_spin    = models.IntegerField(default = 0)
-  count_chicken = models.IntegerField(default = 0)
-  count_sonic   = models.IntegerField(default = 0)
-  count_dankies = models.IntegerField(default = 0)
-  
-  count_cum     = models.IntegerField(default = 0)
-  
-  def zero(self):
-    self.count_messages   = 0
-    self.count_clips      = 0
-    self.count_clip_views = 0
-    self.count_chatters   = 0
-    self.count_videos     = 0
-    
-    self.count_seven   = 0
-    self.count_pound   = 0
-    self.count_love    = 0
-    
-    self.count_etsmg   = 0
-    self.count_ksmg    = 0
-    self.count_stsmg   = 0
-    
-    self.count_pog     = 0
-    self.count_shoop   = 0
-    self.count_gasp    = 0
-    self.count_pogo    = 0
-    self.count_monka   = 0
-    
-    self.count_giggle  = 0
-    self.count_lul     = 0
-    
-    self.count_sneak   = 0
-    self.count_sit     = 0
-    
-    self.count_mmylc   = 0
-    self.count_dance   = 0
-    self.count_vvkool  = 0
-    
-    self.count_spin    = 0
-    self.count_chicken = 0
-    self.count_sonic   = 0
-    self.count_dankies = 0
-    
-    self.count_cum     = 0
-    
-    self.save()
-  
-  def add(self, other_recap : "OverallRecapData"):
-    self.count_messages   += other_recap.count_messages
-    self.count_clips      += other_recap.count_clips
-    self.count_clip_views += other_recap.count_clip_views
-    self.count_chatters   += other_recap.count_chatters
-    self.count_videos     += other_recap.count_videos
-    
-    self.count_seven   += other_recap.count_seven
-    self.count_pound   += other_recap.count_pound
-    self.count_love    += other_recap.count_love
-    
-    self.count_etsmg   += other_recap.count_etsmg
-    self.count_ksmg    += other_recap.count_ksmg
-    self.count_stsmg   += other_recap.count_stsmg
-    
-    self.count_pog     += other_recap.count_pog
-    self.count_shoop   += other_recap.count_shoop
-    self.count_gasp    += other_recap.count_gasp
-    self.count_pogo    += other_recap.count_pogo
-    self.count_monka   += other_recap.count_monka
-    
-    self.count_giggle  += other_recap.count_giggle
-    self.count_lul     += other_recap.count_lul
-    
-    self.count_sneak   += other_recap.count_sneak
-    self.count_sit     += other_recap.count_sit
-    
-    self.count_mmylc   += other_recap.count_mmylc
-    self.count_dance   += other_recap.count_dance
-    self.count_vvkool  += other_recap.count_vvkool
-    
-    self.count_spin    += other_recap.count_spin
-    self.count_chicken += other_recap.count_chicken
-    self.count_sonic   += other_recap.count_sonic
-    self.count_dankies += other_recap.count_dankies
-    
-    self.count_cum     += other_recap.count_cum
-    
-    self.save()
+  leaderboards = models.JSONField(default = dict)
   
   class Meta:
     unique_together = ('year', 'month')
+    
+  def zero(self, exclude = ["year", "month"]):
+    super().zero(exclude)
   
 class TwitchUser(models.Model):
   user_id = models.IntegerField(primary_key = True, editable = False)
@@ -148,126 +140,12 @@ class TwitchUser(models.Model):
   offline_image_url = models.CharField(max_length = 512, default = "missing offline image url")
   created_at = models.DateTimeField("created at", default = DEFAULT_DATETIME)
     
-class UserRecapData(models.Model):
+class UserRecapData(RecapDataMixin):
   overall_recap = models.ForeignKey(OverallRecapData, on_delete = models.CASCADE)
   twitch_user = models.ForeignKey(TwitchUser, on_delete = models.DO_NOTHING)
   
-  count_messages   = models.IntegerField(default = 0)
-  count_clips      = models.IntegerField(default = 0)
-  count_clip_views = models.IntegerField(default = 0)
-  
-  first_message = models.CharField(max_length = 1024, default = "")
-  
-  count_seven   = models.IntegerField(default = 0)
-  count_pound   = models.IntegerField(default = 0)
-  count_love    = models.IntegerField(default = 0)
-  
-  count_etsmg   = models.IntegerField(default = 0)
-  count_ksmg    = models.IntegerField(default = 0)
-  count_stsmg   = models.IntegerField(default = 0)
-  
-  count_pog     = models.IntegerField(default = 0)
-  count_shoop   = models.IntegerField(default = 0)
-  count_gasp    = models.IntegerField(default = 0)
-  count_pogo    = models.IntegerField(default = 0)
-  count_monka   = models.IntegerField(default = 0)
-  
-  count_giggle  = models.IntegerField(default = 0)
-  count_lul     = models.IntegerField(default = 0)
-  
-  count_sneak   = models.IntegerField(default = 0)
-  count_sit     = models.IntegerField(default = 0)
-  
-  count_mmylc   = models.IntegerField(default = 0)
-  count_dance   = models.IntegerField(default = 0)
-  count_vvkool  = models.IntegerField(default = 0)
-  
-  count_spin    = models.IntegerField(default = 0)
-  count_chicken = models.IntegerField(default = 0)
-  count_sonic   = models.IntegerField(default = 0)
-  count_dankies = models.IntegerField(default = 0)
-  
-  count_cum     = models.IntegerField(default = 0)
-  
-  def zero(self):
-    self.count_messages   = 0
-    self.count_clips      = 0
-    self.count_clip_views = 0
-    
-    self.count_seven   = 0
-    self.count_pound   = 0
-    self.count_love    = 0
-    
-    self.count_etsmg   = 0
-    self.count_ksmg    = 0
-    self.count_stsmg   = 0
-    
-    self.count_pog     = 0
-    self.count_shoop   = 0
-    self.count_gasp    = 0
-    self.count_pogo    = 0
-    self.count_monka   = 0
-    
-    self.count_giggle  = 0
-    self.count_lul     = 0
-    
-    self.count_sneak   = 0
-    self.count_sit     = 0
-    
-    self.count_mmylc   = 0
-    self.count_dance   = 0
-    self.count_vvkool  = 0
-    
-    self.count_spin    = 0
-    self.count_chicken = 0
-    self.count_sonic   = 0
-    self.count_dankies = 0
-    
-    self.count_cum     = 0
-    
-    self.save()
-  
-  def add(self, other_recap : "UserRecapData"):
-    self.count_messages   += other_recap.count_messages
-    self.count_clips      += other_recap.count_clips
-    self.count_clip_views += other_recap.count_clip_views
-    
-    self.count_seven   += other_recap.count_seven
-    self.count_pound   += other_recap.count_pound
-    self.count_love    += other_recap.count_love
-    
-    self.count_etsmg   += other_recap.count_etsmg
-    self.count_ksmg    += other_recap.count_ksmg
-    self.count_stsmg   += other_recap.count_stsmg
-    
-    self.count_pog     += other_recap.count_pog
-    self.count_shoop   += other_recap.count_shoop
-    self.count_gasp    += other_recap.count_gasp
-    self.count_pogo    += other_recap.count_pogo
-    self.count_monka   += other_recap.count_monka
-    
-    self.count_giggle  += other_recap.count_giggle
-    self.count_lul     += other_recap.count_lul
-    
-    self.count_sneak   += other_recap.count_sneak
-    self.count_sit     += other_recap.count_sit
-    
-    self.count_mmylc   += other_recap.count_mmylc
-    self.count_dance   += other_recap.count_dance
-    self.count_vvkool  += other_recap.count_vvkool
-    
-    self.count_spin    += other_recap.count_spin
-    self.count_chicken += other_recap.count_chicken
-    self.count_sonic   += other_recap.count_sonic
-    self.count_dankies += other_recap.count_dankies
-    
-    self.count_cum     += other_recap.count_cum
-    
-    self.save()
-  
   class Meta:
     unique_together = ('overall_recap', 'twitch_user')
-  
   
 class ChatMessage(models.Model):
   commenter = models.ForeignKey(TwitchUser, on_delete = models.CASCADE)
@@ -276,6 +154,9 @@ class ChatMessage(models.Model):
   content_offset = models.IntegerField(default = 0)
   created_at = models.DateTimeField("created at", default = DEFAULT_DATETIME)
   message = models.CharField(max_length = 1024, default = "")
+  
+  class Meta:
+    ordering = ( "created_at", )
   
   def __str__(self):
     timestr = self.created_at.strftime("%Y-%m-%d %H:%M:%S")
@@ -306,6 +187,9 @@ class Clip(models.Model):
   thumbnail_url = models.CharField(max_length = 512, default = "missing thumbnail url")
   duration = models.FloatField(default = 0.0)
   vod_offset = models.IntegerField(default = 0)
+  
+  class Meta:
+    ordering = ( "view_count", )
 
 class Video(models.Model):
   vod_id = models.CharField(max_length = 255, primary_key = True, editable = False)
@@ -325,6 +209,9 @@ class Video(models.Model):
   language = models.CharField(max_length = 255, default = "")
   vod_type = models.CharField(max_length = 255, default = "")
   duration = models.CharField(max_length = 255, default = "")
+  
+  class Meta:
+    ordering = ( "created_at", )
   
 class Pet(models.Model):
   acquired = models.BooleanField(default = True)
@@ -348,6 +235,9 @@ class Pet(models.Model):
   clip_url = models.CharField(max_length = 512, default = "", blank = True)
   tweet_url = models.CharField(max_length = 512, default = "", blank = True)
   
+  class Meta:
+    ordering = ( "date", "name", )
+  
   def __str__(self):
     return self.name
   
@@ -360,7 +250,7 @@ class Pet(models.Model):
     return kcstr
   
 class CopyPasteGroup(models.Model):
-  title = models.CharField(max_length = 256, unique = True)
+  title = models.CharField(max_length = 255, unique = True)
   description = models.TextField(blank = True)
   
 class CopyPaste(models.Model):
@@ -380,7 +270,7 @@ class CopyPasteGroupAdmin(admin.ModelAdmin):
   ordering = ( 'title', )
   
 class Ascii(models.Model):
-  title = models.CharField(max_length = 256, unique = True)
+  title = models.CharField(max_length = 255, unique = True)
   text = models.TextField()
   
   is_garf = models.BooleanField(default = False)

@@ -207,7 +207,7 @@ a, a:visited {
   }
 }
 
-#msg-count-wrap {
+.single-line {
   flex-basis: 100%;
   display:flex;
   flex-direction: row;
