@@ -45,7 +45,7 @@ class RecapDataMixin(models.Model):
   count_seven   = CountField(match_list = ["itswill7", "itswillFreeTrial"], default = 0)
   count_pound   = CountField(match_list = ["itswillPound", "itswill4"], default = 0)
   count_love    = CountField(match_list = ["itswillL", "hannLOVE", "peepoLove", "itswillLove"], default = 0)
-  count_sad     = CountField(match_list = ["itswillSad", "Sadge", "widepeepoSad", "hannSadge", "peepoSad"], default = 0)
+  count_sad     = CountField(match_list = ["itswillSad", "Sadge", "widepeepoSad", "hannSADGE", "peepoSad"], default = 0)
   count_mad     = CountField(match_list = ["UltraMad", "ReallyGun", "MadgeLate"], default = 0)
   
   count_etsmg   = CountField(match_list = ["itswillEndTheStreamMyGuy"], default = 0)
@@ -83,7 +83,7 @@ class RecapDataMixin(models.Model):
   count_chedda  = CountField(match_list = ["MrChedda"], default = 0)
   count_glorp   = CountField(match_list = ["glorp"], default = 0)
   count_wlorp   = CountField(match_list = ["Wlorp"], default = 0)
-  count_joel    = CountField(match_list = ["Joel", "EvilJoel", "Joelver", "Jlorp"], default = 0)
+  count_joel    = CountField(match_list = ["Joel", "EvilJoel", "Joelver", "jlorp"], default = 0)
   count_cinema  = CountField(match_list = ["Cinema", "Cheddama"], default = 0)
   count_lift    = CountField(match_list = ["antLift", "WillLift"], default = 0)
   count_dankies = CountField(match_list = ["DANKIES", "HYPERS"], default = 0)
