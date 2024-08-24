@@ -49,8 +49,8 @@ class RecapDataMixin(models.Model):
   count_mad     = CountField(match_list = ["UltraMad", "ReallyGun", "MadgeLate"], default = 0)
   
   count_etsmg   = CountField(match_list = ["itswillEndTheStreamMyGuy"], default = 0)
-  count_ksmg    = CountField(match_list = ["itswillEndTheStreamMyGuy"], default = 0)
-  count_stsmg   = CountField(match_list = ["itswillKeepStreamingMyGuy"], default = 0)
+  count_ksmg    = CountField(match_list = ["itswillKeepStreamingMyGuy"], default = 0)
+  count_stsmg   = CountField(match_list = ["StartTheStreamMyGuy"], default = 0)
   
   count_pog     = CountField(match_list = ["Pog", "PogChamp", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"], emote_list = ["Pog", "PogChamp", "POGCHAMP2", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"], default = 0)
   count_shoop   = CountField(match_list = ["ShoopDaWhoop"], default = 0)
