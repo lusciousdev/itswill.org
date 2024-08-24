@@ -333,7 +333,7 @@ def calculate_yearly_stats(year = None):
   
   recap : OverallRecapData
   for recap in monthrecaps:
-    yearrecap.add(recap)
+    yearrecap.add(recap, exclude = ["year", "month", "count_chatters"])
     
     userrecap : UserRecapData
     for userrecap in recap.userrecapdata_set.all():
