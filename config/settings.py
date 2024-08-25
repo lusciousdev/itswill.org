@@ -201,29 +201,29 @@ CELERY_RESULT_BACKEND = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}
 CELERY_BEAT_SCHEDULE = {
   "get_recent_chat_messages": {
     "task": "itswill_org.tasks.get_recent_chat_messages",
-    "schedule": crontab(minute = 0, hour = 1),
+    "schedule": crontab(minute = 0, hour = 7),
     "args": (5, False,),
   },
   "get_recent_clips": {
     "task": "itswill_org.tasks.get_recent_clips",
-    "schedule": crontab(minute = 0, hour = 2),
+    "schedule": crontab(minute = 0, hour = 8),
     "args": (21,),
   },
   "recalculate_previous_month": {
     "task": "itswill_org.tasks.calculate_monthly_stats",
-    "schedule": crontab(minute = 30, hour = 2),
+    "schedule": crontab(minute = 0, hour = 9),
   },
   "recalculate_year": {
     "task": "itswill_org.tasks.calculate_yearly_stats",
-    "schedule": crontab(minute = 30, hour = 5),
+    "schedule": crontab(minute = 0, hour = 10),
   },
   "recalculate_all_time": {
     "task": "itswill_org.tasks.calculate_yearly_stats",
-    "schedule": crontab(minute = 30, hour = 6),
+    "schedule": crontab(minute = 30, hour = 11),
     "args": (0, ),
   },
   "recalculate_leaderboards": {
     "task": "itswill_org.tasks.calculate_all_leaderboards",
-    "schedule": crontab(minute = 30, hour = 7),
+    "schedule": crontab(minute = 0, hour = 13),
   },
 }
