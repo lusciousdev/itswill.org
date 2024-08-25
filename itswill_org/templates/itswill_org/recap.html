@@ -62,16 +62,24 @@
           {% endif %}
         </div>
         {% if overall_recap %}
+        {% if recap_data.year == 0 %}
+        <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard' %}">Click to see the leaderboards</a>)</div>
+        {% else %}
         {% if recap_data.month == 0 %}
         <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_year' recap_data.year %}">Click to see the leaderboards</a>)</div>
         {% else %}
         <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_month' recap_data.year recap_data.month %}">Click to see the leaderboards</a>)</div>
         {% endif %}
+        {% endif %}
+        {% else %}
+        {% if recap_data.overall_recap.year == 0%}
+        <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard' %}">Click to see the leaderboards</a>)</div>
         {% else %}
         {% if recap_data.overall_recap.month == 0 %}
         <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_year' recap_data.overall_recap.year %}">Click to see the leaderboards</a>)</div>
         {% else %}
         <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_month' recap_data.overall_recap.year recap_data.overall_recap.month %}">Click to see the leaderboards</a>)</div>
+        {% endif %}
         {% endif %}
         {% endif %}
       </div>
