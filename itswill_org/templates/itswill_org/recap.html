@@ -40,16 +40,24 @@
         </div>
         <div class="section-subtitle" id="range-subtitle">
           {% if overall_recap %}
+            {% if recap_data.year == 0%}
+            All time
+            {% else %}
             {% if recap_data.month == 0 %}
             All of {{ recap_data.year }}
             {% else %}
             {{ month_abbr|index:recap_data.month }} {{ recap_data.year }}
             {% endif %}
+            {% endif %}
           {% else %}
+            {% if recap_data.overall_recap.year == 0 %}
+            All time
+            {% else %}
             {% if recap_data.overall_recap.month == 0 %}
             All of {{ recap_data.overall_recap.year }}
             {% else %}
             {{ month_abbr|index:recap_data.overall_recap.month }} {{ recap_data.overall_recap.year }}
+            {% endif %}
             {% endif %}
           {% endif %}
         </div>
@@ -116,7 +124,11 @@
         </div>
       {% for year, year_recap in all_recaps.items %}
         <div class="main-link">
+          {% if year_recap.recap.year == 0 %}
+          <a href="{% url 'itswill_org:recap' %}">All time</a>
+          {% else %}
           <a href="{% url 'itswill_org:recap_year' year_recap.recap.year %}">{{ year_recap.recap.year }}</a>
+          {% endif %}
         </div>
 
         <div class="sublinks-section">
@@ -135,7 +147,11 @@
         </div>
         {% for year, year_recap in all_recaps.items %}
         <div class="main-link">
+          {% if year_recap.recap.year == 0 %}
+          <a href="{% url 'itswill_org:recap_user' twitchuser.login %}">All time</a>
+          {% else %}
           <a href="{% url 'itswill_org:recap_year_user' year_recap.recap.year twitchuser.login %}">{{ year_recap.recap.year }}</a>
+          {% endif %}
         </div>
         <div class="sublinks-section">
           {% for month, month_recap in year_recap.month_recaps.items %}

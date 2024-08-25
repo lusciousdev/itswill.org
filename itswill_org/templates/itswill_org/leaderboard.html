@@ -15,10 +15,14 @@
   <div class="row-wrap-section-wrap" id="leaderboards-wrap">
     <div class="row-wrap-section" id="leaderboards">
       <div class="row-wrap-section-title" id="leaderboards-title">Leaderboards</div>
+      {% if recap_data.year == 0 %}
+      <div class="row-wrap-section-note" id="recap-link">(<a href="{% url 'itswill_org:recap' %}">Click to go back to the recap</a>)</div>
+      {% else %}
       {% if recap_data.month == 0 %}
       <div class="row-wrap-section-note" id="recap-link">(<a href="{% url 'itswill_org:recap_year' recap_data.year %}">Click to go back to the recap</a>)</div>
       {% else %}
       <div class="row-wrap-section-note" id="recap-link">(<a href="{% url 'itswill_org:recap_month' recap_data.year recap_data.month %}">Click to go back to the recap</a>)</div>
+      {% endif %}
       {% endif %}
       {% for key, value in recap_data.leaderboards.items %}
       {% with labelobj=labels|keyvalue:key %}
@@ -67,7 +71,11 @@
         </div>
       {% for year, year_recap in all_recaps.items %}
         <div class="main-link">
+          {% if year_recap.recap.year == 0 %}
+          <a href="{% url 'itswill_org:leaderboard' %}">All time</a>
+          {% else %}
           <a href="{% url 'itswill_org:leaderboard_year' year_recap.recap.year %}">{{ year_recap.recap.year }}</a>
+          {% endif %}
         </div>
 
         <div class="sublinks-section">

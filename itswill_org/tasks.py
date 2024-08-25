@@ -318,14 +318,22 @@ def calculate_yearly_stats(year = None):
   yearrecap, _ = OverallRecapData.objects.get_or_create(year = year, month = 0)
   yearrecap.zero()
   
-  localtz = pytz.timezone("America/Los_Angeles")
-  start_date = datetime.datetime(year, 1, 1, 0, 0, 0, 1, localtz)
-  end_date   = datetime.datetime(year, 12, 31, 23, 59, 59, 999, localtz)
-  
-  firstmsg = ChatMessage.objects.filter(created_at__range = (start_date, end_date)).order_by("created_at").first()
+  firstmsg = ""
+  if year == 0:
+    firstmsg = ChatMessage.objects.order_by("created_at").first()
+  else:
+    localtz = pytz.timezone("America/Los_Angeles")
+    start_date = datetime.datetime(year, 1, 1, 0, 0, 0, 1, localtz)
+    end_date   = datetime.datetime(year, 12, 31, 23, 59, 59, 999, localtz)
+    
+    firstmsg = ChatMessage.objects.filter(created_at__range = (start_date, end_date)).order_by("created_at").first()
+    
   yearrecap.first_message = "" if firstmsg is None else firstmsg.message
 
-  monthrecaps = OverallRecapData.objects.filter(year = year, month__gte = 1).prefetch_related("userrecapdata_set").all()
+  if (year == 0):
+    monthrecaps = OverallRecapData.objects.filter(year__gte = 1, month__gte = 1).prefetch_related("userrecapdata_set").all()
+  else:
+    monthrecaps = OverallRecapData.objects.filter(year = year, month__gte = 1).prefetch_related("userrecapdata_set").all()
   
   userrecap : UserRecapData
   for userrecap in yearrecap.userrecapdata_set.all():

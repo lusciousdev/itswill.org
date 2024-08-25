@@ -113,7 +113,15 @@ class RecapView(generic.TemplateView):
     data["month_abbr"] = calendar.month_abbr
     data["all_recaps"] = {}
     
-    for yearrecap in OverallRecapData.objects.filter(month = 0).order_by("year").all():
+    try:
+      data["all_recaps"]["alltime"] = {
+        "recap": OverallRecapData.objects.get(year = 0, month = 0),
+        "month_recaps": {},
+      }
+    except OverallRecapData.DoesNotExist:
+      pass
+    
+    for yearrecap in OverallRecapData.objects.filter(year__gte = 1, month = 0).order_by("year").all():
       data["all_recaps"][yearrecap.year] = {
         "recap": yearrecap,
         "month_recaps": {}
@@ -164,7 +172,7 @@ class RecapView(generic.TemplateView):
     
 @csrf_exempt
 def get_recap(request):
-  year = str(datetime.datetime.now().year)
+  year = str(0)
   month = str(0)
   username = None
   if request.method == 'POST':
@@ -180,7 +188,7 @@ def get_recap(request):
   try:
     year = int(year)
   except:
-    year = datetime.datetime.now().year
+    year = 0
     
   try:
     month = int(month)
@@ -188,15 +196,22 @@ def get_recap(request):
     month = 0
   
   if username is None:
-    if month > 0:
-      return HttpResponseRedirect(reverse("itswill_org:recap_month", kwargs = { 'year': year, 'month': month }))
+    if year > 0:
+      if month > 0:
+        return HttpResponseRedirect(reverse("itswill_org:recap_month", kwargs = { 'year': year, 'month': month }))
+      else:
+        return HttpResponseRedirect(reverse("itswill_org:recap_year", kwargs = { 'year': year }))
     else:
-      return HttpResponseRedirect(reverse("itswill_org:recap_year", kwargs = { 'year': year }))
+      return HttpResponseRedirect(reverse("itswill_org:recap"))
   else:
-    if month > 0:
-      return HttpResponseRedirect(reverse("itswill_org:recap_month_user", kwargs = { 'year': year, 'month': month, 'username': username }))
+    if year > 0:
+      if month > 0:
+        return HttpResponseRedirect(reverse("itswill_org:recap_month_user", kwargs = { 'year': year, 'month': month, 'username': username }))
+      else:
+        return HttpResponseRedirect(reverse("itswill_org:recap_year_user", kwargs = { 'year': year, 'username': username }))
     else:
-      return HttpResponseRedirect(reverse("itswill_org:recap_year_user", kwargs = { 'year': year, 'username': username }))
+      return HttpResponseRedirect(reverse("itswill_org:recap_user", kwargs = { "username": username }))
+      
   
 class LeaderboardView(generic.TemplateView):
   template_name = "itswill_org/leaderboard.html"

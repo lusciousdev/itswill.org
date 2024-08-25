@@ -14,6 +14,7 @@ from pathlib import Path
 from urllib.parse import quote
 from celery.schedules import crontab
 import luscioustwitch
+import datetime
 
 from .secrets import *
 
@@ -215,6 +216,11 @@ CELERY_BEAT_SCHEDULE = {
   "recalculate_year": {
     "task": "itswill_org.tasks.calculate_yearly_stats",
     "schedule": crontab(minute = 30, hour = 5),
+  },
+  "recalculate_all_time": {
+    "task": "itswill_org.tasks.calculate_yearly_stats",
+    "schedule": crontab(minute = 30, hour = 5),
+    "args": (0, ),
   },
   "recalculate_leaderboards": {
     "task": "itswill_org.tasks.calculate_all_leaderboards",
