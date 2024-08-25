@@ -322,9 +322,10 @@ def calculate_alltime_stats():
   yearrecaps = OverallRecapData.objects.filter(year__gte = 1, month = 0).prefetch_related("userrecapdata_set").all()
   
   userrecap : UserRecapData = alltimerecap.userrecapdata_set.first()
-  for field in userrecap._meta.get_fields():
-    if (field.get_internal_type() == "IntegerField" and field.name not in ["year", "month"]):
-      alltimerecap.userrecapdata_set.update(**{field.name: 0})
+  if userrecap:
+    for field in userrecap._meta.get_fields():
+      if (field.get_internal_type() == "IntegerField" and field.name not in ["year", "month"]):
+        alltimerecap.userrecapdata_set.update(**{field.name: 0})
   
   recap : OverallRecapData
   for recap in yearrecaps:
@@ -365,9 +366,10 @@ def calculate_yearly_stats(year = None):
     monthrecaps = OverallRecapData.objects.filter(year = year, month__gte = 1).prefetch_related("userrecapdata_set").all()
   
   userrecap : UserRecapData = yearrecap.userrecapdata_set.first()
-  for field in userrecap._meta.get_fields():
-    if (field.get_internal_type() == "IntegerField" and field.name not in ["year", "month"]):
-      yearrecap.userrecapdata_set.update(**{field.name: 0})
+  if userrecap:
+    for field in userrecap._meta.get_fields():
+      if (field.get_internal_type() == "IntegerField" and field.name not in ["year", "month"]):
+        yearrecap.userrecapdata_set.update(**{field.name: 0})
   
   recap : OverallRecapData
   for recap in monthrecaps:
@@ -406,9 +408,10 @@ def calculate_monthly_stats(year = None, month = None):
   monthrecap.first_message = "" if firstmsg is None else firstmsg.message
   
   userrecap : UserRecapData = monthrecap.userrecapdata_set.first()
-  for field in userrecap._meta.get_fields():
-    if (field.get_internal_type() == "IntegerField" and field.name not in ["year", "month"]):
-      monthrecap.userrecapdata_set.update(**{field.name: 0})
+  if userrecap:
+    for field in userrecap._meta.get_fields():
+      if (field.get_internal_type() == "IntegerField" and field.name not in ["year", "month"]):
+        monthrecap.userrecapdata_set.update(**{field.name: 0})
   
   for chatter in TwitchUser.objects.prefetch_related("chatmessage_set", "clip_set").all():
     chatter_messages = chatter.chatmessage_set.filter(created_at__range = (start_date, end_date)).order_by("created_at")
