@@ -219,11 +219,11 @@ CELERY_BEAT_SCHEDULE = {
   },
   "recalculate_all_time": {
     "task": "itswill_org.tasks.calculate_yearly_stats",
-    "schedule": crontab(minute = 30, hour = 5),
+    "schedule": crontab(minute = 30, hour = 6),
     "args": (0, ),
   },
   "recalculate_leaderboards": {
     "task": "itswill_org.tasks.calculate_all_leaderboards",
-    "schedule": crontab(minute = 30, hour = 8),
+    "schedule": crontab(minute = 30, hour = 7),
   },
 }
