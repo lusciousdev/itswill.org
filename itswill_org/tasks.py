@@ -309,6 +309,35 @@ def set_yearly_stat_user_count(year):
       
   yearrecap.count_chatters = yearrecap.userrecapdata_set.all().count()
   yearrecap.save()
+  
+@shared_task
+def calculate_alltime_stats():
+  alltimerecap, _ = OverallRecapData.objects.get_or_create(year = 0, month = 0)
+  alltimerecap.zero()
+  
+  firstmsg = ChatMessage.objects.order_by("created_at").first()
+  
+  alltimerecap.first_message = "" if firstmsg is None else firstmsg.message
+  
+  yearrecaps = OverallRecapData.objects.filter(year__gte = 1, month = 0).prefetch_related("userrecapdata_set").all()
+  
+  userrecap : UserRecapData = alltimerecap.userrecapdata_set.first()
+  for field in userrecap._meta.get_fields():
+    if (field.get_internal_type() == "IntegerField" and field.name not in ["year", "month"]):
+      alltimerecap.userrecapdata_set.update(**{field.name: 0})
+  
+  recap : OverallRecapData
+  for recap in yearrecaps:
+    alltimerecap.add(recap, exclude = ["year", "month", "count_chatters"])
+    
+    userrecap : UserRecapData
+    for userrecap in recap.userrecapdata_set.all():
+      useryear, _ = UserRecapData.objects.get_or_create(overall_recap = alltimerecap, twitch_user = userrecap.twitch_user)
+      useryear.add(userrecap)
+  
+  alltimerecap.count_chatters = alltimerecap.userrecapdata_set.all().count()
+  alltimerecap.save()
+  
 
 @shared_task
 def calculate_yearly_stats(year = None):
@@ -335,9 +364,10 @@ def calculate_yearly_stats(year = None):
   else:
     monthrecaps = OverallRecapData.objects.filter(year = year, month__gte = 1).prefetch_related("userrecapdata_set").all()
   
-  userrecap : UserRecapData
-  for userrecap in yearrecap.userrecapdata_set.all():
-    userrecap.zero()
+  userrecap : UserRecapData = yearrecap.userrecapdata_set.first()
+  for field in userrecap._meta.get_fields():
+    if (field.get_internal_type() == "IntegerField" and field.name not in ["year", "month"]):
+      yearrecap.userrecapdata_set.update(**{field.name: 0})
   
   recap : OverallRecapData
   for recap in monthrecaps:
@@ -375,9 +405,10 @@ def calculate_monthly_stats(year = None, month = None):
   
   monthrecap.first_message = "" if firstmsg is None else firstmsg.message
   
-  userrecap : UserRecapData
-  for userrecap in monthrecap.userrecapdata_set.all():
-    userrecap.zero()
+  userrecap : UserRecapData = monthrecap.userrecapdata_set.first()
+  for field in userrecap._meta.get_fields():
+    if (field.get_internal_type() == "IntegerField" and field.name not in ["year", "month"]):
+      monthrecap.userrecapdata_set.update(**{field.name: 0})
   
   for chatter in TwitchUser.objects.prefetch_related("chatmessage_set", "clip_set").all():
     chatter_messages = chatter.chatmessage_set.filter(created_at__range = (start_date, end_date)).order_by("created_at")
