@@ -221,11 +221,15 @@ class Pet(models.Model):
   
   killcount_known = models.BooleanField(default = True)
   killcount = models.IntegerField(default = 0)
+  drop_rate_known = models.BooleanField(default = False)
+  drop_rate = models.IntegerField(default = 0)
   kill_term = models.CharField(max_length = 255, default = "killcount")
   kill_term_pluralize = models.CharField(max_length = 255, default = "", blank = True)
   
   secondary_killcount_needed = models.BooleanField(default = False)
   secondary_killcount = models.IntegerField(default = 0)
+  secondary_drop_rate_known = models.BooleanField(default = False)
+  secondary_drop_rate = models.IntegerField(default = 0)
   secondary_kill_term = models.CharField(max_length = 255, default = "killcount")
   secondary_kill_term_pluralize = models.CharField(max_length = 255, default = "", blank = True)
   
