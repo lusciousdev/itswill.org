@@ -51,6 +51,11 @@ a {
   height: auto;
 }
 
+.pet-droprateinfo {
+  display: none;
+  font-size: 0.8em;
+}
+
 
 .pet-killcount, .pet-date, .pet-clip {
   font-size: 0.8em;

@@ -102,6 +102,39 @@ class PetsView(generic.TemplateView):
     
     data["total_pets"] = Pet.objects.all().count()
     
+    data["drinfo"] = {}
+    
+    for pet in data["acquired_pets"]:
+      data["drinfo"][pet.name] = {}
+      if (pet.killcount_known and pet.drop_rate_known) and (not pet.secondary_killcount_needed or pet.secondary_drop_rate_known):
+        data["drinfo"][pet.name]["show"] = True
+        percent = (pet.killcount / pet.drop_rate)
+        if pet.secondary_killcount_needed:
+          percent += (pet.secondary_killcount / pet.secondary_drop_rate)
+        data["drinfo"][pet.name]["percent"] = percent
+        
+        divclass = "no-drop-rate-info"
+        if percent < 0.1:
+          divclass = "absurdly-lucky"
+        elif percent < 0.333:
+          divclass = "very-lucky"
+        elif percent < 0.8:
+          divclass = "lucky"
+        elif percent < 1.2:
+          divclass = "on-rate"
+        elif percent < 2:
+          divclass = "unlucky"
+        elif percent < 3:
+          divclass = "very-unlucky"
+        else:
+          divclass = "absurdly-unlucky"
+          
+        data['drinfo'][pet.name]["class"] = divclass
+      else:
+        data["drinfo"][pet.name]["show"] = False
+        data["drinfo"][pet.name]["percent"] = 0
+        data["drinfo"][pet.name]["class"] = "no-drop-rate-info"
+      
     return data
   
 class RecapView(generic.TemplateView):

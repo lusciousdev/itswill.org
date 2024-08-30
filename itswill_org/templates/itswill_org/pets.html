@@ -2,9 +2,15 @@
 
 {% load static %}
 {% load humanize %}
+{% load index %}
 
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{% static 'itswill_org/pets.css' %}">
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'itswill_org/pets.js' %}"></script>
 {% endblock %}
 
 {% block title %}itswill's pets{% endblock %}
@@ -14,9 +20,15 @@
   <h1 id="site-title">itswill's pets</h1>
 </header>
 <h2 class="section-title">{{ acquired_pets.count }}/{{ total_pets }} pets</h2>
+<div id="enable-droprateinfo-container">
+  <h3 class="section-title">
+  <input type="checkbox" id="enable-droprateinfo"> show % of drop rate
+  </h3>
+</div>
 <div id="acquired-pets" class="pet-list">
   {% for pet in acquired_pets %}
-  <div class="pet-card">
+  {% with droprateinfo=drinfo|keyvalue:pet.name %}
+  <div class="pet-card {{ droprateinfo.class }}">
     {% if pet.image %}
     <img class="pet-image" src="{{ pet.image.url }}" alt="{{ pet.name }} image">
     {% endif %}
@@ -32,6 +44,12 @@
     </div>
     {% else %}
     <div class="pet-killcount">{{ pet.kill_term|capfirst }} unknown</div>
+    {% endif %}
+
+    {% if droprateinfo.show %}
+    <div class="pet-droprateinfo">{{ droprateinfo.percent|to_percent:1 }} of drop rate</div>
+    {% else %}
+    <div class="pet-droprateinfo">??% of drop rate</div>
     {% endif %}
 
     {% if pet.date_known %}
@@ -50,6 +68,7 @@
     <div class="pet-clip"><a href="{{ pet.clip_url }}" target="_blank" rel="noopener noreferrer">Clip, <a href="{{ pet.tweet_url }}" target="_blank" rel="noopener noreferrer">Tweet</a></a></div>
     {% endif %}
   </div>
+  {% endwith %}
   {% endfor %}
 </div>
 <h2 class="section-title">Pets left</h2>
