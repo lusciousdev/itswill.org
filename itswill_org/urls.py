@@ -22,13 +22,13 @@ urlpatterns = [
   
   path("recap/redirect/", views.get_recap, name = "recap_redirect"),
   
-  path("leaderboard/",                        cache_page(60 * 60)(views.LeaderboardView.as_view()), kwargs = { "year": 0, "month": 0 }, name="leaderboard"),
-  path("leaderboard/<int:year>/",             cache_page(60 * 60)(views.LeaderboardView.as_view()), kwargs = { "month": 0 }, name="leaderboard_year"),
-  path("leaderboard/<int:year>/<int:month>/", cache_page(60 * 60)(views.LeaderboardView.as_view()), name="leaderboard_month"),
+  path("leaderboard/",                        cache_page(60)(views.LeaderboardView.as_view()), kwargs = { "year": 0, "month": 0 }, name="leaderboard"),
+  path("leaderboard/<int:year>/",             cache_page(60)(views.LeaderboardView.as_view()), kwargs = { "month": 0 }, name="leaderboard_year"),
+  path("leaderboard/<int:year>/<int:month>/", cache_page(60)(views.LeaderboardView.as_view()), name="leaderboard_month"),
   
-  path("leaderboard/<str:name>",                        cache_page(60*60)(views.SingleLeaderboardView.as_view()), kwargs = { "year": 0, "month": 0 }, name = "single_leaderboard"),
-  path("leaderboard/<int:year>/<str:name>",             cache_page(60*60)(views.SingleLeaderboardView.as_view()), kwargs = { "month": 0 }, name = "single_leaderboard_year"),
-  path("leaderboard/<int:year>/<int:month>/<str:name>", cache_page(60*60)(views.SingleLeaderboardView.as_view()), name = "single_leaderboard_month"),
+  path("leaderboard/<str:name>",                        cache_page(60)(views.SingleLeaderboardView.as_view()), kwargs = { "year": 0, "month": 0 }, name = "single_leaderboard"),
+  path("leaderboard/<int:year>/<str:name>",             cache_page(60)(views.SingleLeaderboardView.as_view()), kwargs = { "month": 0 }, name = "single_leaderboard_year"),
+  path("leaderboard/<int:year>/<int:month>/<str:name>", cache_page(60)(views.SingleLeaderboardView.as_view()), name = "single_leaderboard_month"),
   
   path("pasta/", views.CopyPasteView.as_view(), name="pasta"),
   path("ascii/", views.AsciiView.as_view(), name="ascii"),
