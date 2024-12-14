@@ -324,7 +324,7 @@ def calculate_alltime_stats():
   userrecap : UserRecapData = alltimerecap.userrecapdata_set.first()
   if userrecap:
     for field in userrecap._meta.get_fields():
-      if (field.get_internal_type() == "IntegerField" and field.name not in ["year", "month"]):
+      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in ["year", "month"]):
         alltimerecap.userrecapdata_set.update(**{field.name: 0})
   
   recap : OverallRecapData
@@ -368,7 +368,7 @@ def calculate_yearly_stats(year = None):
   userrecap : UserRecapData = yearrecap.userrecapdata_set.first()
   if userrecap:
     for field in userrecap._meta.get_fields():
-      if (field.get_internal_type() == "IntegerField" and field.name not in ["year", "month"]):
+      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in ["year", "month"]):
         yearrecap.userrecapdata_set.update(**{field.name: 0})
   
   recap : OverallRecapData
@@ -410,7 +410,7 @@ def calculate_monthly_stats(year = None, month = None):
   userrecap : UserRecapData = monthrecap.userrecapdata_set.first()
   if userrecap:
     for field in userrecap._meta.get_fields():
-      if (field.get_internal_type() == "IntegerField" and field.name not in ["year", "month"]):
+      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in ["year", "month"]):
         monthrecap.userrecapdata_set.update(**{field.name: 0})
   
   for chatter in TwitchUser.objects.prefetch_related("chatmessage_set", "clip_set").all():
@@ -453,8 +453,15 @@ def calculate_all_leaderboards():
   for overallrecap in OverallRecapData.objects.all():
     leaderboards_dict = {}
     for field in overallrecap._meta.get_fields():
-      if (field.get_internal_type() == "IntegerField" and field.name not in ["year", "month", "count_chatters", "count_videos"]):
-        leaderboards_dict[field.name] = [(userrecap.twitch_user.display_name, getattr(userrecap, field.name)) for userrecap in overallrecap.userrecapdata_set.all().order_by("-" + field.name)[:25]]
+      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in ["year", "month", "count_chatters", "count_videos"]):
+        print(type(field))
+        if type(field) in [StatField, BigStatField, StringCountField]:
+          if not field.show_leaderboard:
+            continue
+          leaderboards_dict[field.short_name] = [(userrecap.twitch_user.display_name, getattr(userrecap, field.name), userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.all().order_by("-" + field.name)[:250]]
+        else:
+          leaderboards_dict[field.name] = [(userrecap.twitch_user.display_name, getattr(userrecap, field.name), userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.all().order_by("-" + field.name)[:250]]
+          
         
     overallrecap.leaderboards = leaderboards_dict
     overallrecap.save()

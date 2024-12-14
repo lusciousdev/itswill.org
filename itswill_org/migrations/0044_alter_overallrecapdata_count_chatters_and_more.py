@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='overallrecapdata',
             name='count_cum',
-            field=itswill_org.models.CountField(default=0, verbose_name='Number of cum mentions:'),
+            field=itswill_org.models.StringCountField(default=0, verbose_name='Number of cum mentions:'),
         ),
         migrations.AlterField(
             model_name='overallrecapdata',
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='userrecapdata',
             name='count_cum',
-            field=itswill_org.models.CountField(default=0, verbose_name='Number of cum mentions:'),
+            field=itswill_org.models.StringCountField(default=0, verbose_name='Number of cum mentions:'),
         ),
         migrations.AlterField(
             model_name='userrecapdata',

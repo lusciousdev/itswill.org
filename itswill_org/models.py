@@ -10,89 +10,133 @@ import json
 from .util.timeutil import *
 
 DEFAULT_DATETIME = datetime.datetime(1971, 1, 1, 0, 0, 1, tzinfo = datetime.timezone.utc)
+ASCII_REGEX = re.compile(r'[\u2800-\u28ff \r\n]{10,}')
 
 # Create your models here.
 
-class CountField(models.IntegerField):
-  match_list : typing.List[str] = []
-  match_regex : re.Pattern = None
-  use_images : bool = True
+class StatField(models.IntegerField):
+  show_recap : bool = True
+  show_leaderboard : bool = True
+  short_name : str = ""
   
-  def __init__(self, match_list = [], emote_list = None, use_images = True, *args, **kwargs):
-    self.match_list = match_list
-    self.match_regex = re.compile(re.compile(fr"(?<![^\s_-]){'|'.join(self.match_list)}(?![^\s_-])", re.IGNORECASE))
-    self.emote_list = self.match_list if emote_list is None else emote_list
-    self.use_images = use_images
+  def __init__(self, short_name = "", show_recap = True, show_leaderboard = True, *args, **kwargs):
+    self.short_name = short_name
+    self.show_recap = show_recap
+    self.show_leaderboard = show_leaderboard
     
     super().__init__(*args, **kwargs)
     
   @property
   def non_db_attrs(self):
-    return super().non_db_attrs + ("match_list", "match_regex", "use_matches_as_images")
+    return super().non_db_attrs + ("show_recap", "show_leaderboard")
+    
+class BigStatField(models.BigIntegerField):
+  show_recap : bool = True
+  show_leaderboard : bool = True
+  short_name : str = ""
+  
+  def __init__(self, short_name = "", show_recap = True, show_leaderboard = True, *args, **kwargs):
+    self.short_name = short_name
+    self.show_recap = show_recap
+    self.show_leaderboard = show_leaderboard
+    
+    super().__init__(*args, **kwargs)
+    
+  @property
+  def non_db_attrs(self):
+    return super().non_db_attrs + ("show_recap", "show_leaderboard")
+    
+class StringCountField(StatField):
+  match_list : typing.List[str] = []
+  match_regex : re.Pattern = None
+  use_images : bool = True
+  
+  def __init__(self, short_name = "", match_list = [], emote_list = None, use_images = True, show_recap = True, show_leaderboard = True, *args, **kwargs):
+    self.match_list = match_list
+    self.match_regex = re.compile(re.compile(fr"(?<![^\s_-]){'|'.join(self.match_list)}(?![^\s_-])", re.IGNORECASE))
+    self.emote_list = self.match_list if emote_list is None else emote_list
+    self.use_images = use_images
+    
+    super().__init__(short_name, show_recap, show_leaderboard, *args, **kwargs)
+    
+  @property
+  def non_db_attrs(self):
+    return super().non_db_attrs + ("match_list", "match_regex", "use_images", "show_recap")
 
 class RecapDataMixin(models.Model):
   class Meta:
     abstract = True
   
-  count_messages = models.IntegerField(verbose_name = "Messages sent:", default = 0)
-  count_clips = models.IntegerField(verbose_name = "Clips created:", default = 0)
-  count_clip_views = models.IntegerField(verbose_name = "Views on those clips:", default = 0)
-  count_chatters = models.IntegerField(verbose_name = "Number of chatters:", default = 0)
-  count_videos = models.IntegerField(verbose_name = "Number of videos:", default = 0)
+  count_messages = StatField(short_name = "messages", verbose_name = "Messages sent:", default = 0)
+  count_characters = BigStatField(short_name = "characters", show_recap = False, show_leaderboard = False, verbose_name = "Total characters:", default = 0)
+  count_ascii = StatField(short_name = "ascii", verbose_name = "ASCIIs sent:", default = 0)
+  count_clips = StatField(short_name = "clips", verbose_name = "Clips created:", default = 0)
+  count_clip_views = StatField(short_name = "views", verbose_name = "Views on those clips:", default = 0)
+  count_chatters = StatField(short_name = "chatters", verbose_name = "Number of chatters:", default = 0)
+  count_videos = StatField(short_name = "videos", verbose_name = "Number of videos:", default = 0)
   
   first_message = models.CharField(verbose_name = "First message:", max_length = 1024, default = "")
+  last_message = models.CharField(verbose_name = "Last message:", max_length = 1024, default = "")
   
-  count_seven   = CountField(match_list = ["itswill7", "itswillFreeTrial"], default = 0)
-  count_pound   = CountField(match_list = ["itswillPound", "itswill4"], default = 0)
-  count_love    = CountField(match_list = ["itswillL", "hannLOVE", "peepoLove", "itswillLove"], default = 0)
-  count_sad     = CountField(match_list = ["itswillSad", "Sadge", "widepeepoSad", "hannSADGE", "peepoSad"], default = 0)
-  count_mad     = CountField(match_list = ["UltraMad", "ReallyGun", "MadgeLate"], default = 0)
+  count_seven   = StringCountField(short_name = "seven", match_list = ["itswill7", "itswillFreeTrial"], default = 0)
+  count_pound   = StringCountField(short_name = "pound", match_list = ["itswillPound", "itswill4"], default = 0)
+  count_love    = StringCountField(short_name = "love", match_list = ["itswillL", "hannLOVE", "peepoLove", "itswillLove"], default = 0)
+  count_sad     = StringCountField(short_name = "sad", match_list = ["itswillSad", "Sadge", "widepeepoSad", "hannSADGE", "peepoSad"], default = 0)
+  count_mad     = StringCountField(short_name = "mad", match_list = ["UltraMad", "ReallyGun", "MadgeLate"], default = 0)
   
-  count_etsmg   = CountField(match_list = ["itswillEndTheStreamMyGuy"], default = 0)
-  count_ksmg    = CountField(match_list = ["itswillKeepStreamingMyGuy"], default = 0)
-  count_stsmg   = CountField(match_list = ["StartTheStreamMyGuy"], default = 0)
+  count_etsmg   = StringCountField(short_name = "ETSMG", match_list = ["itswillEndTheStreamMyGuy"], default = 0)
+  count_ksmg    = StringCountField(short_name = "KSMG", match_list = ["itswillKeepStreamingMyGuy"], default = 0)
+  count_stsmg   = StringCountField(short_name = "STSMG", match_list = ["StartTheStreamMyGuy"], default = 0)
   
-  count_pog     = CountField(match_list = ["Pog", "PogChamp", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"], emote_list = ["Pog", "PogChamp", "POGCHAMP2", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"], default = 0)
-  count_shoop   = CountField(match_list = ["ShoopDaWhoop"], default = 0)
-  count_gasp    = CountField(match_list = ["D\\:", "hannD"], emote_list = ["GASP", "hannD"], default = 0)
-  count_pogo    = CountField(match_list = ["PogO", "WeirdChamp", "itswillO", "itswillWeird", "WeirdPause", "UHM"], default = 0)
-  count_monka   = CountField(match_list = ["monkaS", "monkaW", "monkaEyes", "monkaGun", "monkaSTEER", "monkaH", "MONKA"], default = 0)
+  count_pog     = StringCountField(short_name = "pog", match_list = ["Pog", "PogChamp", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"], emote_list = ["Pog", "PogChamp", "POGCHAMP2", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"], default = 0)
+  count_goop    = StringCountField(short_name = "gooper", match_list = ["GooperGang"], default = 0)
+  count_shoop   = StringCountField(short_name = "shoop", match_list = ["ShoopDaWhoop"], default = 0)
+  count_gasp    = StringCountField(short_name = "gasp", match_list = ["D\\:", "hannD"], emote_list = ["GASP", "hannD"], default = 0)
+  count_pogo    = StringCountField(short_name = "pogo", match_list = ["PogO", "WeirdChamp", "itswillO", "itswillWeird", "WeirdPause", "UHM"], default = 0)
+  count_monka   = StringCountField(short_name = "monka", match_list = ["monkaS", "monkaW", "monkaEyes", "monkaGun", "monkaSTEER", "monkaH"], default = 0)
+  count_monka2  = StringCountField(short_name = "eek", match_list = ["MONKA", "EEK"], default = 0)
   
-  count_ijbol   = CountField(match_list = ["IJBOL"], default = 0)
-  count_lmao    = CountField(match_list = ["LMAO"], default = 0)
-  count_hehe    = CountField(match_list = ["hehe"], default = 0)
-  count_giggle  = CountField(match_list = ["x0r6ztGiggle", "willGiggle", "itswillGiggle"], default = 0)
-  count_lul     = CountField(match_list = ["LUL", "LULW", "OMEGALUL", "OMEGADANCE", "OMEGALULftCloudWizard"], default = 0)
+  count_ijbol   = StringCountField(short_name = "IJBOL", match_list = ["IJBOL"], default = 0)
+  count_lmao    = StringCountField(short_name = "lmao", match_list = ["LMAO"], default = 0)
+  count_hehe    = StringCountField(short_name = "hehe", match_list = ["hehe"], default = 0)
+  count_giggle  = StringCountField(short_name = "giggle", match_list = ["x0r6ztGiggle", "willGiggle", "itswillGiggle"], default = 0)
+  count_lul     = StringCountField(short_name = "lul", match_list = ["LUL", "LULW", "OMEGALUL", "OMEGADANCE", "OMEGALULftCloudWizard"], default = 0)
   
-  count_sneak   = CountField(match_list = ["itswillSneak", "itswillFollow", "Sneak"], default = 0)
-  count_sit     = CountField(match_list = ["itswillSit"], default = 0)
+  count_sneak   = StringCountField(short_name = "sneak", match_list = ["itswillSneak", "itswillFollow", "Sneak"], default = 0)
+  count_sit     = StringCountField(short_name = "sit", match_list = ["itswillSit"], default = 0)
   
-  count_sludge  = CountField(match_list = ["SLUDGE"], default = 0)
-  count_gludge  = CountField(match_list = ["GLUDGE"], default = 0)
+  count_sludge  = StringCountField(short_name = "sludge", match_list = ["SLUDGE"], default = 0)
+  count_gludge  = StringCountField(short_name = "gludge", match_list = ["GLUDGE"], default = 0)
   
-  count_mmylc   = CountField(match_list = ["MusicMakeYouLoseControl"], default = 0)
-  count_nessie  = CountField(match_list = ["nessiePls"], default = 0)
-  count_happi   = CountField(match_list = ["Happi"], default = 0)
-  count_goodboy = CountField(match_list = ["GoodBoy"], default = 0)
-  count_dance   = CountField(match_list = ["itswillPls", "pepeD", "PepePls", "daemonDj", "willDJ", "SourPls"], default = 0)
-  count_vvkool  = CountField(match_list = ["VVKool", "VVotate", "VVKoolMini"], default = 0)
+  count_mmylc   = StringCountField(short_name = "MMYLC", match_list = ["MusicMakeYouLoseControl"], default = 0)
+  count_nessie  = StringCountField(short_name = "nessie", match_list = ["nessiePls"], default = 0)
+  count_happi   = StringCountField(short_name = "happi", match_list = ["Happi"], default = 0)
+  count_goodboy = StringCountField(short_name = "goodboy", match_list = ["GoodBoy"], default = 0)
+  count_dance   = StringCountField(short_name = "dance", match_list = ["itswillPls", "pepeD", "PepePls", "daemonDj", "willDJ", "SourPls"], default = 0)
+  count_vvkool  = StringCountField(short_name = "vvkool", match_list = ["VVKool", "VVotate", "VVKoolMini"], default = 0)
   
-  count_spin    = CountField(match_list = ["itswillSpin", "willSpin", "borpaSpin", "YourMom"], default = 0)
-  count_chicken = CountField(match_list = ["chickenWalk"], default = 0)
-  count_sonic   = CountField(match_list = ["itsWillCoolSonic", "CoolSonic"], emote_list = ["CoolSonic"], default = 0)
-  count_chedda  = CountField(match_list = ["MrChedda"], default = 0)
-  count_glorp   = CountField(match_list = ["glorp"], default = 0)
-  count_wlorp   = CountField(match_list = ["Wlorp"], default = 0)
-  count_joel    = CountField(match_list = ["Joel", "EvilJoel", "Joelver", "jlorp"], default = 0)
-  count_cinema  = CountField(match_list = ["Cinema", "Cheddama"], default = 0)
-  count_lift    = CountField(match_list = ["antLift", "WillLift"], default = 0)
-  count_dankies = CountField(match_list = ["DANKIES", "HYPERS"], default = 0)
+  count_spin    = StringCountField(short_name = "spin", match_list = ["itswillSpin", "willSpin", "borpaSpin", "YourMom"], default = 0)
+  count_burger  = StringCountField(short_name = "burger", match_list = ["BURGER"], default = 0)
+  count_chicken = StringCountField(short_name = "chicken", match_list = ["chickenWalk"], default = 0)
+  count_sonic   = StringCountField(short_name = "sonic", match_list = ["itsWillCoolSonic", "CoolSonic"], emote_list = ["CoolSonic"], default = 0)
+  count_chedda  = StringCountField(short_name = "chedda", match_list = ["MrChedda"], default = 0)
+  count_glorp   = StringCountField(short_name = "glorp", match_list = ["glorp"], default = 0)
+  count_wlorp   = StringCountField(short_name = "wlorp", match_list = ["Wlorp"], default = 0)
+  count_kirb    = StringCountField(short_name = "kirb", match_list = ["Kirbeter"], default = 0)
+  count_goose   = StringCountField(short_name = "goose", match_list = ["GriddyGoose", "GriddyCrow"], default = 0)
+  count_joel    = StringCountField(short_name = "joel", match_list = ["Joel", "EvilJoel", "Joelver", "jlorp"], default = 0)
+  count_cinema  = StringCountField(short_name = "cinema", match_list = ["Cinema", "Cheddama", "Willema"], default = 0)
+  count_lift    = StringCountField(short_name = "lift", match_list = ["antLift", "WillLift"], default = 0)
+  count_dankies = StringCountField(short_name = "dankies", match_list = ["DANKIES", "HYPERS"], default = 0)
   
-  count_cum     = CountField(match_list = ["cum", "cumming", "cumb", "cummies", "cumshot"], use_images = False, verbose_name = "Number of cum mentions:", default = 0)
+  count_cum     = StringCountField(short_name = "cum", match_list = ["cum", "cumming", "cumb", "cummies", "cumshot"], use_images = False, verbose_name = "Number of cum mentions:", default = 0)
+  
+  count_caw     = StringCountField(short_name = "caw", match_list = ["caw"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "CAW:", default = 0)
+  count_400     = StringCountField(short_name = "400k", match_list = ["400k"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "400k:", default = 0)
   
   def zero(self, exclude = [], save = True):
     for f in self._meta.get_fields():
-      if (f.get_internal_type() == "IntegerField") and (f.name not in exclude):
+      if (f.get_internal_type() == "IntegerField" or f.get_internal_type() == "BigIntegerField") and (f.name not in exclude):
         setattr(self, f.name, 0)
     
     if save:
@@ -100,17 +144,21 @@ class RecapDataMixin(models.Model):
   
   def add(self, other_recap : "RecapDataMixin", exclude = [], save = True):
     for f in self._meta.get_fields():
-      if (f.get_internal_type() == "IntegerField") and (f.name not in exclude):
-        setattr(self, f.name, getattr(self, f.name) + getattr(other_recap, f.name));
+      if (f.get_internal_type() == "IntegerField" or f.get_internal_type() == "BigIntegerField") and (f.name not in exclude):
+        setattr(self, f.name, getattr(self, f.name) + getattr(other_recap, f.name))
     
     if save:
       self.save()
     
   def process_message(self, message : str, save = True):
     self.count_messages += 1
+    self.count_characters += len(message)
+    
+    if len(message) > 200 and len(ASCII_REGEX.findall(message)) > 0:
+      self.count_ascii += 1
     
     for f in self._meta.get_fields():
-      if (type(f) == CountField):
+      if (type(f) == StringCountField):
         setattr(self, f.name, getattr(self, f.name) + len(f.match_regex.findall(message)))
     
     if save:
@@ -139,6 +187,8 @@ class TwitchUser(models.Model):
   profile_image_url = models.CharField(max_length = 512, default = "missing profile image url")
   offline_image_url = models.CharField(max_length = 512, default = "missing offline image url")
   created_at = models.DateTimeField("created at", default = DEFAULT_DATETIME)
+  
+  is_bot = models.BooleanField(default = False)
     
 class UserRecapData(RecapDataMixin):
   overall_recap = models.ForeignKey(OverallRecapData, on_delete = models.CASCADE)

@@ -14,21 +14,21 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='overallrecapdata',
             name='count_goodboy',
-            field=itswill_org.models.CountField(default=0),
+            field=itswill_org.models.StringCountField(default=0),
         ),
         migrations.AddField(
             model_name='overallrecapdata',
             name='count_happi',
-            field=itswill_org.models.CountField(default=0),
+            field=itswill_org.models.StringCountField(default=0),
         ),
         migrations.AddField(
             model_name='userrecapdata',
             name='count_goodboy',
-            field=itswill_org.models.CountField(default=0),
+            field=itswill_org.models.StringCountField(default=0),
         ),
         migrations.AddField(
             model_name='userrecapdata',
             name='count_happi',
-            field=itswill_org.models.CountField(default=0),
+            field=itswill_org.models.StringCountField(default=0),
         ),
     ]

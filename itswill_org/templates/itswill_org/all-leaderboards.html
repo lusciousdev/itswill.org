@@ -26,7 +26,7 @@
       {% endif %}
       {% for key, value in recap_data.leaderboards.items %}
       {% with labelobj=labels|keyvalue:key %}
-      {% if key == "count_messages" %}
+      {% if key == "messages" %}
       <div class="single-line" id="{{ key }}-wrap">
       {% endif %}
         <div class="leaderboard-item" id="{{ key }}">
@@ -40,9 +40,18 @@
             {% else %}
             <div class="leaderboard-label" id="{{ key }}-label">{{ labelobj.label }}</div>
             {% endif %}
+            {% if recap_data.year == 0 %}
+            <div class="leaderboard-note" id="{{ key }}-full-link"><a href="{% url 'itswill_org:single_leaderboard' key %}">Full list</a></div>
+            {% else %}
+            {% if recap_data.month == 0 %}
+            <div class="leaderboard-note" id="{{ key }}-full-link"><a href="{% url 'itswill_org:single_leaderboard_year' recap_data.year key %}">Full list</a></div>
+            {% else %}
+            <div class="leaderboard-note" id="{{ key }}-full-link"><a href="{% url 'itswill_org:single_leaderboard_month' recap_data.year recap_data.month key %}">Full list</a></div>
+            {% endif %}
+            {% endif %}
           </div>
           <table class="stat-leaderboard" id="{{ key }}-leaderboard">
-            {% for entry in value|firstn:limit %}
+            {% for entry in value|filter_on_not_index:2|firstn:limit %}
               <tr class='leaderboard-table'>
                 <td>{{ forloop.counter }}.</td>
                 <td>{{ entry.0 }}</td>
@@ -51,7 +60,7 @@
             {% endfor %}
           </table>
         </div>
-      {% if key == "count_messages" %}
+      {% if key == "messages" %}
       </div>
       {% endif %}
       {% endwith %}

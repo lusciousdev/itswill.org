@@ -20,6 +20,19 @@ class MessageProcessingTest(TestCase):
       "DANKIES musicmakeyoulosecontrol",
       "monkaS monkaW monkaEyes monkaGun! monkaSteer monkaH",
       "VVKool Mini chicken Walk",
+      """MusicMakeYouLoseControl 
+⠀⠀⠀⠀⠀⠀⠀⣠⡀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠤⠤⣄⣀⡀⠀⠀⠀⠀⠀⠀⠀ 
+⠀⠀⠀⠀⠀⢀⣾⣟⠳⢦⡀⠀⠀⠀⠀⠀⠀⢸Music⠉⠉⠉⠉⠉⠒⣲⡄ 
+⠀⠀⠀⠀⠀⣿⣿⣿⡇⡇⡱⠲⢤⣀⠀⠀⠀⢸make ⠀⣠⠴⠊⢹⠁ 
+⠀⠀⠀⠀⠀⠘⢻⠓⠀⠉⣥⣀⣠⠞⠀⠀⠀⢸you⢀⡴⠋⠀⠀⠀⢸⠀ 
+⠀⠀⠀⠀⢀⣀⡾⣄⠀⠀⢳⠀⠀⠀⠀⠀⠀⢸⢠⡄⢀⡴⠁⠀⠀⠀⠀⠀⡞⠀ 
+⠀⠀⠀⣠⢎⡉⢦⡀⠀⠀⡸⠀⠀⠀⠀⠀⢀⡼⣣⠧⡼⠀lose⢠⠇⠀ 
+⠀⢀⡔⠁⠀⠙⠢⢭⣢⡚⢣⠀⠀⠀⠀⠀⢀⣇⠁⢸⠁control⢸⠀⠀ 
+⠀⡞⠀⠀⠀⠀⠀⠀⠈⢫⡉⠀⠀⠀⠀⢠⢮⠈⡦⠋⠀ MusicMakeYouLoseControl ⠀⣸⠀⠀ 
+⢀⠇⠀⠀⠀⠀⠀⠀⠀⠀⠙⢦⡀⣀⡴⠃⠀⡷⡇⢀⡴⠋⠉⠉⠙⠓⠒⠃⠀⠀ 
+⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠁⠀⠀⡼⠀⣷⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ 
+⡞⠀⠀⠀⠀⠀⠀⠀⣄⠀⠀⠀⠀⠀⠀⡰⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ 
+⢧⠀⠀⠀⠀⠀⠀⠀⠈⠣⣀⠀⠀⡰⠋⠀⠀⠀"""
     ]
     
     for msg in messages:
@@ -27,13 +40,14 @@ class MessageProcessingTest(TestCase):
       
     overallrecap.save()
     
-    self.assertEqual(overallrecap.count_messages, 4)
+    self.assertEqual(overallrecap.count_messages, 5)
     self.assertEqual(overallrecap.count_cum, 1)
     self.assertEqual(overallrecap.count_chicken, 0)
     self.assertEqual(overallrecap.count_monka, 6)
     self.assertEqual(overallrecap.count_seven, 1)
     self.assertEqual(overallrecap.count_vvkool, 1)
-    self.assertEqual(overallrecap.count_mmylc, 1)
+    self.assertEqual(overallrecap.count_mmylc, 3)
+    self.assertEqual(overallrecap.count_ascii, 1)
     
     userrecap = UserRecapData.objects.get(twitch_user__user_id = 82920215, overall_recap__year = 2000, overall_recap__month = 1)
     
@@ -42,10 +56,11 @@ class MessageProcessingTest(TestCase):
     
     userrecap.save()
       
-    self.assertEqual(userrecap.count_messages, 4)
+    self.assertEqual(userrecap.count_messages, 5)
     self.assertEqual(userrecap.count_cum, 1)
     self.assertEqual(userrecap.count_chicken, 0)
     self.assertEqual(userrecap.count_monka, 6)
     self.assertEqual(userrecap.count_seven, 1)
     self.assertEqual(userrecap.count_vvkool, 1)
-    self.assertEqual(userrecap.count_mmylc, 1)
+    self.assertEqual(userrecap.count_mmylc, 3)
+    self.assertEqual(userrecap.count_ascii, 1)

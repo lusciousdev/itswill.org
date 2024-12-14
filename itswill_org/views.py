@@ -191,11 +191,12 @@ class RecapView(generic.TemplateView):
     
     data["counters"] = {}
     for field in data["recap_data"]._meta.get_fields():
-      if (field.get_internal_type() == "IntegerField"):
-        if (type(field) == CountField):
+      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField")):
+        if (type(field) == StringCountField):
           data["counters"][field.name] = {}
           data["counters"][field.name]["label"] = field.verbose_name
           data["counters"][field.name]["count"] = getattr(data["recap_data"], field.name)
+          data["counters"][field.name]["show"] = field.show_recap
           if field.use_images:
             data["counters"][field.name]["image_list"] = field.emote_list
           else:
@@ -247,7 +248,7 @@ def get_recap(request):
       
   
 class LeaderboardView(generic.TemplateView):
-  template_name = "itswill_org/leaderboard.html"
+  template_name = "itswill_org/all-leaderboards.html"
   
   def get_context_data(self, year : int, month : int, **kwargs):
     data = super().get_context_data(**kwargs)
@@ -278,13 +279,61 @@ class LeaderboardView(generic.TemplateView):
     data["labels"] = {}
     
     for field in overallrecap._meta.get_fields():
-      if (field.get_internal_type() == "IntegerField"):
-        data["labels"][field.name] = {}
-        data["labels"][field.name]["label"] = field.verbose_name
-        if (type(field) == CountField and field.use_images):
-          data["labels"][field.name]["image_list"] = field.emote_list
+      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField")):
+        labelkey = field.name
+        if type(field) in [StatField, BigStatField, StringCountField]:
+          labelkey = field.short_name
+        data["labels"][labelkey] = {}
+        data["labels"][labelkey]["label"] = field.verbose_name
+        if (type(field) == StringCountField and field.use_images):
+          data["labels"][labelkey]["image_list"] = field.emote_list
         else:
-          data["labels"][field.name]["image_list"] = None
+          data["labels"][labelkey]["image_list"] = None
+    
+    return data
+  
+class SingleLeaderboardView(generic.TemplateView):
+  template_name = "itswill_org/single-leaderboard.html"
+  
+  def get_context_data(self, year : int, month : int, name : str, **kwargs):
+    data = super().get_context_data(**kwargs)
+    
+    data["month_abbr"] = calendar.month_abbr
+    data["all_recaps"] = {}
+    
+    for yearrecap in OverallRecapData.objects.filter(month = 0).order_by("year").all():
+      data["all_recaps"][yearrecap.year] = {
+        "recap": yearrecap,
+        "month_recaps": {}
+      }
+      
+      for monthrecap in OverallRecapData.objects.filter(year = yearrecap.year, month__gte = 1).order_by("month").all():
+        data["all_recaps"][monthrecap.year]["month_recaps"][monthrecap.month] = {
+          "month_name": calendar.month_abbr[monthrecap.month],
+          "recap": monthrecap
+        }
+    
+    try:
+      overallrecap = OverallRecapData.objects.get(year = year, month = month)
+    except OverallRecapData.DoesNotExist:
+      raise Http404("That recap does not exist (yet?).")
+    
+    data["recap_data"] = overallrecap
+    data["leaderboard_name"] = name
+    
+    data["labels"] = {}
+    
+    for field in overallrecap._meta.get_fields():
+      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField")):
+        labelkey = field.name
+        if type(field) in [StatField, BigStatField, StringCountField]:
+          labelkey = field.short_name
+        data["labels"][labelkey] = {}
+        data["labels"][labelkey]["label"] = field.verbose_name
+        if (type(field) == StringCountField and field.use_images):
+          data["labels"][labelkey]["image_list"] = field.emote_list
+        else:
+          data["labels"][labelkey]["image_list"] = None
     
     return data
   

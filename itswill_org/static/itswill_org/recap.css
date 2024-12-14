@@ -141,6 +141,12 @@ html {
   text-align: center;
 }
 
+.leaderboard-note {
+  font-size: 0.75em;
+  flex-basis: 100%;
+  text-align: center;
+}
+
 a, a:visited {
   color: var(--accent-color);
 }

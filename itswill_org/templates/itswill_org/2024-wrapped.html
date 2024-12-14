@@ -101,7 +101,6 @@
       </div>
       {% for key, value in counters.items %}
       {% with counterobj=counters|keyvalue:key %}
-      {% if counterobj.show %}
       <div class="stat-item" id="{{ key }}">
         <span class="stat-label" id="{{ key }}-label">
           {% if counterobj.image_list %}
@@ -116,63 +115,8 @@
         </span>
         <span class="stat-value" id="{{ key }}-value">{{ counterobj.count|intcomma }}</span>
       </div>
-      {% endif %}
       {% endwith %}
       {% endfor %}
-    </div>
-  </div>
-  <div class="section-wrap" id="links-wrap">
-    <div class="section" id="links">
-      <div class="full-section-title">
-        <div class="section-title" id="links-title">
-          QUICK LINKS
-        </div>
-      </div>
-      <div class="link-section">
-        <div class="link-section-title">
-          Overall Recaps
-        </div>
-      {% for year, year_recap in all_recaps.items %}
-        <div class="main-link">
-          {% if year_recap.recap.year == 0 %}
-          <a href="{% url 'itswill_org:recap' %}">All time</a>
-          {% else %}
-          <a href="{% url 'itswill_org:recap_year' year_recap.recap.year %}">{{ year_recap.recap.year }}</a>
-          {% endif %}
-        </div>
-
-        <div class="sublinks-section">
-        {% for month, month_recap in year_recap.month_recaps.items %}
-          <span class="sublink">
-            <a href="{% url 'itswill_org:recap_month' month_recap.recap.year month_recap.recap.month %}">{{ month_recap.month_name }}</a>
-          </span>
-        {% endfor %}
-        </div>
-      {% endfor %}
-      </div>
-      {% if not overall_recap %}
-      <div class="link-section">
-        <div class="link-section-title">
-          {{ twitchuser.display_name}}'s Recaps
-        </div>
-        {% for year, year_recap in all_recaps.items %}
-        <div class="main-link">
-          {% if year_recap.recap.year == 0 %}
-          <a href="{% url 'itswill_org:recap_user' twitchuser.login %}">All time</a>
-          {% else %}
-          <a href="{% url 'itswill_org:recap_year_user' year_recap.recap.year twitchuser.login %}">{{ year_recap.recap.year }}</a>
-          {% endif %}
-        </div>
-        <div class="sublinks-section">
-          {% for month, month_recap in year_recap.month_recaps.items %}
-          <span class="sublink">
-            <a href="{% url 'itswill_org:recap_month_user' month_recap.recap.year month_recap.recap.month twitchuser.login %}">{{ month_recap.month_name }}</a>
-          </span>
-          {% endfor %}
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %}
     </div>
   </div>
 </div>
