@@ -454,7 +454,6 @@ def calculate_all_leaderboards():
     leaderboards_dict = {}
     for field in overallrecap._meta.get_fields():
       if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in ["year", "month", "count_chatters", "count_videos"]):
-        print(type(field))
         if type(field) in [StatField, BigStatField, StringCountField]:
           if not field.show_leaderboard:
             continue

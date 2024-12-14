@@ -69,9 +69,9 @@ class RecapDataMixin(models.Model):
   
   count_messages = StatField(short_name = "messages", verbose_name = "Messages sent:", default = 0)
   count_characters = BigStatField(short_name = "characters", show_recap = False, show_leaderboard = False, verbose_name = "Total characters:", default = 0)
-  count_ascii = StatField(short_name = "ascii", verbose_name = "ASCIIs sent:", default = 0)
   count_clips = StatField(short_name = "clips", verbose_name = "Clips created:", default = 0)
   count_clip_views = StatField(short_name = "views", verbose_name = "Views on those clips:", default = 0)
+  count_ascii = StatField(short_name = "ascii", verbose_name = "ASCIIs sent:", default = 0)
   count_chatters = StatField(short_name = "chatters", verbose_name = "Number of chatters:", default = 0)
   count_videos = StatField(short_name = "videos", verbose_name = "Number of videos:", default = 0)
   
@@ -90,6 +90,7 @@ class RecapDataMixin(models.Model):
   
   count_pog     = StringCountField(short_name = "pog", match_list = ["Pog", "PogChamp", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"], emote_list = ["Pog", "PogChamp", "POGCHAMP2", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"], default = 0)
   count_goop    = StringCountField(short_name = "gooper", match_list = ["GooperGang"], default = 0)
+  count_bork    = StringCountField(short_name = "bork", match_list = ["hannBORK", "hannAAAA"], default = 0)
   count_shoop   = StringCountField(short_name = "shoop", match_list = ["ShoopDaWhoop"], default = 0)
   count_gasp    = StringCountField(short_name = "gasp", match_list = ["D\\:", "hannD"], emote_list = ["GASP", "hannD"], default = 0)
   count_pogo    = StringCountField(short_name = "pogo", match_list = ["PogO", "WeirdChamp", "itswillO", "itswillWeird", "WeirdPause", "UHM"], default = 0)
