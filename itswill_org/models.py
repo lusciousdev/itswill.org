@@ -6,6 +6,7 @@ import datetime
 import re
 import typing
 import json
+import luscioustwitch
 
 from .util.timeutil import *
 
@@ -70,6 +71,7 @@ class RecapDataMixin(models.Model):
   count_messages = StatField(short_name = "messages", verbose_name = "Messages sent:", default = 0)
   count_characters = BigStatField(short_name = "characters", show_recap = False, show_leaderboard = False, verbose_name = "Total characters:", default = 0)
   count_clips = StatField(short_name = "clips", verbose_name = "Clips created:", default = 0)
+  count_clip_duration = StatField(short_name = "duration", verbose_name = "Total clip duration:", default = 0)
   count_clip_views = StatField(short_name = "views", verbose_name = "Views on those clips:", default = 0)
   count_ascii = StatField(short_name = "ascii", verbose_name = "ASCIIs sent:", default = 0)
   count_chatters = StatField(short_name = "chatters", verbose_name = "Number of chatters:", default = 0)
@@ -93,6 +95,7 @@ class RecapDataMixin(models.Model):
   count_bork    = StringCountField(short_name = "bork", match_list = ["hannBORK", "hannAAAA"], default = 0)
   count_shoop   = StringCountField(short_name = "shoop", match_list = ["ShoopDaWhoop"], default = 0)
   count_gasp    = StringCountField(short_name = "gasp", match_list = ["D\\:", "hannD"], emote_list = ["GASP", "hannD"], default = 0)
+  count_what    = StringCountField(short_name = "what", match_list = ["WHAT"], default = 0)
   count_pogo    = StringCountField(short_name = "pogo", match_list = ["PogO", "WeirdChamp", "itswillO", "itswillWeird", "WeirdPause", "UHM"], default = 0)
   count_monka   = StringCountField(short_name = "monka", match_list = ["monkaS", "monkaW", "monkaEyes", "monkaGun", "monkaSTEER", "monkaH"], default = 0)
   count_monka2  = StringCountField(short_name = "eek", match_list = ["MONKA", "EEK"], default = 0)
@@ -102,6 +105,8 @@ class RecapDataMixin(models.Model):
   count_hehe    = StringCountField(short_name = "hehe", match_list = ["hehe"], default = 0)
   count_giggle  = StringCountField(short_name = "giggle", match_list = ["x0r6ztGiggle", "willGiggle", "itswillGiggle"], default = 0)
   count_lul     = StringCountField(short_name = "lul", match_list = ["LUL", "LULW", "OMEGALUL", "OMEGADANCE", "OMEGALULftCloudWizard"], default = 0)
+  
+  count_chatter = StringCountField(short_name = "chatter", match_list = ["FirstTimeChadder", "FirstTimeChedda", "LastTimeChatter"], default = 0)
   
   count_sneak   = StringCountField(short_name = "sneak", match_list = ["itswillSneak", "itswillFollow", "Sneak"], default = 0)
   count_sit     = StringCountField(short_name = "sit", match_list = ["itswillSit"], default = 0)
@@ -134,6 +139,7 @@ class RecapDataMixin(models.Model):
   
   count_caw     = StringCountField(short_name = "caw", match_list = ["caw"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "CAW:", default = 0)
   count_400     = StringCountField(short_name = "400k", match_list = ["400k"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "400k:", default = 0)
+  count_plus1   = StringCountField(short_name = "plusone", match_list = ["+1"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "+1:", default = 0)
   
   def zero(self, exclude = [], save = True):
     for f in self._meta.get_fields():
@@ -190,6 +196,19 @@ class TwitchUser(models.Model):
   created_at = models.DateTimeField("created at", default = DEFAULT_DATETIME)
   
   is_bot = models.BooleanField(default = False)
+  
+  def to_json(self):
+    return {
+      "user_id": self.user_id,
+      "login": self.login,
+      "display_name": self.display_name,
+      "user_type": self.user_type,
+      "broadcaster_type": self.broadcaster_type,
+      "description": self.description,
+      "profile_image_url": self.profile_image_url,
+      "offline_image_url": self.offline_image_url,
+      "created_at": self.created_at.strftime(luscioustwitch.TWITCH_API_TIME_FORMAT),
+    }
     
 class UserRecapData(RecapDataMixin):
   overall_recap = models.ForeignKey(OverallRecapData, on_delete = models.CASCADE)
@@ -197,6 +216,23 @@ class UserRecapData(RecapDataMixin):
   
   class Meta:
     unique_together = ('overall_recap', 'twitch_user')
+    
+class OverallWrappedData(models.Model):
+  year = models.IntegerField(default = 1971)
+  
+  wrapped_data = models.JSONField(default = dict)
+  
+  class Meta:
+    unique_together = ('year', )
+    
+class UserWrappedData(models.Model):
+  overall_wrapped = models.ForeignKey(OverallWrappedData, on_delete = models.CASCADE)
+  twitch_user = models.ForeignKey(TwitchUser, on_delete = models.CASCADE)
+  
+  wrapped_data = models.JSONField(default = dict)
+  
+  class Meta:
+    unique_together = ('overall_wrapped', 'twitch_user')
   
 class ChatMessage(models.Model):
   commenter = models.ForeignKey(TwitchUser, on_delete = models.CASCADE)
@@ -220,6 +256,14 @@ class ChatMessage(models.Model):
     
     return f"[{timestr}] {self.commenter.display_name}: {self.message}"
   
+  def to_json(self):
+    return {
+      "commenter": self.commenter.to_json(),
+      "content_offset": self.content_offset,
+      "created_at": self.created_at.strftime(luscioustwitch.TWITCH_API_TIME_FORMAT),
+      "message": self.message,
+    }
+  
 class Clip(models.Model):
   clip_id = models.CharField(max_length = 255, primary_key = True, editable = False)
   
@@ -241,6 +285,25 @@ class Clip(models.Model):
   
   class Meta:
     ordering = ( "view_count", )
+    
+  def to_json(self):
+    return {
+      "clip_id": self.clip_id,
+      "creator": self.creator.to_json(),
+      "url": self.url,
+      "embed_url": self.embed_url,
+      "broadcaster_id": self.broadcaster_id,
+      "broadcaster_name": self.broadcaster_name,
+      "video_id": self.video_id,
+      "game_id": self.game_id,
+      "language": self.language,
+      "title": self.title,
+      "view_count": self.view_count,
+      "created_at": self.created_at.strftime(luscioustwitch.TWITCH_API_TIME_FORMAT),
+      "thumbnail_url": self.thumbnail_url,
+      "duration": self.duration,
+      "vod_offset": self.vod_offset,
+    }
 
 class Video(models.Model):
   vod_id = models.CharField(max_length = 255, primary_key = True, editable = False)

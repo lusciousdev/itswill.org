@@ -245,6 +245,61 @@ def get_recap(request):
         return HttpResponseRedirect(reverse("itswill_org:recap_year_user", kwargs = { 'year': year, 'username': username }))
     else:
       return HttpResponseRedirect(reverse("itswill_org:recap_user", kwargs = { "username": username }))
+  
+class Wrapped2024View(generic.TemplateView):
+  template_name = "itswill_org/2024-wrapped.html"
+  
+  def get_context_data(self, **kwargs):
+    data = super().get_context_data(**kwargs)
+    
+    try:
+      overall_wrapped = OverallWrappedData.objects.get(year = 2024)
+    except OverallWrappedData.DoesNotExist:
+      raise Http404("That recap does not exist (yet?).")
+    
+    data["wrapped"] = overall_wrapped.wrapped_data
+      
+    return data
+  
+class Wrapped2024UserView(generic.TemplateView):
+  template_name = "itswill_org/2024-wrapped-user.html"
+  
+  def get_context_data(self, username : str, **kwargs):
+    data = super().get_context_data(**kwargs)
+    
+    try:
+      overall_wrapped = OverallWrappedData.objects.get(year = 2024)
+    except OverallWrappedData.DoesNotExist:
+      raise Http404("That recap does not exist (yet?).")
+    
+    try:
+      twitchuser = TwitchUser.objects.get(display_name__iexact = username)
+    except TwitchUser.DoesNotExist:
+      raise Http404("That user does not exist or has not chatted.")
+    
+    try:
+      userrecap = UserWrappedData.objects.get(overall_wrapped = overall_wrapped, twitch_user = twitchuser)
+    except UserRecapData.DoesNotExist:
+      raise Http404("No data for that user in this period.")
+    
+    data["wrapped"] = overall_wrapped.wrapped_data
+      
+    return data
+    
+@csrf_exempt
+def get_wrapped(request):
+  username = None
+  if request.method == 'POST':
+    username = request.POST.get("username", username)
+  if request.method == "GET":
+    username = request.GET.get("username", username)
+    
+  username = None if username == "" else username
+  
+  if username is None:
+    return HttpResponseRedirect(reverse("itswill_org:wrapped"))
+  else:
+    return HttpResponseRedirect(reverse("itswill_org:wrapped_user", kwargs = { 'username': username }))
       
   
 class LeaderboardView(generic.TemplateView):

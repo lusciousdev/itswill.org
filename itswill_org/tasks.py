@@ -9,6 +9,7 @@ import datetime
 import pytz
 import calendar
 import re
+import math
 import requests
 from random import randint
 import time
@@ -420,20 +421,27 @@ def calculate_monthly_stats(year = None, month = None):
     chatter_msg_count  = chatter_messages.count()
     chatter_clip_count = chatter_clips.count()
     
+    chatter_clip_duration = 0
+    
+    for clip in chatter_clips:
+      chatter_clip_duration += round(clip.duration)
+    
     chatter_clip_views = 0
     for clip in chatter_clips:
       chatter_clip_views += clip.view_count
     
     if chatter_msg_count > 0 or chatter_clip_count > 0:
-      monthrecap.count_messages   += chatter_msg_count
-      monthrecap.count_clips      += chatter_clip_count
-      monthrecap.count_clip_views += chatter_clip_views
-      monthrecap.count_chatters   += 1
+      monthrecap.count_messages      += chatter_msg_count
+      monthrecap.count_clips         += chatter_clip_count
+      monthrecap.count_clip_duration += chatter_clip_duration
+      monthrecap.count_clip_views    += chatter_clip_views
+      monthrecap.count_chatters      += 1
       
       chatter_recap, _ = UserRecapData.objects.get_or_create(overall_recap = monthrecap, twitch_user = chatter)
         
-      chatter_recap.count_clips      = chatter_clip_count
-      chatter_recap.count_clip_views = chatter_clip_views
+      chatter_recap.count_clips         = chatter_clip_count
+      chatter_recap.count_clip_duration = chatter_clip_duration
+      chatter_recap.count_clip_views    = chatter_clip_views
       
       firstmsg : ChatMessage = chatter_messages.first()
       chatter_recap.first_message = "" if firstmsg is None else firstmsg.message
@@ -444,7 +452,7 @@ def calculate_monthly_stats(year = None, month = None):
       
       chatter_recap.save()
       
-      monthrecap.add(chatter_recap, ["year", "month", "count_messages", "count_clips", "count_clip_views", "count_chatters"])
+      monthrecap.add(chatter_recap, ["year", "month", "count_messages", "count_clips", "count_clip_views", "count_clip_duration", "count_chatters"])
       
       monthrecap.save()
       
@@ -464,3 +472,94 @@ def calculate_all_leaderboards():
         
     overallrecap.leaderboards = leaderboards_dict
     overallrecap.save()
+    
+@shared_task
+def calculate_everything():
+  year = datetime.datetime.now(TIMEZONE).year
+  
+  for y in range(2023, year+1):
+    for m in range(1, 13):
+      calculate_monthly_stats(y, m)
+    calculate_yearly_stats(y)
+    
+  calculate_alltime_stats()
+  
+  get_all_first_messages()
+  
+  calculate_all_leaderboards()
+  
+  create_wrapped_data()
+    
+def seconds_to_duration(input : int, abbr : bool = False):
+  days, rem = divmod(input, (3600 * 24))
+  hours, rem = divmod(rem, 3600)
+  minutes, rem = divmod(rem, 60)
+  seconds = rem
+  
+  output = ""
+  
+  msd_hit = False
+  if days > 0:
+    output += f"{days}d " if abbr else f"{days} days, "
+    msd_hit = True
+  if msd_hit or hours > 0:
+    output += f"{hours}h " if abbr else f"{hours} hours, "
+    msd_hit = True
+  if msd_hit or minutes > 0:
+    output += f"{minutes}m {seconds}s" if abbr else f"{minutes} minutes and {seconds} seconds"
+  
+  return output
+    
+@shared_task
+def create_wrapped_data(year = None):
+  if year is None:
+    year = datetime.datetime.now(TIMEZONE).year
+  
+  localtz = pytz.timezone("America/Los_Angeles")
+  
+  start_year = datetime.datetime(year, 1, 1, 0, 0, 0, 1, localtz)
+  end_year = datetime.datetime(year, 12, 31, 23, 59, 59, 999, localtz)
+  
+  try:
+    overallrecap = OverallRecapData.objects.get(year = year, month = 0)
+  except OverallRecapData.DoesNotExist:
+    print("No recap for that year.")
+    return
+  
+  overall_wrapped, _ = OverallWrappedData.objects.get_or_create(year = year)
+  
+  overall_dict = {}
+    
+  clips = Clip.objects.filter(created_at__range = (start_year, end_year)).order_by("-view_count")
+  
+  overall_dict["messages"] = overallrecap.count_messages
+  overall_dict["characters"] = overallrecap.count_characters
+  overall_dict["typing_time"] = seconds_to_duration(overallrecap.count_characters // 5)
+  
+  overall_dict["clips"] = overallrecap.count_clips
+  overall_dict["clip_views"] = overallrecap.count_clip_views
+  overall_dict["clip_duration"] = overallrecap.count_clip_duration
+  
+  overall_dict["top_clips"] = [[] for i in range(0, 13)]
+  overall_dict["top_clips"][0] = [clip.to_json() for clip in clips[:5]]
+  
+  msgs = ChatMessage.objects.filter(created_at__range = (start_year, end_year)).order_by("created_at")
+  
+  firstmsg = msgs.first()
+  lastmsg = msgs.last()
+  
+  overall_dict["first_message"] = firstmsg.to_json()
+  overall_dict["last_message"] = lastmsg.to_json()
+  
+  for month in range(1, 13):
+    start_range = datetime.datetime(year, month, 1, 0, 0, 0, 1, localtz)
+    end_range = datetime.datetime(year, month, calendar.monthrange(year, month)[1], 23, 59, 59, 999999, localtz)
+    clips = Clip.objects.filter(created_at__range = (start_range, end_range)).order_by("-view_count")
+    
+    overall_dict["top_clips"][month] = [clip.to_json() for clip in clips[:5]]
+  
+  userrecap_set = overallrecap.userrecapdata_set.all()
+  
+  overall_wrapped.wrapped_data = overall_dict
+  overall_wrapped.save()
+  
