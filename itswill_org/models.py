@@ -238,7 +238,7 @@ class WrappedDataMixin(models.Model):
 class OverallWrappedData(WrappedDataMixin):
   year = models.IntegerField(default = 1971)
   
-  recap = models.ForeignKey(OverallRecapData, on_delete=models.CASCADE)
+  recap = models.ForeignKey(OverallRecapData, on_delete=models.CASCADE, null = True, blank = True)
   
   class Meta:
     unique_together = ('year', )
@@ -247,7 +247,7 @@ class UserWrappedData(WrappedDataMixin):
   overall_wrapped = models.ForeignKey(OverallWrappedData, on_delete = models.CASCADE)
   twitch_user = models.ForeignKey(TwitchUser, on_delete = models.CASCADE)
   
-  recap = models.ForeignKey(UserRecapData, on_delete=models.CASCADE)
+  recap = models.ForeignKey(UserRecapData, on_delete=models.CASCADE, null = True, blank = True)
   
   class Meta:
     unique_together = ('overall_wrapped', 'twitch_user')
