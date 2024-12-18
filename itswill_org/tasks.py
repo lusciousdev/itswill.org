@@ -656,7 +656,7 @@ def create_wrapped_data(year = None):
       highlight = {
         "title": "CAW",
         "description": [
-          f"CAW RANK {(leaderboards["count_caw"].keys()).index(user.user_id) + 1} CAWs CAW", 
+          f"CAW RANK {(leaderboards['count_caw'].keys()).index(user.user_id) + 1} CAWs CAW", 
           f"CAW {userrecap.count_caw:,} CAWs CAW",
           f"CAW CAW made up {percent_caws:.1%} of your total chat output CAW"
         ],
