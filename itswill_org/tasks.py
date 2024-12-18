@@ -644,9 +644,9 @@ def create_wrapped_data(year = None):
         if user.user_id in leaderboards[field.name]:
           leaderboard_positions[field.name] = (list(leaderboards[field.name].keys()).index(user.user_id), leaderboards[field.name][user.user_id])
           
-    leaderboard_positions = [(k, v) for k, v in sorted(leaderboard_positions.items(), key = lambda item: item[0], reverse = True)]
+    sorted_leaderboard_positions = [(k, v) for k, v in sorted(leaderboard_positions.items(), key = lambda item: item[0], reverse = True)]
   
-    user_dict["top_leaderboard_positions"] = leaderboard_positions[:5]
+    user_dict["top_leaderboard_positions"] = sorted_leaderboard_positions[:5]
     
     highlight = {}
     
@@ -656,14 +656,14 @@ def create_wrapped_data(year = None):
       highlight = {
         "title": "CAW",
         "description": [
-          f"CAW RANK {(leaderboards['count_caw'].keys()).index(user.user_id) + 1} CAWs CAW", 
+          f"CAW RANK {leaderboard_positions['count_caw'][0] + 1} CAWs CAW", 
           f"CAW {userrecap.count_caw:,} CAWs CAW",
           f"CAW CAW made up {percent_caws:.1%} of your total chat output CAW"
         ],
         "image": "GriddyCrow.webp",
       }
     elif user.user_id == 617816768: # viuphiet_
-      rank_400 = list(leaderboards["count_400"].keys()).index(user.user_id) + 1
+      rank_400 = leaderboard_positions["count_400"][0] + 1
       rank_comment = "Unsurprisingly, you said \"400k\" the most this year of all the chatters."
       if rank_400 != 1:
         rank_comment = f"In an insane twist, you weren't the chatter who said \"400k\" the most this year. You were rank {rank_400}."
@@ -682,7 +682,7 @@ def create_wrapped_data(year = None):
         "image": "money.jpg"
       }
     elif user.user_id == 30512356: # CubsFanatic
-      rank_cum = list(leaderboards["count_cum"].keys()).index(user.user_id) + 1
+      rank_cum = leaderboard_positions["count_cum"][0] + 1
       rank_comment = "To no one's surprise, you managed to secure rank 1 cum mentions."
       if rank_cum > 1:
         rank_comment = f"I didn't think this was possible but you got dethroned as cum leader. You ended up as rank {rank_cum} on the leaderboard."
@@ -722,7 +722,7 @@ def create_wrapped_data(year = None):
         "image": ""
       }
     else:
-      for (category, (rank, count)) in leaderboard_positions:
+      for (category, (rank, count)) in sorted_leaderboard_positions:
         if rank > 100:
           break
         if category == "count_messages":
