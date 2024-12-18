@@ -275,28 +275,36 @@ def get_all_first_messages():
   localtz = pytz.timezone("America/Los_Angeles")
   
   for overallrecap in OverallRecapData.objects.all():
-    if overallrecap.month == 0:
-      start_date = datetime.datetime(overallrecap.year, 1, 1, 0, 0, 0, 1, localtz)
-      end_date   = datetime.datetime(overallrecap.year, 12, 31, 23, 59, 59, 999, localtz)
+    firstmsg = None
+    if overallrecap.year == 0:
+      firstmsg = ChatMessage.objects.order_by("created_at").first()
     else:
-      monthrange = calendar.monthrange(overallrecap.year, overallrecap.month)
-      start_date = datetime.datetime(overallrecap.year, overallrecap.month, 1, 0, 0, 0, 1, localtz)
-      end_date   = datetime.datetime(overallrecap.year, overallrecap.month, monthrange[1], 23, 59, 59, 999, localtz)
-      
-    firstmsg = ChatMessage.objects.filter(created_at__range = (start_date, end_date)).order_by("created_at").first()
+      if overallrecap.month == 0:
+        start_date = datetime.datetime(overallrecap.year, 1, 1, 0, 0, 0, 1, localtz)
+        end_date   = datetime.datetime(overallrecap.year, 12, 31, 23, 59, 59, 999, localtz)
+      else:
+        monthrange = calendar.monthrange(overallrecap.year, overallrecap.month)
+        start_date = datetime.datetime(overallrecap.year, overallrecap.month, 1, 0, 0, 0, 1, localtz)
+        end_date   = datetime.datetime(overallrecap.year, overallrecap.month, monthrange[1], 23, 59, 59, 999, localtz)
+        
+      firstmsg = ChatMessage.objects.filter(created_at__range = (start_date, end_date)).order_by("created_at").first()
     overallrecap.first_message = "" if firstmsg is None else firstmsg.message
     overallrecap.save()
     
   for userrecap in UserRecapData.objects.all():
-    if userrecap.overall_recap.month == 0:
-      start_date = datetime.datetime(userrecap.overall_recap.year, 1, 1, 0, 0, 0, 1, localtz)
-      end_date   = datetime.datetime(userrecap.overall_recap.year, 12, 31, 23, 59, 59, 999, localtz)
+    firstmsg = None
+    if userrecap.overall_recap.year == 0:
+      firstmsg = ChatMessage.objects.filter(commenter = userrecap.twitch_user).order_by("created_at").first()
     else:
-      monthrange = calendar.monthrange(userrecap.overall_recap.year, userrecap.overall_recap.month)
-      start_date = datetime.datetime(userrecap.overall_recap.year, userrecap.overall_recap.month, 1, 0, 0, 0, 1, localtz)
-      end_date   = datetime.datetime(userrecap.overall_recap.year, userrecap.overall_recap.month, monthrange[1], 23, 59, 59, 999, localtz)
-      
-    firstmsg = ChatMessage.objects.filter(created_at__range = (start_date, end_date), commenter = userrecap.twitch_user).order_by("created_at").first()
+      if userrecap.overall_recap.month == 0:
+        start_date = datetime.datetime(userrecap.overall_recap.year, 1, 1, 0, 0, 0, 1, localtz)
+        end_date   = datetime.datetime(userrecap.overall_recap.year, 12, 31, 23, 59, 59, 999, localtz)
+      else:
+        monthrange = calendar.monthrange(userrecap.overall_recap.year, userrecap.overall_recap.month)
+        start_date = datetime.datetime(userrecap.overall_recap.year, userrecap.overall_recap.month, 1, 0, 0, 0, 1, localtz)
+        end_date   = datetime.datetime(userrecap.overall_recap.year, userrecap.overall_recap.month, monthrange[1], 23, 59, 59, 999, localtz)
+        
+      firstmsg = ChatMessage.objects.filter(created_at__range = (start_date, end_date), commenter = userrecap.twitch_user).order_by("created_at").first()
     userrecap.first_message = "" if firstmsg is None else firstmsg.message
     userrecap.save()
 
@@ -468,7 +476,6 @@ def calculate_all_leaderboards():
           leaderboards_dict[field.short_name] = [(userrecap.twitch_user.display_name, getattr(userrecap, field.name), userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.all().order_by("-" + field.name)[:250]]
         else:
           leaderboards_dict[field.name] = [(userrecap.twitch_user.display_name, getattr(userrecap, field.name), userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.all().order_by("-" + field.name)[:250]]
-          
         
     overallrecap.leaderboards = leaderboards_dict
     overallrecap.save()
@@ -483,8 +490,6 @@ def calculate_everything():
     calculate_yearly_stats(y)
     
   calculate_alltime_stats()
-  
-  get_all_first_messages()
   
   calculate_all_leaderboards()
   
@@ -528,17 +533,14 @@ def create_wrapped_data(year = None):
   
   overall_wrapped, _ = OverallWrappedData.objects.get_or_create(year = year)
   
+  overall_wrapped.recap = overallrecap
+  
   overall_dict = {}
     
   clips = Clip.objects.filter(created_at__range = (start_year, end_year)).order_by("-view_count")
   
-  overall_dict["messages"] = overallrecap.count_messages
-  overall_dict["characters"] = overallrecap.count_characters
-  overall_dict["typing_time"] = seconds_to_duration(overallrecap.count_characters // 5)
-  
-  overall_dict["clips"] = overallrecap.count_clips
-  overall_dict["clip_views"] = overallrecap.count_clip_views
-  overall_dict["clip_duration"] = overallrecap.count_clip_duration
+  overall_wrapped.typing_time = seconds_to_duration(overallrecap.count_characters // 5)
+  overall_wrapped.clip_duration = seconds_to_duration(overallrecap.count_clip_duration)
   
   overall_dict["top_clips"] = [[] for i in range(0, 13)]
   overall_dict["top_clips"][0] = [clip.to_json() for clip in clips[:5]]
@@ -551,6 +553,49 @@ def create_wrapped_data(year = None):
   overall_dict["first_message"] = firstmsg.to_json()
   overall_dict["last_message"] = lastmsg.to_json()
   
+  combo_regex_str = r"((.+) ruined the )?([0-9]+)x ([A-Za-z]+) combo.*"
+  combo_regex = re.compile(combo_regex_str)
+  
+  combo_messages = msgs.filter(commenter_id = 100135110, message__iregex = combo_regex_str)
+  
+  combos = []
+  emote_combo_counts = {}
+  for message in combo_messages:
+    msg_match = combo_regex.match(message.message)
+    
+    combo_length = int(msg_match.group(3))
+    emote = msg_match.group(4)
+    
+    broken_by = None
+    if msg_match.group(2):
+      broken_by = msg_match.group(2)
+      
+    combos.append((emote, combo_length, broken_by))
+    
+    if emote in emote_combo_counts:
+      emote_combo_counts[emote] += 1
+    else:
+      emote_combo_counts[emote] = 1
+      
+  jackass_messages = msgs.filter(message = "+1")
+  
+  jackass_count = 0
+  last_jackass_timestamp : datetime.datetime = None
+  for message in jackass_messages:
+    if last_jackass_timestamp and (message.created_at - last_jackass_timestamp).total_seconds() < 60:
+      continue
+    if len(jackass_messages.filter(created_at__range = (message.created_at, message.created_at + datetime.timedelta(seconds = 30)))) > 5:
+      jackass_count += 1
+      last_jackass_timestamp = message.created_at
+  
+  overall_wrapped.jackass_count = jackass_count
+    
+  longest_combos = sorted(combos, key = lambda c: c[1], reverse = True)
+  most_common_combos = [(k, v) for k, v in sorted(emote_combo_counts.items(), key = lambda item: item[1], reverse = True)]
+  
+  overall_dict["longest_combos"] = longest_combos[:10]
+  overall_dict["most_common_combos"] = most_common_combos[:10]
+  
   for month in range(1, 13):
     start_range = datetime.datetime(year, month, 1, 0, 0, 0, 1, localtz)
     end_range = datetime.datetime(year, month, calendar.monthrange(year, month)[1], 23, 59, 59, 999999, localtz)
@@ -558,8 +603,225 @@ def create_wrapped_data(year = None):
     
     overall_dict["top_clips"][month] = [clip.to_json() for clip in clips[:5]]
   
-  userrecap_set = overallrecap.userrecapdata_set.all()
-  
-  overall_wrapped.wrapped_data = overall_dict
+  overall_wrapped.extra_data = overall_dict
   overall_wrapped.save()
   
+  userrecap_set = overallrecap.userrecapdata_set.all()
+  
+  leaderboards = {}
+  
+  for field in overallrecap._meta.get_fields():
+    if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in ["year", "month", "count_chatters", "count_videos", "count_400", "count_plus1", "count_caw"]):
+      leaderboards[field.name] = {userrecap.twitch_user.user_id: getattr(userrecap, field.name) for userrecap in overallrecap.userrecapdata_set.filter(twitch_user__is_bot = False).all().order_by("-" + field.name)}
+  
+  userrecap : UserRecapData
+  for userrecap in userrecap_set:
+    user = userrecap.twitch_user
+    user_dict = {}
+  
+    user_wrapped, _ = UserWrappedData.objects.get_or_create(overall_wrapped = overall_wrapped, twitch_user = user)
+    
+    user_wrapped.recap = userrecap
+    
+    userclips = Clip.objects.filter(creator = user, created_at__range = (start_year, end_year)).order_by("-view_count")
+    
+    user_dict["typing_time"] = seconds_to_duration(userrecap.count_characters // 5)
+    user_dict["clip_duration"] = seconds_to_duration(userrecap.count_clip_duration)
+  
+    msgs = ChatMessage.objects.filter(commenter = user, created_at__range = (start_year, end_year)).order_by("created_at")
+    
+    firstmsg = msgs.first()
+    lastmsg = msgs.last()
+    
+    user_dict["first_message"] = "" if not firstmsg else firstmsg.to_json()
+    user_dict["last_message"] = "" if not lastmsg else lastmsg.to_json()
+    
+    user_dict["top_clips"] = [clip.to_json() for clip in userclips[:5]] if len(userclips) > 1 else None
+    
+    leaderboard_positions = {}
+    for field in userrecap._meta.get_fields():
+      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in ["year", "month", "count_chatters", "count_videos", "count_400", "count_plus1", "count_caw"]):
+        if user.user_id in leaderboards[field.name]:
+          leaderboard_positions[field.name] = (list(leaderboards[field.name].keys()).index(user.user_id), leaderboards[field.name][user.user_id])
+          
+    leaderboard_positions = [(k, v) for k, v in sorted(leaderboard_positions.items(), key = lambda item: item[0], reverse = True)]
+  
+    user_dict["top_leaderboard_positions"] = leaderboard_positions[:5]
+    
+    highlight = {}
+    
+    if user.user_id == 444861963: # ACrowOutside
+      print(user.to_json())
+      percent_caws = (3 * userrecap.count_caw) / max(userrecap.count_characters, 1)
+      highlight = {
+        "title": "CAW",
+        "description": [
+          f"CAW RANK {(leaderboards["count_caw"].keys()).index(user.user_id) + 1} CAWs CAW", 
+          f"CAW {userrecap.count_caw:,} CAWs CAW",
+          f"CAW CAW made up {percent_caws:.1%} of your total chat output CAW"
+        ],
+        "image": "GriddyCrow.webp",
+      }
+    elif user.user_id == 617816768: # viuphiet_
+      rank_400 = list(leaderboards["count_400"].keys()).index(user.user_id) + 1
+      rank_comment = "Unsurprisingly, you said \"400k\" the most this year of all the chatters."
+      if rank_400 != 1:
+        rank_comment = f"In an insane twist, you weren't the chatter who said \"400k\" the most this year. You were rank {rank_400}."
+        
+      difference = 19 - userrecap.count_400
+      change_comment = f"Compared to last year, you mentioned your salary {abs(difference)} " + ("fewer times" if difference > 0 else "more time")
+      if difference == 0:
+        change_comment = f"This is the exact same number of times as in 2023. How odd."
+      highlight = {
+        "title": "Anyone know how much this guy makes?",
+        "description": [
+          f"You mentioned the fact that you make 400k {userrecap.count_400:,} times this year.",
+          change_comment,
+          rank_comment,
+        ],
+        "image": "money.jpg"
+      }
+    elif user.user_id == 30512356: # CubsFanatic
+      rank_cum = list(leaderboards["count_cum"].keys()).index(user.user_id) + 1
+      rank_comment = "To no one's surprise, you managed to secure rank 1 cum mentions."
+      if rank_cum > 1:
+        rank_comment = f"I didn't think this was possible but you got dethroned as cum leader. You ended up as rank {rank_cum} on the leaderboard."
+    
+      highlight = {
+        "title": "itswill7 cum",
+        "description": [
+          f"You said cum {userrecap.count_cum:,} times this year.",
+          rank_comment,
+          f"Word on the street is that you've retired. But will you return to secure rank 1 2025?",
+        ],
+        "image": "itswill7.webp"
+      }
+    elif user.user_id == 528474814: # allknowing89
+      highlight = {
+        "title": "Chatter extraordinaire",
+        "description": [
+          f"In October you were the first (and only) person this year who sent more chat messages than both itswillChat and Nightbot in a single month.",
+          f"You send 5,757 messages that month, Nightbot only sent 4,385",
+        ],
+        "image": "itswillChat.webp"
+      }
+    elif user.user_id == 43246220: # itswill
+      highlight = {
+        "title": "hello mr. streamer",
+        "description": [
+          f""
+        ],
+        "image": ""
+      }
+    elif user.user_id == 82920215: # lusciousdev
+      highlight = {
+        "title": "",
+        "description": [
+          f""
+        ],
+        "image": ""
+      }
+    else:
+      for (category, (rank, count)) in leaderboard_positions:
+        if rank > 100:
+          break
+        if category == "count_messages":
+          highlight = {
+            "title": "You chatted a whole lot this year.",
+            "description": [
+              f"You sent a total of {count:,} messages over the course of this year.",
+              f"This placed you at rank {rank} among the entire itswill chat.",
+            ],
+            "image": ""
+          }
+          break
+        elif category == "count_clips":
+          highlight = {
+            "title": "Precious moments",
+            "description": [
+              f"You clipped a total of "
+            ],
+            "image": ""
+          }
+          break
+        elif category == "count_clip_views":
+          highlight = {
+            "title": "All eyes on you.",
+            "description": [
+              f"Your clips got a total of {count:,} views over this past year.",
+              f""
+            ],
+            "image": ""
+          }
+          break
+        elif category == "count_ascii":
+          highlight = {
+            "title": "All pictures of Garfield I assume.",
+            "description": [
+              f"You posted {count:,} ASCIIs this year.",
+              f"All that beautiful art earned you the #{rank} spot on the ASCII leaderboard."
+            ],
+            "image": ""
+          }
+          break
+        elif category == "count_seven":
+          highlight = {
+            "title": "Salutations o7",
+            "description": [
+              f"You sent {count:,} itswill7s in the chat this year.",
+              f"All those salutes put you at #{rank} on the leaderboard."
+            ],
+            "image": "itswill7.webp"
+          }
+          break
+        elif category == "count_pound":
+          highlight = {
+            "title": "Any pounders in the chat?",
+            "description": [
+              f"You pounded your fellow chatters a total of {count:,} times this past year.",
+              f"That amount of pounding earned you rank {rank} among the itswill chat.",
+            ],
+            "image": "itswillPound.webp"
+          }
+          break
+        elif category == "count_love":
+          highlight = {
+            "title": "",
+            "description": [
+              
+            ],
+            "image": "itswillLove.webp"
+          }
+          break
+        elif category == "count_pog":
+          highlight = {
+            "title": "",
+            "description": [
+              
+            ],
+            "image": ""
+          }
+          break
+        elif category == "count_shoop":
+          highlight = {
+            "title": "",
+            "description": [
+              
+            ],
+            "image": ""
+          }
+          break
+        elif category == "count_clip_views":
+          highlight = {
+            "title": "",
+            "description": [
+              
+            ],
+            "image": ""
+          }
+          break
+          
+    user_dict["highlight"] = highlight
+    
+    user_wrapped.extra_data = user_dict
+    user_wrapped.save()

@@ -257,7 +257,7 @@ class Wrapped2024View(generic.TemplateView):
     except OverallWrappedData.DoesNotExist:
       raise Http404("That recap does not exist (yet?).")
     
-    data["wrapped"] = overall_wrapped.wrapped_data
+    data["wrapped"] = overall_wrapped
       
     return data
   
@@ -278,11 +278,13 @@ class Wrapped2024UserView(generic.TemplateView):
       raise Http404("That user does not exist or has not chatted.")
     
     try:
-      userrecap = UserWrappedData.objects.get(overall_wrapped = overall_wrapped, twitch_user = twitchuser)
+      user_wrapped = UserWrappedData.objects.get(overall_wrapped = overall_wrapped, twitch_user = twitchuser)
     except UserRecapData.DoesNotExist:
       raise Http404("No data for that user in this period.")
     
-    data["wrapped"] = overall_wrapped.wrapped_data
+    data["wrapped"] = {}
+    data["wrapped"]["overall"] = overall_wrapped
+    data["wrapped"]["user"]    = user_wrapped
       
     return data
     

@@ -32,35 +32,35 @@
       </div>
       <div class="stat-item" id="msg-count">
         <span class="stat-label" id="msg-count-label">Messages sent:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.recap.count_messages|intcomma }}</span>
+        <span class="stat-value" id="msg-count-value">{{ wrapped.user.recap.count_messages|intcomma }}</span>
       </div>
       <div class="stat-item" id="msg-count">
         <span class="stat-label" id="msg-count-label">Total character count:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.recap.count_characters|intcomma }}</span>
+        <span class="stat-value" id="msg-count-value">{{ wrapped.user.recap.count_characters|intcomma }}</span>
       </div>
       <div class="stat-item" id="msg-count">
         <span class="stat-label" id="msg-count-label">Time spent typing at 60 WPM:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.typing_time }}</span>
+        <span class="stat-value" id="msg-count-value">{{ wrapped.user.typing_time }}</span>
       </div>
       <div class="stat-item" id="clip-count">
         <span class="stat-label" id="clip-count-label">Total chatters:</span>
-        <span class="stat-value" id="clip-count-value">{{ wrapped.recap.count_chatters|intcomma }}</span>
+        <span class="stat-value" id="clip-count-value">{{ wrapped.user.recap.count_chatters|intcomma }}</span>
       </div>
       <div class="stat-item" id="clip-views">
         <span class="stat-label" id="clip-views-label">Clips:</span>
-        <span class="stat-value" id="clip-views-value">{{ wrapped.recap.count_clips|intcomma }}</span>
+        <span class="stat-value" id="clip-views-value">{{ wrapped.user.recap.count_clips|intcomma }}</span>
       </div>
       <div class="stat-item" id="msg-count">
         <span class="stat-label" id="msg-count-value">Clip views:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.recap.count_clip_views|intcomma }}</span>
+        <span class="stat-value" id="msg-count-value">{{ wrapped.user.recap.count_clip_views|intcomma }}</span>
       </div>
       <div class="stat-item" id="msg-count">
         <span class="stat-label" id="msg-count-label">Clip duration:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.clip_duration }}</span>
+        <span class="stat-value" id="msg-count-value">{{ wrapped.user.clip_duration }}</span>
       </div>
       <div class="stat-item" id="msg-count">
         <span class="stat-label" id="msg-count-label">Top clip:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.extra_data.top_clips.0.0.url }}</span>
+        <span class="stat-value" id="msg-count-value">{{ wrapped.user.extra_data.top_clips.0.url }}</span>
       </div>
     </div>
   </div>
