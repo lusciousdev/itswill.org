@@ -565,7 +565,9 @@ def create_wrapped_data(year = None):
   overall_dict["first_ijbol"] = ijbol_messages.first().to_json()
   
   combo_regex_str = r"((.+) ruined the )?([0-9]+)x ([A-Za-z]+) combo.*"
+  backup_combo_regex_str = r"you don't ruin ([0-9]+)x ([A-Za-z]+) combos ([A-Za-z0-9_\-\.]+) .*"
   combo_regex = re.compile(combo_regex_str, re.IGNORECASE)
+  backup_combo_regex = re.compile(backup_combo_regex_str, re.IGNORECASE)
   
   combo_messages = msgs.filter(commenter_id = 100135110, message__iregex = combo_regex_str)
   
@@ -575,16 +577,23 @@ def create_wrapped_data(year = None):
     msg_match = combo_regex.match(message.message)
     
     if not msg_match:
-      print(f"Somehow could not find a match in a filtered message.")
-      print(message.message)
-      continue
-    
-    combo_length = int(msg_match.group(3))
-    emote = msg_match.group(4)
-    
-    broken_by = None
-    if msg_match.group(2):
-      broken_by = msg_match.group(2)
+      msg_match = backup_combo_regex.match(message.message)
+      
+      if not msg_match:
+        print("Message does not match either combo regex")
+        print(message.message)
+        continue
+      
+      combo_length = int(msg_match.group(1))
+      emote = msg_match.group(2)
+      broken_by = msg_match.group(3)
+    else:
+      combo_length = int(msg_match.group(3))
+      emote = msg_match.group(4)
+      
+      broken_by = None
+      if msg_match.group(2):
+        broken_by = msg_match.group(2)
       
     combos.append((emote, combo_length, broken_by))
     
@@ -613,6 +622,8 @@ def create_wrapped_data(year = None):
   
   overall_wrapped.extra_data = overall_dict
   overall_wrapped.save()
+  
+  print("Overall wrapped data created. Moving on to user data.")
   
   userrecap_set = overallrecap.userrecapdata_set.all()
   

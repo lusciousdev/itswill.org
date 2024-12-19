@@ -106,7 +106,7 @@
       <div class="page-section">
         <ol>
           {% for clip in wrapped.extra_data.top_clips.0 %}
-          <li><a href="{{ clip.url }}"><i>{{ clip.title }}</i></a> by {{ clip.creator.display_name }} ({{ clip.view_count }} views)</li>
+          <li><a href="{{ clip.url }}"><i>{{ clip.title }}</i></a> by {{ clip.creator.display_name }} ({{ clip.view_count|intcomma }} views)</li>
           {% endfor %}
         </ol>
       </div>
@@ -122,7 +122,7 @@
           <li>{{ forloop.counter0|month_name }}</li>
           <ul>
             {% with clip=top_clips.0 %}
-            <li><a href="{{ clip.url }}"><i>{{ clip.title }}</i></a> by {{ clip.creator.display_name }} ({{ clip.view_count }} views)</li>
+            <li><a href="{{ clip.url }}"><i>{{ clip.title }}</i></a> by {{ clip.creator.display_name }} ({{ clip.view_count|intcomma }} views)</li>
             {% endwith %}
           </ul>
           {% endif %}
