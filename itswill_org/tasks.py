@@ -429,10 +429,10 @@ def calculate_monthly_stats(year = None, month = None):
     chatter_msg_count  = chatter_messages.count()
     chatter_clip_count = chatter_clips.count()
     
-    chatter_clip_duration = 0
+    chatter_clip_watch_time = 0
     
     for clip in chatter_clips:
-      chatter_clip_duration += round(clip.duration)
+      chatter_clip_watch_time += round(clip.duration) * clip.view_count
     
     chatter_clip_views = 0
     for clip in chatter_clips:
@@ -441,14 +441,14 @@ def calculate_monthly_stats(year = None, month = None):
     if chatter_msg_count > 0 or chatter_clip_count > 0:
       monthrecap.count_messages      += chatter_msg_count
       monthrecap.count_clips         += chatter_clip_count
-      monthrecap.count_clip_duration += chatter_clip_duration
+      monthrecap.count_clip_watch    += chatter_clip_watch_time
       monthrecap.count_clip_views    += chatter_clip_views
       monthrecap.count_chatters      += 1
       
       chatter_recap, _ = UserRecapData.objects.get_or_create(overall_recap = monthrecap, twitch_user = chatter)
         
       chatter_recap.count_clips         = chatter_clip_count
-      chatter_recap.count_clip_duration = chatter_clip_duration
+      chatter_recap.count_clip_watch    = chatter_clip_watch_time
       chatter_recap.count_clip_views    = chatter_clip_views
       
       firstmsg : ChatMessage = chatter_messages.first()
@@ -460,7 +460,7 @@ def calculate_monthly_stats(year = None, month = None):
       
       chatter_recap.save()
       
-      monthrecap.add(chatter_recap, ["year", "month", "count_messages", "count_clips", "count_clip_views", "count_clip_duration", "count_chatters"])
+      monthrecap.add(chatter_recap, ["year", "month", "count_messages", "count_clips", "count_clip_views", "count_clip_watch", "count_chatters"])
       
       monthrecap.save()
       
@@ -536,14 +536,9 @@ def create_wrapped_data(year = None):
   overall_wrapped.recap = overallrecap
   
   overall_dict = {}
-    
-  clips = Clip.objects.filter(created_at__range = (start_year, end_year)).order_by("-view_count")
   
   overall_wrapped.typing_time = seconds_to_duration(overallrecap.count_characters // 5)
-  overall_wrapped.clip_duration = seconds_to_duration(overallrecap.count_clip_duration)
-  
-  overall_dict["top_clips"] = [[] for i in range(0, 13)]
-  overall_dict["top_clips"][0] = [clip.to_json() for clip in clips[:5]]
+  overall_wrapped.clip_watch_time = seconds_to_duration(overallrecap.count_clip_watch)
   
   msgs = ChatMessage.objects.filter(created_at__range = (start_year, end_year)).order_by("created_at")
   
@@ -552,9 +547,25 @@ def create_wrapped_data(year = None):
   
   overall_dict["first_message"] = firstmsg.to_json()
   overall_dict["last_message"] = lastmsg.to_json()
+      
+  jackass_messages = msgs.filter(message = "+1")
+  
+  jackass_count = 0
+  last_jackass_timestamp : datetime.datetime = None
+  for message in jackass_messages:
+    if last_jackass_timestamp and (message.created_at - last_jackass_timestamp).total_seconds() < 60:
+      continue
+    if len(jackass_messages.filter(created_at__range = (message.created_at, message.created_at + datetime.timedelta(seconds = 30)))) > 5:
+      jackass_count += 1
+      last_jackass_timestamp = message.created_at
+  
+  overall_wrapped.jackass_count = jackass_count
+  
+  ijbol_messages = msgs.filter(message__iregex = ".*IJBOL.*")
+  overall_dict["first_ijbol"] = ijbol_messages.first().to_json()
   
   combo_regex_str = r"((.+) ruined the )?([0-9]+)x ([A-Za-z]+) combo.*"
-  combo_regex = re.compile(combo_regex_str)
+  combo_regex = re.compile(combo_regex_str, re.IGNORECASE)
   
   combo_messages = msgs.filter(commenter_id = 100135110, message__iregex = combo_regex_str)
   
@@ -562,6 +573,11 @@ def create_wrapped_data(year = None):
   emote_combo_counts = {}
   for message in combo_messages:
     msg_match = combo_regex.match(message.message)
+    
+    if not msg_match:
+      print(f"Somehow could not find a match in a filtered message.")
+      print(message.message)
+      continue
     
     combo_length = int(msg_match.group(3))
     emote = msg_match.group(4)
@@ -576,25 +592,17 @@ def create_wrapped_data(year = None):
       emote_combo_counts[emote] += 1
     else:
       emote_combo_counts[emote] = 1
-      
-  jackass_messages = msgs.filter(message = "+1")
-  
-  jackass_count = 0
-  last_jackass_timestamp : datetime.datetime = None
-  for message in jackass_messages:
-    if last_jackass_timestamp and (message.created_at - last_jackass_timestamp).total_seconds() < 60:
-      continue
-    if len(jackass_messages.filter(created_at__range = (message.created_at, message.created_at + datetime.timedelta(seconds = 30)))) > 5:
-      jackass_count += 1
-      last_jackass_timestamp = message.created_at
-  
-  overall_wrapped.jackass_count = jackass_count
     
   longest_combos = sorted(combos, key = lambda c: c[1], reverse = True)
   most_common_combos = [(k, v) for k, v in sorted(emote_combo_counts.items(), key = lambda item: item[1], reverse = True)]
   
   overall_dict["longest_combos"] = longest_combos[:10]
   overall_dict["most_common_combos"] = most_common_combos[:10]
+    
+  clips = Clip.objects.filter(created_at__range = (start_year, end_year)).order_by("-view_count")
+  
+  overall_dict["top_clips"] = [[] for i in range(0, 13)]
+  overall_dict["top_clips"][0] = [clip.to_json() for clip in clips[:5]]
   
   for month in range(1, 13):
     start_range = datetime.datetime(year, month, 1, 0, 0, 0, 1, localtz)
@@ -626,7 +634,7 @@ def create_wrapped_data(year = None):
     userclips = Clip.objects.filter(creator = user, created_at__range = (start_year, end_year)).order_by("-view_count")
     
     user_dict["typing_time"] = seconds_to_duration(userrecap.count_characters // 5)
-    user_dict["clip_duration"] = seconds_to_duration(userrecap.count_clip_duration)
+    user_dict["clip_duration"] = seconds_to_duration(userrecap.count_clip_watch)
   
     msgs = ChatMessage.objects.filter(commenter = user, created_at__range = (start_year, end_year)).order_by("created_at")
     
@@ -652,18 +660,19 @@ def create_wrapped_data(year = None):
     
     if user.user_id == 444861963: # ACrowOutside
       print(user.to_json())
+      caw_rank = -1 if 'count_caw' not in leaderboard_positions else leaderboard_positions['count_caw'][0] + 1
       percent_caws = (3 * userrecap.count_caw) / max(userrecap.count_characters, 1)
       highlight = {
         "title": "CAW",
         "description": [
-          f"CAW RANK {leaderboard_positions['count_caw'][0] + 1} CAWs CAW", 
+          f"CAW RANK {caw_rank} CAWs CAW", 
           f"CAW {userrecap.count_caw:,} CAWs CAW",
           f"CAW CAW made up {percent_caws:.1%} of your total chat output CAW"
         ],
         "image": "GriddyCrow.webp",
       }
     elif user.user_id == 617816768: # viuphiet_
-      rank_400 = leaderboard_positions["count_400"][0] + 1
+      rank_400 = -1 if 'count_400' not in leaderboard_positions else leaderboard_positions["count_400"][0] + 1
       rank_comment = "Unsurprisingly, you said \"400k\" the most this year of all the chatters."
       if rank_400 != 1:
         rank_comment = f"In an insane twist, you weren't the chatter who said \"400k\" the most this year. You were rank {rank_400}."
@@ -682,7 +691,7 @@ def create_wrapped_data(year = None):
         "image": "money.jpg"
       }
     elif user.user_id == 30512356: # CubsFanatic
-      rank_cum = leaderboard_positions["count_cum"][0] + 1
+      rank_cum = -1 if 'count_cum' not in leaderboard_positions else leaderboard_positions["count_cum"][0] + 1
       rank_comment = "To no one's surprise, you managed to secure rank 1 cum mentions."
       if rank_cum > 1:
         rank_comment = f"I didn't think this was possible but you got dethroned as cum leader. You ended up as rank {rank_cum} on the leaderboard."

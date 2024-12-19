@@ -1,6 +1,10 @@
 from django import template
 register = template.Library()
 
+import datetime
+import calendar
+import luscioustwitch
+
 @register.filter
 def index(indexable, i):
     return indexable[i]
@@ -27,3 +31,11 @@ def filter_on_index(indexable, index):
 @register.filter
 def filter_on_not_index(indexable, index):
   return list(filter(lambda item: not item[index], indexable))
+
+@register.filter
+def dtformatswap(dtstring : str, format : str):
+  return datetime.datetime.strptime(dtstring, luscioustwitch.TWITCH_API_TIME_FORMAT).strftime(format)
+
+@register.filter
+def month_name(month_number):
+  return calendar.month_name[month_number]

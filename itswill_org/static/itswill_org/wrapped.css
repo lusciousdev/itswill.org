@@ -1,0 +1,95 @@
+html {
+  background-color: var(--bg);
+  color: var(--default-color);
+  font-family: Roobert, Helvetica, Arial, sans-serif;
+  font-size: 1em;
+}
+
+a {
+  color: var(--twitch-purple);
+}
+
+a:visited {
+  color: var(--twitch-purple);
+}
+
+b {
+  color: var(--accent-color);
+}
+
+li {
+  margin-bottom: 0.25em;
+}
+
+#lookup-form {
+  margin: 10px 0px 10px 0px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.presentation {
+  width: 90vw;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.page {
+  background-color: var(--bg-light);
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 640px;
+  padding: 2em;
+  box-sizing: border-box;
+
+  display: none;
+}
+
+.show {
+  display: flex!important;
+}
+
+.page-title {
+  font-size: 1.5em;
+}
+
+.centered {
+  width: 100%;
+  flex-basis: 100%;
+  text-align: center;
+  align-items: center;
+}
+
+.navigation {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-button {
+  font-size: 1.5em;
+  margin: 0.5em 0.05em;
+  padding: 0 30px;
+  border: none;
+  color: var(--bg);
+  background-color: var(--twitch-purple);
+  cursor:pointer;
+}
+
+.nav-button:hover {
+  filter: brightness(90%);
+}
+
+.nav-button:active {
+  filter: brightness(75%);
+}

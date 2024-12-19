@@ -16,7 +16,7 @@ urlpatterns = [
   path("recap/",                                       cache_page(5 * 60)(views.RecapView.as_view()), kwargs = { "year": 0, "month": 0, "username": None }, name="recap"),
   path("recap/<int:year>/",                            cache_page(5 * 60)(views.RecapView.as_view()), kwargs = { "month": 0, "username": None }, name="recap_year"),
   path("recap/<int:year>/<int:month>/",                cache_page(5 * 60)(views.RecapView.as_view()), kwargs = { "username": None }, name = "recap_month"),
-  path("recap/all/<str:username>/",                     views.RecapView.as_view(), kwargs = { "year": 0, "month": 0 }, name = "recap_user"),
+  path("recap/all/<str:username>/",                    views.RecapView.as_view(), kwargs = { "year": 0, "month": 0 }, name = "recap_user"),
   path("recap/<int:year>/<str:username>/",             views.RecapView.as_view(), kwargs = { "month": 0 }, name = "recap_year_user"),
   path("recap/<int:year>/<int:month>/<str:username>/", views.RecapView.as_view(), name = "recap_month_user"),
   
@@ -31,7 +31,7 @@ urlpatterns = [
   path("leaderboard/<int:year>/<int:month>/<str:name>/", cache_page(60)(views.SingleLeaderboardView.as_view()), name = "single_leaderboard_month"),
   
   path("wrapped/", cache_page(60)(views.Wrapped2024View.as_view()), name="wrapped"),
-  path("wrapped/<str:username>/", views.Wrapped2024UserView.as_view(), name="wrapped_user"),
+  path("wrapped/user/<str:username>/", views.Wrapped2024UserView.as_view(), name="wrapped_user"),
   
   path("wrapped/redirect/", views.get_wrapped, name = "wrapped_redirect"),
   

@@ -35,7 +35,9 @@ class MessageProcessingTest(TestCase):
 ⢀⠇⠀⠀⠀⠀⠀⠀⠀⠀⠙⢦⡀⣀⡴⠃⠀⡷⡇⢀⡴⠋⠉⠉⠙⠓⠒⠃⠀⠀ 
 ⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠁⠀⠀⡼⠀⣷⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ 
 ⡞⠀⠀⠀⠀⠀⠀⠀⣄⠀⠀⠀⠀⠀⠀⡰⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ 
-⢧⠀⠀⠀⠀⠀⠀⠀⠈⠣⣀⠀⠀⡰⠋⠀⠀⠀"""
+⢧⠀⠀⠀⠀⠀⠀⠀⠈⠣⣀⠀⠀⡰⠋⠀⠀⠀""",
+      "https://www.youtube.com/watch?v=jjNca1L6CUk",
+      "https://youtu.be/jjNca1L6CUk?si=uofvhqYc5dUtJWzx",
     ]
     
     for msg in messages:
@@ -52,6 +54,7 @@ class MessageProcessingTest(TestCase):
     self.assertEqual(overallrecap.count_mmylc, 3)
     self.assertEqual(overallrecap.count_ascii, 1)
     self.assertEqual(overallrecap.count_q, 2)
+    self.assertEqual(overallrecap.count_yt, 2)
     
     userrecap = UserRecapData.objects.get(twitch_user__user_id = 82920215, overall_recap__year = 2000, overall_recap__month = 1)
     
@@ -68,4 +71,5 @@ class MessageProcessingTest(TestCase):
     self.assertEqual(userrecap.count_vvkool, 1)
     self.assertEqual(userrecap.count_mmylc, 3)
     self.assertEqual(userrecap.count_ascii, 1)
-    self.assertEqual(overallrecap.count_q, 2)
+    self.assertEqual(userrecap.count_q, 2)
+    self.assertEqual(userrecap.count_yt, 2)

@@ -5,63 +5,146 @@
 {% load humanize %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{% static 'itswill_org/recap.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'itswill_org/wrapped.css' %}">
 {% endblock %}
 
-{% block title %}The itswill Recap{% endblock %}
+{% block scripts %}
+<script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'itswill_org/wrapped.js' %}"></script>
+{% endblock %}
+
+{% block title %}itswill 2024 Wrapped{% endblock %}
     
 {% block body %}
 <div class="content">
-  <div class="section-wrap" id="lookup-form-wrap">
-    <div class="section" id="lookup-form">
-      <form class="recap-form" action="{% url 'itswill_org:wrapped_redirect' %}" method="post">
-        <label class="entry-label" id="username-entry-label" for="id_username">Username:</label>
-        <input type="text" id="id_username" name="username">
-        <input type="submit" class="form-button" id="lookup-submit" value="Find user">
-      </form>
+  <div class="presentation" id="wrapped-presentation">
+    <div class="page show" id="page-1">
+      <div class="page-title centered" id="main-title">
+        The 2024 itswill Chat Wrapped
+      </div>
+      if you find somehow found this and leak it i'll ban you forever
     </div>
-  </div>
-  <div class="section-wrap" id="stats-wrap">
-    <div class="section" id="stats">
-      <div class="full-section-title">
-        <div class="section-title" id="stat-title">
-          2024 Wrapped
+    <div class="page" id="page-2">
+      <div class="page-title">
+        Chat Stats Pt. 1
+      </div>
+      <div class="page-section">
+        <ul>
+          <li>{{ wrapped.recap.count_messages|intcomma }} messages were sent by {{ wrapped.recap.count_chatters|intcomma }} different chatters in 2024</li>
+          <li>The total length of the 2024 chat log is {{wrapped.recap.count_characters|intcomma }} characters</li>
+          <ul>
+            <li>At 60 WPM, the itswill community spent approximately <b>{{ wrapped.typing_time }}</b> typing their chat messages.</li>
+          </ul>
+          <li>The first message of the year was "{{ wrapped.extra_data.first_message.message }}" sent by {{ wrapped.extra_data.first_message.commenter.display_name }}</li>
+          <li>The last message of the year was "{{ wrapped.extra_data.last_message.message }}" sent by {{ wrapped.extra_data.last_message.commenter.display_name }}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="page" id="page-3">
+      <div class="page-title">
+        Chat Stats Pt. 2
+      </div>
+      <div class="page-section">
+        <ul>
+          <li>itswillChat was @ed by the chat {{ wrapped.recap.count_at_bot|intcomma }} times.</li>
+          <li>The jackasses in chat spammed +1s {{ wrapped.jackass_count|intcomma }} times this year.</li>
+          <li>{{ wrapped.recap.count_q|intcomma }} messages were just a bunch of question marks (???)</li>
+          <li>
+            The IJBOL emote was made by chumbo_crumbo on June 20th, 2024. 
+            <br>
+            But did you know the first instance of IJBOL in the itswill chat was in a {{ wrapped.extra_data.first_ijbol.commenter.display_name }} message on {{ wrapped.extra_data.first_ijbol.created_at|dtformatswap:"%b %d, %Y" }}?
+          </li>
+          <ul>
+            <li><b>[{{ wrapped.extra_data.first_ijbol.created_at|dtformatswap:"%Y-%m-%d %I:%M:%S %p" }}] {{ wrapped.extra_data.first_ijbol.commenter.display_name }}:</b> {{ wrapped.extra_data.first_ijbol.message }}</li>
+          </ul>
+        </ul>
+      </div>
+    </div>
+    <div class="page" id="page-4">
+      <div class="page-title">
+        Emote streaks
+      </div>
+      <div class="page-section">
+        <div>
+          <div class="section-title">
+            Longest streaks
+          </div>
+          <ol>
+            {% for emote, combo_length, broken_by in wrapped.extra_data.longest_combos %}
+            <li>{{ combo_length }} {{ emote }} streak {% if broken_by %}(broken by {{ broken_by }}){% endif %}</li>
+            {% endfor %}
+          </ol>
         </div>
-        <div class="section-subtitle" id="range-subtitle">
+        <div>
+          <div class="section-title">
+            Most common streaks
+          </div>
+          <ol>
+            {% for emote, streak_count in wrapped.extra_data.most_common_combos %}
+            <li>{{ streak_count }} {{ emote }} streaks</li>
+            {% endfor %}
+          </ol>
         </div>
       </div>
-      <div class="stat-item" id="msg-count">
-        <span class="stat-label" id="msg-count-label">Messages sent:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.recap.count_messages|intcomma }}</span>
+    </div>
+    <div class="page" id="page-4">
+      <div class="page-title">
+        Clip Stats
       </div>
-      <div class="stat-item" id="msg-count">
-        <span class="stat-label" id="msg-count-label">Total character count:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.recap.count_characters|intcomma }}</span>
+      <div class="page-section">
+        <ul>
+          <li>{{ wrapped.recap.count_clips|intcomma }} clips were made this year.</li>
+          <li>In total, these clips were viewed {{ wrapped.recap.count_clip_views|intcomma }} times.</li>
+          <li>The total watch time on this year's clips is <b>{{ wrapped.clip_watch_time }}</b></li>
+        </ul>
       </div>
-      <div class="stat-item" id="msg-count">
-        <span class="stat-label" id="msg-count-label">Time spent typing at 60 WPM:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.typing_time }}</span>
+    </div>
+    <div class="page" id="page-5">
+      <div class="page-title">
+        Top Clips of 2024
       </div>
-      <div class="stat-item" id="clip-count">
-        <span class="stat-label" id="clip-count-label">Total chatters:</span>
-        <span class="stat-value" id="clip-count-value">{{ wrapped.recap.count_chatters|intcomma }}</span>
+      <div class="page-section">
+        <ol>
+          {% for clip in wrapped.extra_data.top_clips.0 %}
+          <li><a href="{{ clip.url }}"><i>{{ clip.title }}</i></a> by {{ clip.creator.display_name }} ({{ clip.view_count }} views)</li>
+          {% endfor %}
+        </ol>
       </div>
-      <div class="stat-item" id="clip-views">
-        <span class="stat-label" id="clip-views-label">Clips:</span>
-        <span class="stat-value" id="clip-views-value">{{ wrapped.recap.count_clips|intcomma }}</span>
+    </div>
+    <div class="page" id="page-6">
+      <div class="page-title">
+        Top Clips by month
       </div>
-      <div class="stat-item" id="msg-count">
-        <span class="stat-label" id="msg-count-value">Clip views:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.recap.count_clip_views|intcomma }}</span>
+      <div class="page-section">
+        <ul>
+          {% for top_clips in wrapped.extra_data.top_clips %}
+          {% if forloop.counter0 != 0 %}
+          <li>{{ forloop.counter0|month_name }}</li>
+          <ul>
+            {% with clip=top_clips.0 %}
+            <li><a href="{{ clip.url }}"><i>{{ clip.title }}</i></a> by {{ clip.creator.display_name }} ({{ clip.view_count }} views)</li>
+            {% endwith %}
+          </ul>
+          {% endif %}
+          {% endfor %}
+        </ul>
       </div>
-      <div class="stat-item" id="msg-count">
-        <span class="stat-label" id="msg-count-label">Clip duration:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.clip_duration }}</span>
+    </div>
+    <div class="page" id="page-7">
+      <div class="page-title centered">
+        Find your recap
       </div>
-      <div class="stat-item" id="msg-count">
-        <span class="stat-label" id="msg-count-label">Top clip:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.extra_data.top_clips.0.0.url }}</span>
+      <div class="page-section centered" id="lookup-form">
+        <form class="recap-form" action="{% url 'itswill_org:wrapped_redirect' %}" method="post">
+          <label class="entry-label" id="username-entry-label" for="id_username">Username:</label>
+          <input type="text" id="id_username" name="username">
+          <input type="submit" class="form-button" id="lookup-submit" value="Find user">
+        </form>
       </div>
+    </div>
+    <div class="navigation">
+      <button class="nav-button" id="prev-slide" onclick="prevSlide();">&#10094;</button>
+      <button class="nav-button" id="next-slide" onclick="nextSlide();">&#10095;</button>
     </div>
   </div>
 </div>
