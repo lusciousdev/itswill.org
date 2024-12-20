@@ -5,63 +5,139 @@
 {% load humanize %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{% static 'itswill_org/recap.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'itswill_org/wrapped.css' %}">
 {% endblock %}
 
-{% block title %}The itswill Recap{% endblock %}
+{% block scripts %}
+<script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'itswill_org/wrapped.js' %}"></script>
+{% endblock %}
+
+{% block title %}itswill 2024 Wrapped{% endblock %}
     
 {% block body %}
 <div class="content">
-  <div class="section-wrap" id="lookup-form-wrap">
-    <div class="section" id="lookup-form">
-      <form class="recap-form" action="{% url 'itswill_org:wrapped_redirect' %}" method="post">
-        <label class="entry-label" id="username-entry-label" for="id_username">Username:</label>
-        <input type="text" id="id_username" name="username">
-        <input type="submit" class="form-button" id="lookup-submit" value="Find user">
-      </form>
+  <div class="presentation" id="wrapped-presentation">
+    <div class="page show" id="page-1">
+      <div class="page-title centered" id="main-title">
+        {{ wrapped.user.recap.twitch_user.display_name }}'s 2024 itswill Chat Wrapped
+      </div>
+      if you find somehow found this and leak it i'll ban you forever
     </div>
-  </div>
-  <div class="section-wrap" id="stats-wrap">
-    <div class="section" id="stats">
-      <div class="full-section-title">
-        <div class="section-title" id="stat-title">
-          2024 Wrapped
+    <div class="page" id="page-2">
+      <div class="page-title">
+        Chat Stats Pt. 1
+      </div>
+      <div class="page-section">
+        <ul>
+          <li>You sent a total of {{ wrapped.user.recap.count_messages|intcomma }} messages  in 2024</li>
+          <li>The total length of your 2024 chat log is {{wrapped.user.recap.count_characters|intcomma }} characters</li>
+          <ul>
+            <li>At 60 WPM, you spent approximately <b>{{ wrapped.user.typing_time }}</b> typing in chat.</li>
+          </ul>
+          <li>Your first message of the year was "{{ wrapped.user.extra_data.first_message.message }}" sent on {{ wrapped.user.extra_data.first_message.created_at|dtformatswap:"%b %d, %Y" }}</li>
+          <li>Your last message of the year was "{{ wrapped.user.extra_data.last_message.message }}" sent on {{ wrapped.user.extra_data.last_message.created_at|dtformatswap:"%b %d, %Y" }}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="page" id="page-3">
+      <div class="page-title">
+        Chat Stats Pt. 2
+      </div>
+      <div class="page-section">
+        <ul>
+          <li>You sent messages to itswillChat a total of {{ wrapped.user.recap.count_at_bot|intcomma }} times this year.</li>
+          <li>{{ wrapped.user.recap.count_q|intcomma }} of your messages were just a bunch of question marks (???).</li>
+          <li>You sent {{ wrapped.recap.count_ascii|intcomma }} beautiful pieces of ASCII art this year.</li>
+        </ul>
+      </div>
+    </div>
+    {% if wrapped.user.extra_data.highlight %}
+    <div class="page" id="page-4">
+      <div class="page-title">
+        {{ wrapped.user.extra_data.highlight.title }}
+      </div>
+      <div class="page-section">
+        <ul>
+          {% for line in wrapped.user.extra_data.highlight.description %}
+          <li>{{ line }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% endif %}
+    <div class="page" id="page-4">
+      <div class="page-title centered">
+        Top Leaderboard Spots
+      </div>
+      <div class="page-section centered">
+        <div class="full-width" id="leaderboards-wrap">
+        {% for key, value in wrapped.top_leaderboards.items %}
+        {% with counterobj=wrapped.top_leaderboards|keyvalue:key %}
+          <div class="stat-item" id="{{ key }}">
+            <span class="stat-label" id="{{ key }}-label">
+              {% if counterobj.image_list %}
+              {% for name in counterobj.image_list %}
+              {% with imageurl="itswill_org/recap_img/"|add:name|add:'.webp' %}
+              <img class="emote-img" id="{{ name }}-img" src="{% static imageurl %}" title="{{ name }}">
+              {% endwith %}
+              {% endfor %}
+              {% else %}
+              <span class="stat-label" id="{{ key }}-label">{{ counterobj.label }}</span>
+              {% endif %}
+            </span>
+            <span class="stat-value" id="{{ key }}-value">#{{ counterobj.position }}</span>
+          </div>
+          {% endwith %}
+          {% endfor %}
         </div>
-        <div class="section-subtitle" id="range-subtitle">
-        </div>
       </div>
-      <div class="stat-item" id="msg-count">
-        <span class="stat-label" id="msg-count-label">Messages sent:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.user.recap.count_messages|intcomma }}</span>
+    </div>
+    <div class="page" id="page-4">
+      <div class="page-title">
+        Clip Stats
       </div>
-      <div class="stat-item" id="msg-count">
-        <span class="stat-label" id="msg-count-label">Total character count:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.user.recap.count_characters|intcomma }}</span>
+      <div class="page-section">
+        <ul>
+          <li>You clipped {{ wrapped.user.recap.count_clips|intcomma }} moments over the course of this past year.</li>
+          <li>Your clips were viewed a total of {{ wrapped.user.recap.count_clip_views|intcomma }} times.</li>
+          <li>The total watch time on your clips is <b>{{ wrapped.user.clip_watch_time }}</b></li>
+        </ul>
       </div>
-      <div class="stat-item" id="msg-count">
-        <span class="stat-label" id="msg-count-label">Time spent typing at 60 WPM:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.user.typing_time }}</span>
+    </div>
+    <div class="page" id="page-5">
+      <div class="page-title">
+        Your Top Clips of 2024
       </div>
-      <div class="stat-item" id="clip-count">
-        <span class="stat-label" id="clip-count-label">Total chatters:</span>
-        <span class="stat-value" id="clip-count-value">{{ wrapped.user.recap.count_chatters|intcomma }}</span>
+      <div class="page-section">
+        <ol>
+          {% for clip in wrapped.user.extra_data.top_clips %}
+          <li><a href="{{ clip.url }}"><i>{{ clip.title }}</i></a> by {{ clip.creator.display_name }} ({{ clip.view_count|intcomma }} views)</li>
+          {% empty %}
+          You didn't clip anything this year :(
+          {% endfor %}
+        </ol>
       </div>
-      <div class="stat-item" id="clip-views">
-        <span class="stat-label" id="clip-views-label">Clips:</span>
-        <span class="stat-value" id="clip-views-value">{{ wrapped.user.recap.count_clips|intcomma }}</span>
+    </div>
+    <div class="page" id="page-7">
+      <div class="page-subtitle centered">
+        Head back to the <a href="{% url 'itswill_org:wrapped' %}">2024 itswill Community Wrapped</a>
       </div>
-      <div class="stat-item" id="msg-count">
-        <span class="stat-label" id="msg-count-value">Clip views:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.user.recap.count_clip_views|intcomma }}</span>
+      <div class="centered" style="margin-top: 0.8em; margin-bottom: 0.8em;">or</div>
+      <div class="page-subtitle centered">
+        Find another user's 2024 Wrapped
       </div>
-      <div class="stat-item" id="msg-count">
-        <span class="stat-label" id="msg-count-label">Clip duration:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.user.clip_duration }}</span>
+      <div class="page-section centered" id="lookup-form">
+        <form class="recap-form" action="{% url 'itswill_org:wrapped_redirect' %}" method="post">
+          <label class="entry-label" id="username-entry-label" for="id_username">Username:</label>
+          <input type="text" id="id_username" name="username">
+          <input type="submit" class="form-button" id="lookup-submit" value="Find user">
+        </form>
       </div>
-      <div class="stat-item" id="msg-count">
-        <span class="stat-label" id="msg-count-label">Top clip:</span>
-        <span class="stat-value" id="msg-count-value">{{ wrapped.user.extra_data.top_clips.0.url }}</span>
-      </div>
+    </div>
+    <div class="navigation">
+      <button class="nav-button" id="prev-slide" onclick="prevSlide();">&#10094;</button>
+      <button class="nav-button" id="next-slide" onclick="nextSlide();">&#10095;</button>
     </div>
   </div>
 </div>

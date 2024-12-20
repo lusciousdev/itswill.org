@@ -482,18 +482,30 @@ def calculate_all_leaderboards():
     
 @shared_task
 def calculate_everything():
+  start = time.perf_counter()
+  
   year = datetime.datetime.now(TIMEZONE).year
   
   for y in range(2023, year+1):
     for m in range(1, 13):
       calculate_monthly_stats(y, m)
+      print(f"{y}-{m}: calc took {time.perf_counter() - start} seconds")
+      start = time.perf_counter()
     calculate_yearly_stats(y)
+    print(f"{y}-{m}: calc took {time.perf_counter() - start} seconds")
+    start = time.perf_counter()
     
   calculate_alltime_stats()
+  print(f"alltime: calc took {time.perf_counter() - start} seconds")
+  start = time.perf_counter()
   
   calculate_all_leaderboards()
+  print(f"leaderboards: calc took {time.perf_counter() - start} seconds")
+  start = time.perf_counter()
   
   create_wrapped_data()
+  print(f"wrapped: calc took {time.perf_counter() - start} seconds")
+  start = time.perf_counter()
     
 def seconds_to_duration(input : int, abbr : bool = False):
   days, rem = divmod(input, (3600 * 24))
@@ -629,10 +641,12 @@ def create_wrapped_data(year = None):
   
   leaderboards = {}
   
-  for field in overallrecap._meta.get_fields():
-    if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in ["year", "month", "count_chatters", "count_videos", "count_400", "count_plus1", "count_caw"]):
-      leaderboards[field.name] = {userrecap.twitch_user.user_id: getattr(userrecap, field.name) for userrecap in overallrecap.userrecapdata_set.filter(twitch_user__is_bot = False).all().order_by("-" + field.name)}
+  exclude_leaderboards = ["year", "month", "count_chatters", "count_videos", "count_400", "count_plus1", "count_caw", "count_yt", "count_q"]
   
+  for field in overallrecap._meta.get_fields():
+    if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in exclude_leaderboards):
+      leaderboards[field.name] = {userrecap.twitch_user.user_id: getattr(userrecap, field.name) for userrecap in overallrecap.userrecapdata_set.filter(twitch_user__is_bot = False).all().order_by("-" + field.name)}
+      
   userrecap : UserRecapData
   for userrecap in userrecap_set:
     user = userrecap.twitch_user
@@ -644,8 +658,8 @@ def create_wrapped_data(year = None):
     
     userclips = Clip.objects.filter(creator = user, created_at__range = (start_year, end_year)).order_by("-view_count")
     
-    user_dict["typing_time"] = seconds_to_duration(userrecap.count_characters // 5)
-    user_dict["clip_duration"] = seconds_to_duration(userrecap.count_clip_watch)
+    user_wrapped.typing_time = seconds_to_duration(userrecap.count_characters // 5)
+    user_wrapped.clip_watch_time = seconds_to_duration(userrecap.count_clip_watch)
   
     msgs = ChatMessage.objects.filter(commenter = user, created_at__range = (start_year, end_year)).order_by("created_at")
     
@@ -659,11 +673,11 @@ def create_wrapped_data(year = None):
     
     leaderboard_positions = {}
     for field in userrecap._meta.get_fields():
-      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in ["year", "month", "count_chatters", "count_videos", "count_400", "count_plus1", "count_caw"]):
+      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in exclude_leaderboards):
         if user.user_id in leaderboards[field.name]:
           leaderboard_positions[field.name] = (list(leaderboards[field.name].keys()).index(user.user_id), leaderboards[field.name][user.user_id])
           
-    sorted_leaderboard_positions = [(k, v) for k, v in sorted(leaderboard_positions.items(), key = lambda item: item[0], reverse = True)]
+    sorted_leaderboard_positions = [(k, v) for k, v in sorted(leaderboard_positions.items(), key = lambda item: item[0])]
   
     user_dict["top_leaderboard_positions"] = sorted_leaderboard_positions[:5]
     
@@ -680,26 +694,6 @@ def create_wrapped_data(year = None):
           f"CAW {userrecap.count_caw:,} CAWs CAW",
           f"CAW CAW made up {percent_caws:.1%} of your total chat output CAW"
         ],
-        "image": "GriddyCrow.webp",
-      }
-    elif user.user_id == 617816768: # viuphiet_
-      rank_400 = -1 if 'count_400' not in leaderboard_positions else leaderboard_positions["count_400"][0] + 1
-      rank_comment = "Unsurprisingly, you said \"400k\" the most this year of all the chatters."
-      if rank_400 != 1:
-        rank_comment = f"In an insane twist, you weren't the chatter who said \"400k\" the most this year. You were rank {rank_400}."
-        
-      difference = 19 - userrecap.count_400
-      change_comment = f"Compared to last year, you mentioned your salary {abs(difference)} " + ("fewer times" if difference > 0 else "more time")
-      if difference == 0:
-        change_comment = f"This is the exact same number of times as in 2023. How odd."
-      highlight = {
-        "title": "Anyone know how much this guy makes?",
-        "description": [
-          f"You mentioned the fact that you make 400k {userrecap.count_400:,} times this year.",
-          change_comment,
-          rank_comment,
-        ],
-        "image": "money.jpg"
       }
     elif user.user_id == 30512356: # CubsFanatic
       rank_cum = -1 if 'count_cum' not in leaderboard_positions else leaderboard_positions["count_cum"][0] + 1
@@ -712,38 +706,69 @@ def create_wrapped_data(year = None):
         "description": [
           f"You said cum {userrecap.count_cum:,} times this year.",
           rank_comment,
-          f"Word on the street is that you've retired. But will you return to secure rank 1 2025?",
+          f"Can we count on you getting #1 in 2025?",
         ],
-        "image": "itswill7.webp"
       }
     elif user.user_id == 528474814: # allknowing89
       highlight = {
         "title": "Chatter extraordinaire",
         "description": [
           f"In October you were the first (and only) person this year who sent more chat messages than both itswillChat and Nightbot in a single month.",
-          f"You send 5,757 messages that month, Nightbot only sent 4,385",
+          f"You send 5,757 messages that month, Nightbot only sent 4,385.",
         ],
-        "image": "itswillChat.webp"
       }
     elif user.user_id == 43246220: # itswill
       highlight = {
         "title": "hello mr. streamer",
         "description": [
-          f""
+          f"{userrecap.count_yt:,} of your {userrecap.count_messages:,} messages were youtube video links. Shameless self promo PogO.",
+          f"You typed cum {userrecap.count_cum:,} times. So much for being the cum guy."
         ],
-        "image": ""
       }
     elif user.user_id == 82920215: # lusciousdev
       highlight = {
-        "title": "",
+        "title": "nerd",
         "description": [
-          f""
+          "you made this website you already have all the info.",
+          "just go look at the database, jackass"
         ],
-        "image": ""
+      }
+    elif user.user_id == 185681366: # Brettdog_
+      highlight = {
+        "title": "Hate to be the bearer of bad news...",
+        "description": [
+          "but I just found out that not everyone in chat has access to the exclusive level 5 hype train emote GriddyGoose",
+          f"But you do, and you typed it {userrecap.count_goose:,} times this year.",
+          f"The whole chat followed your lead and typed {overallrecap.count_goose:,} times.",
+          f"Can we get 5 gifted to kick off a hype train so we all have the chance to get the exclusive level 5 hype train emote the GriddyGoose?"
+        ],
+      }
+    elif user.user_id == 32678027: # widebuh
+      rank_nessie = -1 if 'count_nessie' not in leaderboard_positions else leaderboard_positions["count_nessie"][0] + 1
+      rank_comment = f"You easily got rank {rank_nessie} on the nessiePls leaderboards."
+      if rank_nessie > 1:
+        rank_comment = f"Wtf. You weren't rank 1 nessiePls? You ended up as rank {rank_nessie} on the leaderboard."
+    
+      highlight = {
+        "title": "nessiePls nessiePls nessiePls",
+        "description": [
+          f"You went crazy with the nessiePls this year, you managed to send {userrecap.count_nessie:,}.",
+          rank_comment,
+        ],
+      }
+    elif user.user_id == 446615592: # twenty_five (ChickenWalk)
+      caw_rank = -1 if 'count_chicken' not in leaderboard_positions else leaderboard_positions['count_chicken'][0] + 1
+      highlight = {
+        "title": "chickenWalk",
+        "description": [
+          f"{userrecap.count_chicken:,} chickenWalks",
+          f"Rank #{caw_rank} chickenWalker",
+        ]
       }
     else:
       for (category, (rank, count)) in sorted_leaderboard_positions:
         if rank > 100:
+          highlight = None
           break
         if category == "count_messages":
           highlight = {
@@ -752,16 +777,15 @@ def create_wrapped_data(year = None):
               f"You sent a total of {count:,} messages over the course of this year.",
               f"This placed you at rank {rank} among the entire itswill chat.",
             ],
-            "image": ""
           }
           break
         elif category == "count_clips":
           highlight = {
-            "title": "Precious moments",
+            "title": "Are you Clipper?",
             "description": [
-              f"You clipped a total of "
+              f"Wait, no, you just created {count} clips this year."
+              f"You managed to reach rank #{rank} on the clipper leaderboards!"
             ],
-            "image": ""
           }
           break
         elif category == "count_clip_views":
@@ -769,19 +793,17 @@ def create_wrapped_data(year = None):
             "title": "All eyes on you.",
             "description": [
               f"Your clips got a total of {count:,} views over this past year.",
-              f""
+              f"That kind of mass appeal secured you rank {rank:,} on the clip view leaderboards."
             ],
-            "image": ""
           }
           break
         elif category == "count_ascii":
           highlight = {
-            "title": "All pictures of Garfield I assume.",
+            "title": "All pictures of Garfield I hope",
             "description": [
               f"You posted {count:,} ASCIIs this year.",
               f"All that beautiful art earned you the #{rank} spot on the ASCII leaderboard."
             ],
-            "image": ""
           }
           break
         elif category == "count_seven":
@@ -791,7 +813,6 @@ def create_wrapped_data(year = None):
               f"You sent {count:,} itswill7s in the chat this year.",
               f"All those salutes put you at #{rank} on the leaderboard."
             ],
-            "image": "itswill7.webp"
           }
           break
         elif category == "count_pound":
@@ -801,43 +822,62 @@ def create_wrapped_data(year = None):
               f"You pounded your fellow chatters a total of {count:,} times this past year.",
               f"That amount of pounding earned you rank {rank} among the itswill chat.",
             ],
-            "image": "itswillPound.webp"
           }
           break
         elif category == "count_love":
           highlight = {
-            "title": "",
+            "title": "Love is in the air",
             "description": [
-              
+              f"You typed itswilL, itswillLove, etc. {count:,} times this year.",
+              f"You're lovely chatting got you rank {rank:,} in love emotes for 2024."
             ],
-            "image": "itswillLove.webp"
           }
           break
         elif category == "count_pog":
           highlight = {
-            "title": "",
+            "title": "You had an exciting year",
             "description": [
-              
+              f"You typed the various Pog emotes {count:,} times this year",
+              f"That makes you the #{rank:,} most pogged chatter!"
             ],
-            "image": ""
           }
           break
         elif category == "count_shoop":
           highlight = {
-            "title": "",
+            "title": "ShoopDaWhoop supremacy",
             "description": [
-              
+              f"You typed ShoopDaWhoop {count:,} times this year. Fuck PogChamp am I right?",
+              f"You were the #{rank:,} ShoopDaWhooper of the year."
             ],
-            "image": ""
           }
           break
-        elif category == "count_clip_views":
+        elif category == "count_spin":
           highlight = {
-            "title": "",
+            "title": "AROUND THE WORLD",
             "description": [
-              
+              f"You posted {count:,} borpaSpin and other spin related emotes this year",
+              f"That's a lot of piss breaks listening to Daft Punk.",
+              f"You snagged rank {rank:,} on the leaderboard!"
             ],
-            "image": ""
+          }
+          break
+        elif category == "count_chicken":
+          highlight = {
+            "title": "We chicken we walk",
+            "description": [
+              f"You posted {count:,} chickenWalks this year",
+              f"NO BORPA YEP COCK am I right?",
+              f"You earned yourself rank {rank:,} on the chickenWalk leaderboard!"
+            ],
+          }
+          break
+        elif category == "count_glorp":
+          highlight = {
+            "title": "Paging all glorps 📡",
+            "description": [
+              f"You glorped {count:,} times this year.",
+              f"That was sufficient glorping to lock in rank {rank:,} overall on the glorp leaderboards."
+            ]
           }
           break
           

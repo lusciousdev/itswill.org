@@ -39,3 +39,7 @@ def dtformatswap(dtstring : str, format : str):
 @register.filter
 def month_name(month_number):
   return calendar.month_name[month_number]
+
+@register.filter
+def field_from_name(obj, field_name):
+  return obj._meta.get_field(field_name)

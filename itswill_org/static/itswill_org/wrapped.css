@@ -62,6 +62,10 @@ li {
   font-size: 1.5em;
 }
 
+.page-subtitle {
+  font-size: 1.33em;
+}
+
 .centered {
   width: 100%;
   flex-basis: 100%;
@@ -92,4 +96,40 @@ li {
 
 .nav-button:active {
   filter: brightness(75%);
+}
+
+.full-width {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-light);
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 5px 5px 5px;
+  width: 75%;
+}
+
+.stat-item:hover {
+  background-color: #ffffff20;
+}
+
+.stat-label {
+  margin-right: 25px;
+}
+
+.stat-value {
+  color: var(--accent-color);
+}
+
+.emote-img {
+  height: 28px;
+  width: auto;
+  margin: 0 1px 0 1px;
 }

@@ -20,7 +20,7 @@
   <div class="presentation" id="wrapped-presentation">
     <div class="page show" id="page-1">
       <div class="page-title centered" id="main-title">
-        The 2024 itswill Chat Wrapped
+        The 2024 itswill Community Wrapped
       </div>
       if you find somehow found this and leak it i'll ban you forever
     </div>
@@ -48,11 +48,12 @@
         <ul>
           <li>itswillChat was @ed by the chat {{ wrapped.recap.count_at_bot|intcomma }} times.</li>
           <li>The jackasses in chat spammed +1s {{ wrapped.jackass_count|intcomma }} times this year.</li>
+          <li>The artists in the community sent a total of {{ wrapped.recap.count_ascii|intcomma }} ASCIIs this year.</li>
           <li>{{ wrapped.recap.count_q|intcomma }} messages were just a bunch of question marks (???)</li>
           <li>
-            The IJBOL emote was made by chumbo_crumbo on June 20th, 2024. 
+            The beautiful IJBOL emote was made by chumbo_crumbo on June 20th, 2024. 
             <br>
-            But did you know the first instance of IJBOL in the itswill chat was in a {{ wrapped.extra_data.first_ijbol.commenter.display_name }} message on {{ wrapped.extra_data.first_ijbol.created_at|dtformatswap:"%b %d, %Y" }}?
+            But did you know the first IJBOL of 2024 was a {{ wrapped.extra_data.first_ijbol.commenter.display_name }} message on {{ wrapped.extra_data.first_ijbol.created_at|dtformatswap:"%b %d, %Y" }}?
           </li>
           <ul>
             <li><b>[{{ wrapped.extra_data.first_ijbol.created_at|dtformatswap:"%Y-%m-%d %I:%M:%S %p" }}] {{ wrapped.extra_data.first_ijbol.commenter.display_name }}:</b> {{ wrapped.extra_data.first_ijbol.message }}</li>
