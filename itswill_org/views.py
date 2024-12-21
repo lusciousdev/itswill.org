@@ -178,7 +178,10 @@ class RecapView(generic.TemplateView):
       try:
         twitchuser = TwitchUser.objects.get(display_name__iexact = username)
       except TwitchUser.DoesNotExist:
-        raise Http404("That user does not exist or has not chatted.")
+        try:
+          twitchuser = TwitchUser.objects.get(login__iexact = username)
+        except:
+          raise Http404("That user does not exist or has not chatted.")
       
       try:
         userrecap = UserRecapData.objects.get(overall_recap = overallrecap, twitch_user = twitchuser)
@@ -275,7 +278,10 @@ class Wrapped2024UserView(generic.TemplateView):
     try:
       twitchuser = TwitchUser.objects.get(display_name__iexact = username)
     except TwitchUser.DoesNotExist:
-      raise Http404("That user does not exist or has not chatted.")
+      try:
+        twitchuser = TwitchUser.objects.get(login__iexact = username)
+      except:
+        raise Http404("That user does not exist or has not chatted.")
     
     try:
       user_wrapped = UserWrappedData.objects.get(overall_wrapped = overall_wrapped, twitch_user = twitchuser)

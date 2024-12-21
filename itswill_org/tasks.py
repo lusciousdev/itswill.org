@@ -545,6 +545,9 @@ def seconds_to_duration(input : int, abbr : bool = False):
     msd_hit = True
   if msd_hit or minutes > 0:
     output += f"{minutes}m {seconds}s" if abbr else f"{minutes} minutes and {seconds} seconds"
+   
+  if not msd_hit:
+    output += f"{seconds} seconds"
   
   return output
     
@@ -789,11 +792,13 @@ def create_wrapped_data(year = None, skip_users = False):
       }
     elif user.user_id == 446615592: # twenty_five (ChickenWalk)
       caw_rank = -1 if 'count_chicken' not in all_leaderboard_positions else all_leaderboard_positions['count_chicken'][0]
+      percent_chicken = (len("chickenWalk") * userrecap.count_chicken) / max(userrecap.count_characters, 1)
       highlight = {
         "title": "chickenWalk",
         "description": [
           f"{userrecap.count_chicken:,} chickenWalks",
           f"Rank #{caw_rank} chickenWalker",
+          f"chickenWalk is {percent_chicken:.0%} of your total chat history."
         ]
       }
     else:
