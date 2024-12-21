@@ -597,7 +597,7 @@ def create_wrapped_data(year = None, skip_users = False):
   ijbol_messages = msgs.filter(message__iregex = ".*IJBOL.*")
   overall_dict["first_ijbol"] = ijbol_messages.first().to_json()
   
-  all_combo_regex_str = r".*([0-9]+)x ([A-Za-z]+) combo.*"
+  all_combo_regex_str = r".*combo.*"
   reg_combo_regex_str = r"((.+) ruined the )?([0-9]+)x ([A-Za-z]+) combo.*"
   big_combo_regex_str = r"you don't ruin ([0-9]+)x ([A-Za-z]+) combos ([A-Za-z0-9_\-\.]+).*"
   reg_combo_regex = re.compile(reg_combo_regex_str, re.IGNORECASE)
