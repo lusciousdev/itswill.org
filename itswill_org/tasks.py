@@ -549,7 +549,7 @@ def seconds_to_duration(input : int, abbr : bool = False):
   return output
     
 @shared_task
-def create_wrapped_data(year = None):
+def create_wrapped_data(year = None, skip_users = False):
   if year is None:
     year = datetime.datetime.now(TIMEZONE).year
   
@@ -597,20 +597,21 @@ def create_wrapped_data(year = None):
   ijbol_messages = msgs.filter(message__iregex = ".*IJBOL.*")
   overall_dict["first_ijbol"] = ijbol_messages.first().to_json()
   
-  combo_regex_str = r"((.+) ruined the )?([0-9]+)x ([A-Za-z]+) combo.*"
-  backup_combo_regex_str = r"you don't ruin ([0-9]+)x ([A-Za-z]+) combos ([A-Za-z0-9_\-\.]+) .*"
-  combo_regex = re.compile(combo_regex_str, re.IGNORECASE)
-  backup_combo_regex = re.compile(backup_combo_regex_str, re.IGNORECASE)
+  all_combo_regex_str = r".*([0-9])x ([A-Za-z]+) combos?.*"
+  reg_combo_regex_str = r"((.+) ruined the )?([0-9]+)x ([A-Za-z]+) combo.*"
+  big_combo_regex_str = r"you don't ruin ([0-9]+)x ([A-Za-z]+) combos ([A-Za-z0-9_\-\.]+) .*"
+  reg_combo_regex = re.compile(reg_combo_regex_str, re.IGNORECASE)
+  big_combo_regex = re.compile(big_combo_regex_str, re.IGNORECASE)
   
-  combo_messages = msgs.filter(commenter_id = 100135110, message__iregex = combo_regex_str)
+  combo_messages = msgs.filter(commenter_id = 100135110, message__iregex = all_combo_regex_str)
   
   combos = []
   emote_combo_counts = {}
   for message in combo_messages:
-    msg_match = combo_regex.match(message.message)
+    msg_match = reg_combo_regex.match(message.message)
     
     if not msg_match:
-      msg_match = backup_combo_regex.match(message.message)
+      msg_match = big_combo_regex.match(message.message)
       
       if not msg_match:
         print("Message does not match either combo regex")
@@ -655,6 +656,9 @@ def create_wrapped_data(year = None):
   
   overall_wrapped.extra_data = overall_dict
   overall_wrapped.save()
+  
+  if skip_users:
+    return
   
   print("Overall wrapped data created. Moving on to user data.")
   
