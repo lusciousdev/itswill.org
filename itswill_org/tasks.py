@@ -748,7 +748,7 @@ def create_wrapped_data(year = None, skip_users = False):
         "title": "Chatter extraordinaire",
         "description": [
           f"In October you were the first (and only) person this year who sent more chat messages than both itswillChat and Nightbot in a single month.",
-          f"You send 5,757 messages that month, Nightbot only sent 4,385.",
+          f"You sent 5,757 messages that month, Nightbot only sent 4,385.",
         ],
       }
     elif user.user_id == 43246220: # itswill
@@ -773,7 +773,7 @@ def create_wrapped_data(year = None, skip_users = False):
         "description": [
           "but I just found out that not everyone in chat has access to the exclusive level 5 hype train emote GriddyGoose",
           f"But you do, and you typed it {userrecap.count_goose:,} times this year.",
-          f"The whole chat followed your lead and typed {overallrecap.count_goose:,} times.",
+          f"The whole chat followed your lead and typed it {overallrecap.count_goose:,} times.",
           f"Can we get 5 gifted to kick off a hype train so we all have the chance to get the exclusive level 5 hype train emote the GriddyGoose?"
         ],
       }

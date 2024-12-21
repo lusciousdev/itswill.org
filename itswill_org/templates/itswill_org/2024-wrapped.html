@@ -153,11 +153,12 @@
       </div>
     </div>
     <div class="page" id="page-8">
-      <div class="page-title centered">
+      <div class="page-bigtitle centered">
         Thanks for chatting in 2024!
       </div>
+      <div class="centered" style="margin-top: 1em; margin-bottom: 1em;"></div>
       <div class="page-subtitle centered">
-        Find your 2024 Wrapped
+        Find your personal 2024 Wrapped
       </div>
       <div class="page-section centered" id="lookup-form">
         <form class="recap-form" action="{% url 'itswill_org:wrapped_redirect' %}" method="post">
@@ -165,6 +166,10 @@
           <input type="text" id="id_username" name="username">
           <input type="submit" class="form-button" id="lookup-submit" value="Find user">
         </form>
+      </div>
+      <div class="centered" style="margin-top: 0.4em; margin-bottom: 0.4em;">or</div>
+      <div class="page-subtitle centered">
+        Check out the <a href="{% url 'itswill_org:recap_year' 2024 %}">2024 recap data</a>
       </div>
     </div>
     <div class="navigation">
