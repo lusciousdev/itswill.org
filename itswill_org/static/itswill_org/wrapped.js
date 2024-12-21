@@ -60,10 +60,10 @@ function handleFiveRecord(data)
 
   if ($("#five-record").length != 0)
   {
-    $("#early").html("Will went live early {0} times ({1} of streams)".format(data["early"], earlyPerc.toLocaleString(undefined, {style: "percent", maximumFractionDigits: 1})));
-    $("#on-time").html("He went live on time {0} times ({1} of streams)".format(data["on-time"], ontimePerc.toLocaleString(undefined, {style: "percent", maximumFractionDigits: 1})));
-    $("#late").html("He was late for {0} streams ({1} of streams)".format(data["total"] - data["early"] - data["on-time"], latePerc.toLocaleString(undefined, {style: "percent", maximumFractionDigits: 1})));
-    $("#total-streams").html("That puts us at {0} days streamed in 2024".format(data["total"]));
+    $("#early").html("Will went live early <b>{0}</b> times ({1} of streams)".format(data["early"], earlyPerc.toLocaleString(undefined, {style: "percent", maximumFractionDigits: 1})));
+    $("#on-time").html("He went live on time <b>{0}</b> times ({1} of streams)".format(data["on-time"], ontimePerc.toLocaleString(undefined, {style: "percent", maximumFractionDigits: 1})));
+    $("#late").html("He was late for <b>{0}</b> streams ({1} of streams)".format(data["total"] - data["early"] - data["on-time"], latePerc.toLocaleString(undefined, {style: "percent", maximumFractionDigits: 1})));
+    $("#total-streams").html("That puts us at <b>{0}</b> days streamed in 2024".format(data["total"]));
   }
 }
 
