@@ -73,10 +73,10 @@ class RecapDataMixin(models.Model):
     abstract = True
   
   count_messages = StatField(short_name = "messages", verbose_name = "Messages sent:", default = 0)
-  count_characters = BigStatField(short_name = "characters", show_recap = False, show_leaderboard = False, verbose_name = "Total characters typed:", unit = "chatter", default = 0)
+  count_characters = BigStatField(short_name = "characters", show_recap = False, show_leaderboard = False, verbose_name = "Characters typed:", unit = "chatter", default = 0)
   count_clips = StatField(short_name = "clips", verbose_name = "Clips created:", unit = "clip", default = 0)
-  count_clip_watch = BigStatField(short_name = "watchtime", show_recap = False, show_leaderboard = False, verbose_name = "Total clip watch time:", unit = "second", default = 0)
-  count_clip_views = StatField(short_name = "views", verbose_name = "Views on those clips:", unit = "clip view", default = 0)
+  count_clip_watch = BigStatField(short_name = "watchtime", show_recap = False, show_leaderboard = False, verbose_name = "Clip watch time:", unit = "second", default = 0)
+  count_clip_views = StatField(short_name = "views", verbose_name = "Clip views:", unit = "clip view", default = 0)
   count_ascii = StatField(short_name = "ascii", verbose_name = "ASCIIs sent:", unit = "ASCII", default = 0)
   count_chatters = StatField(short_name = "chatters", verbose_name = "Number of chatters:", unit = "chatter", default = 0)
   count_videos = StatField(short_name = "videos", verbose_name = "Number of videos:", unit = "video", default = 0)
