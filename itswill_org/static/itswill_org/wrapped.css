@@ -56,6 +56,9 @@ li {
 
 .show {
   display: flex!important;
+
+  transition-duration: 5s;
+  transition-property: all;
 }
 
 .page-bigtitle {
