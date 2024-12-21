@@ -7,7 +7,7 @@ import requests
 from random import randint
 import time
 
-from .tasks import get_random_message, post_random_message
+from .tasks import get_random_message, get_last_message, post_random_message
 from .models import *
 
 @csrf_exempt
@@ -46,6 +46,45 @@ def get_random_message_api(request):
     return HttpResponse(" ", 200)
   
   return HttpResponse(get_random_message(user), 200)
+
+@csrf_exempt
+def get_last_message_api(request):
+  if request.method != "GET":
+    return HttpResponse("Invalid request type.", 501)
+  
+  altuser = request.GET.get("user", "")
+  altuser = altuser.strip("@")
+
+  user = None
+  if altuser == "":
+    user = None
+  elif altuser != "" and altuser != "null" and altuser is not None:
+    try:
+      user = TwitchUser.objects.get(login = altuser)
+    except TwitchUser.DoesNotExist:
+      return HttpResponse(f"User \"{altuser}\" does not exist.", 404)
+  
+  return HttpResponse(get_last_message(user))
+
+@csrf_exempt
+def get_last_message_2024_api(request):
+  if request.method != "GET":
+    return HttpResponse("Invalid request type.", 501)
+  
+  altuser = request.GET.get("user", "")
+  altuser = altuser.strip("@")
+
+  user = None
+  if altuser == "":
+    user = None
+  elif altuser != "" and altuser != "null" and altuser is not None:
+    try:
+      user = TwitchUser.objects.get(login = altuser)
+    except TwitchUser.DoesNotExist:
+      return HttpResponse(f"User \"{altuser}\" does not exist.", 404)
+  
+  return JsonResponse(get_last_message(user, (datetime.datetime(2024, 1, 1, 0, 0, 0, 1, TIMEZONE), datetime.datetime(2024, 12, 31, 23, 59, 59, 999999, TIMEZONE)), True))
+  
 
 @csrf_exempt
 def get_random_clip(request):
@@ -101,6 +140,15 @@ def get_random_garfield(request):
   random_garf = garf_asciis.all()[randint(0, ascii_count - 1)]
   
   return HttpResponse(random_garf.text, content_type = "charset=utf-8")
+
+@csrf_exempt
+def get_live_at_five_record(request):
+  if request.method != "GET":
+    return HttpResponse("Invalid request type.", 501)
+  
+  record = requests.get("https://liveatfive.net/api/v1/record/?year=2024")
+  
+  return JsonResponse(record.json())
 
 @csrf_exempt
 def test_endpoint(request):

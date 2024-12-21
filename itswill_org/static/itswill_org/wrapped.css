@@ -58,6 +58,10 @@ li {
   display: flex!important;
 }
 
+.page-bigtitle {
+  font-size: 1.75em;
+}
+
 .page-title {
   font-size: 1.5em;
 }
@@ -130,6 +134,12 @@ li {
 
 .emote-img {
   height: 28px;
+  width: auto;
+  margin: 0 1px 0 1px;
+}
+
+.inline-emote-img {
+  height: 1.2em;
   width: auto;
   margin: 0 1px 0 1px;
 }

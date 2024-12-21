@@ -290,16 +290,14 @@ class Wrapped2024UserView(generic.TemplateView):
     for field_name, (position, count) in user_wrapped.extra_data["top_leaderboard_positions"]:
       field = user_wrapped.recap._meta.get_field(field_name)
       if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField")):
-        if (type(field) == StringCountField):
-          top_boards[field.name] = {}
-          top_boards[field.name]["label"] = field.verbose_name
-          top_boards[field.name]["show"] = field.show_recap
-          top_boards[field.name]["position"] = position
-          top_boards[field.name]["count"] = count
-          if field.use_images:
-            top_boards[field.name]["image_list"] = field.emote_list
-          else:
-            top_boards[field.name]["image_list"] = None
+        top_boards[field.name] = {}
+        top_boards[field.name]["label"] = field.verbose_name
+        top_boards[field.name]["position"] = position
+        top_boards[field.name]["count"] = count
+        if (type(field) == StringCountField) and field.use_images:
+          top_boards[field.name]["image_list"] = field.emote_list
+        else:
+          top_boards[field.name]["image_list"] = None
     
     data["wrapped"]["top_leaderboards"] = top_boards
       

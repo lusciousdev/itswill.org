@@ -204,6 +204,12 @@ class TwitchUser(models.Model):
   
   is_bot = models.BooleanField(default = False)
   
+  class Meta:
+    indexes = [
+      models.Index(fields = [ "login", ]),
+      models.Index(fields = [ "created_at", ]),
+    ]
+  
   def to_json(self):
     return {
       "user_id": self.user_id,
@@ -262,6 +268,9 @@ class ChatMessage(models.Model):
   
   class Meta:
     ordering = ( "created_at", )
+    indexes = [
+      models.Index(fields = ["created_at", ]),
+    ]
   
   def __str__(self):
     timestr = self.created_at.strftime("%Y-%m-%d %H:%M:%S")
@@ -303,6 +312,10 @@ class Clip(models.Model):
   
   class Meta:
     ordering = ( "view_count", )
+    indexes = [
+      models.Index(fields = [ "created_at", ]),
+      models.Index(fields = [ "view_count", ]),
+    ]
     
   def to_json(self):
     return {
@@ -344,6 +357,10 @@ class Video(models.Model):
   
   class Meta:
     ordering = ( "created_at", )
+    indexes = [
+      models.Index(fields = [ "created_at", ]),
+      models.Index(fields = [ "view_count", ]),
+    ]
   
 class Pet(models.Model):
   acquired = models.BooleanField(default = True)

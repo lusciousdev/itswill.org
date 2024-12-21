@@ -10,7 +10,12 @@
 
 {% block scripts %}
 <script src="{% static 'jquery-3.7.1.min.js' %}"></script>
-<script src="{% static 'itswill_org/wrapped.js' %}"></script>
+<script src="{% static 'itswill_org/wrapped.js' %}"
+        defer
+        data-lastmsgapi="{% url 'itswill_org:api_last_message_2024' %}"
+        data-fiverecordapi="{% url 'itswill_org:api_five_record' %}"
+        data-overall="true">
+</script>
 {% endblock %}
 
 {% block title %}itswill 2024 Wrapped{% endblock %}
@@ -22,7 +27,6 @@
       <div class="page-title centered" id="main-title">
         The 2024 itswill Community Wrapped
       </div>
-      if you find somehow found this and leak it i'll ban you forever
     </div>
     <div class="page" id="page-2">
       <div class="page-title">
@@ -36,7 +40,7 @@
             <li>At 60 WPM, the itswill community spent approximately <b>{{ wrapped.typing_time }}</b> typing their chat messages.</li>
           </ul>
           <li>The first message of the year was "{{ wrapped.extra_data.first_message.message }}" sent by {{ wrapped.extra_data.first_message.commenter.display_name }}</li>
-          <li>The last message of the year was "{{ wrapped.extra_data.last_message.message }}" sent by {{ wrapped.extra_data.last_message.commenter.display_name }}</li>
+          <li id="last-msg">The last message of the year was "{{ wrapped.extra_data.last_message.message }}" sent by {{ wrapped.extra_data.last_message.commenter.display_name }}</li>
         </ul>
       </div>
     </div>
@@ -132,8 +136,28 @@
       </div>
     </div>
     <div class="page" id="page-7">
+      <div class="page-title">
+        Mr. Live at Five?
+      </div>
+      <div class="page-section">
+        <div class="section-title">
+          The 2024 Record
+        </div>
+        <ul id="five-record">
+          <li id="early">38 early</li>
+          <li id="on-time">90 on time</li>
+          <li id="late">162 late</li>
+          <li id="total-streams">290 streams</li>
+          <li>16 minute buffer <img class="inline-emote-img" src="{% static "itswill_org/recap_img/ICANT.webp" %}" title="ICANT"></li>
+        </ul>
+      </div>
+    </div>
+    <div class="page" id="page-8">
       <div class="page-title centered">
-        Find your recap
+        Thanks for chatting in 2024!
+      </div>
+      <div class="page-subtitle centered">
+        Find your 2024 Wrapped
       </div>
       <div class="page-section centered" id="lookup-form">
         <form class="recap-form" action="{% url 'itswill_org:wrapped_redirect' %}" method="post">

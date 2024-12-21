@@ -40,6 +40,27 @@ def get_random_message(user):
     
   return response_str
 
+def get_last_message(user, range = None, return_json = False):
+  if user != None:
+    user_message_set = ChatMessage.objects.filter(commenter = user).order_by("created_at")
+  else:
+    user_message_set = ChatMessage.objects.order_by("created_at")
+    
+  if range:
+    user_message_set = user_message_set.filter(created_at__range = range)
+    
+  last_message = user_message_set.last()
+  
+  if return_json:
+    return {
+      "message": last_message.message,
+      "commenter": last_message.commenter.display_name,
+      "timestamp": last_message.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+      "prettytime": last_message.created_at.astimezone(TIMEZONE).strftime("%b %d, %Y"),
+    }
+  else:
+    return last_message.localtz_str()
+
 @shared_task
 def post_random_message(user_id, response_url):
   if user_id != -1:
@@ -641,10 +662,11 @@ def create_wrapped_data(year = None):
   
   leaderboards = {}
   
-  exclude_leaderboards = ["year", "month", "count_chatters", "count_videos", "count_400", "count_plus1", "count_caw", "count_yt", "count_q"]
+  invalid_fields = ["year", "month", "count_chatters", "count_videos"]
+  exclude_leaderboards = ["year", "month", "count_chatters", "count_videos", "count_clip_watch", "count_400", "count_plus1", "count_caw", "count_yt", "count_q"]
   
   for field in overallrecap._meta.get_fields():
-    if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in exclude_leaderboards):
+    if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in invalid_fields):
       leaderboards[field.name] = {userrecap.twitch_user.user_id: getattr(userrecap, field.name) for userrecap in overallrecap.userrecapdata_set.filter(twitch_user__is_bot = False).all().order_by("-" + field.name)}
       
   userrecap : UserRecapData
@@ -672,20 +694,25 @@ def create_wrapped_data(year = None):
     user_dict["top_clips"] = [clip.to_json() for clip in userclips[:5]] if len(userclips) > 1 else None
     
     leaderboard_positions = {}
+    all_leaderboard_positions = {}
     for field in userrecap._meta.get_fields():
-      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in exclude_leaderboards):
+      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in invalid_fields):
         if user.user_id in leaderboards[field.name]:
-          leaderboard_positions[field.name] = (list(leaderboards[field.name].keys()).index(user.user_id), leaderboards[field.name][user.user_id])
+          if leaderboards[field.name][user.user_id] > 0:
+            pos = (list(leaderboards[field.name].keys()).index(user.user_id) + 1, leaderboards[field.name][user.user_id])
+            if field.name not in exclude_leaderboards:
+              leaderboard_positions[field.name] = pos
+            all_leaderboard_positions[field.name] = pos
           
-    sorted_leaderboard_positions = [(k, v) for k, v in sorted(leaderboard_positions.items(), key = lambda item: item[0])]
+    sorted_leaderboard_positions = [(k, v) for k, v in sorted(leaderboard_positions.items(), key = lambda item: item[1][0])]
+    sorted_all_leaderboard_positions = [(k, v) for k, v in sorted(all_leaderboard_positions.items(), key = lambda item: item[1][0])]
   
     user_dict["top_leaderboard_positions"] = sorted_leaderboard_positions[:5]
     
     highlight = {}
     
     if user.user_id == 444861963: # ACrowOutside
-      print(user.to_json())
-      caw_rank = -1 if 'count_caw' not in leaderboard_positions else leaderboard_positions['count_caw'][0] + 1
+      caw_rank = -1 if 'count_caw' not in all_leaderboard_positions else all_leaderboard_positions['count_caw'][0]
       percent_caws = (3 * userrecap.count_caw) / max(userrecap.count_characters, 1)
       highlight = {
         "title": "CAW",
@@ -696,7 +723,7 @@ def create_wrapped_data(year = None):
         ],
       }
     elif user.user_id == 30512356: # CubsFanatic
-      rank_cum = -1 if 'count_cum' not in leaderboard_positions else leaderboard_positions["count_cum"][0] + 1
+      rank_cum = -1 if 'count_cum' not in all_leaderboard_positions else all_leaderboard_positions["count_cum"][0]
       rank_comment = "To no one's surprise, you managed to secure rank 1 cum mentions."
       if rank_cum > 1:
         rank_comment = f"I didn't think this was possible but you got dethroned as cum leader. You ended up as rank {rank_cum} on the leaderboard."
@@ -744,7 +771,7 @@ def create_wrapped_data(year = None):
         ],
       }
     elif user.user_id == 32678027: # widebuh
-      rank_nessie = -1 if 'count_nessie' not in leaderboard_positions else leaderboard_positions["count_nessie"][0] + 1
+      rank_nessie = -1 if 'count_nessie' not in all_leaderboard_positions else all_leaderboard_positions["count_nessie"][0]
       rank_comment = f"You easily got rank {rank_nessie} on the nessiePls leaderboards."
       if rank_nessie > 1:
         rank_comment = f"Wtf. You weren't rank 1 nessiePls? You ended up as rank {rank_nessie} on the leaderboard."
@@ -757,7 +784,7 @@ def create_wrapped_data(year = None):
         ],
       }
     elif user.user_id == 446615592: # twenty_five (ChickenWalk)
-      caw_rank = -1 if 'count_chicken' not in leaderboard_positions else leaderboard_positions['count_chicken'][0] + 1
+      caw_rank = -1 if 'count_chicken' not in all_leaderboard_positions else all_leaderboard_positions['count_chicken'][0]
       highlight = {
         "title": "chickenWalk",
         "description": [
@@ -767,7 +794,7 @@ def create_wrapped_data(year = None):
       }
     else:
       for (category, (rank, count)) in sorted_leaderboard_positions:
-        if rank > 100:
+        if rank > 250:
           highlight = None
           break
         if category == "count_messages":

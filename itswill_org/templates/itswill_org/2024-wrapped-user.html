@@ -10,7 +10,12 @@
 
 {% block scripts %}
 <script src="{% static 'jquery-3.7.1.min.js' %}"></script>
-<script src="{% static 'itswill_org/wrapped.js' %}"></script>
+<script src="{% static 'itswill_org/wrapped.js' %}"
+        defer
+        data-lastmsgapi="{% url 'itswill_org:api_last_message_2024' %}?user={{ wrapped.user.recap.twitch_user.display_name }}"
+        data-fiverecordapi="{% url 'itswill_org:api_five_record' %}"
+        data-overall="false">
+</script>
 {% endblock %}
 
 {% block title %}itswill 2024 Wrapped{% endblock %}
@@ -22,7 +27,6 @@
       <div class="page-title centered" id="main-title">
         {{ wrapped.user.recap.twitch_user.display_name }}'s 2024 itswill Chat Wrapped
       </div>
-      if you find somehow found this and leak it i'll ban you forever
     </div>
     <div class="page" id="page-2">
       <div class="page-title">
@@ -30,13 +34,13 @@
       </div>
       <div class="page-section">
         <ul>
-          <li>You sent a total of {{ wrapped.user.recap.count_messages|intcomma }} messages  in 2024</li>
-          <li>The total length of your 2024 chat log is {{wrapped.user.recap.count_characters|intcomma }} characters</li>
+          <li>You sent a total of <b>{{ wrapped.user.recap.count_messages|intcomma }}</b> messages  in 2024</li>
+          <li>The total length of your 2024 chat log is <b>{{wrapped.user.recap.count_characters|intcomma }}</b> characters</li>
           <ul>
             <li>At 60 WPM, you spent approximately <b>{{ wrapped.user.typing_time }}</b> typing in chat.</li>
           </ul>
           <li>Your first message of the year was "{{ wrapped.user.extra_data.first_message.message }}" sent on {{ wrapped.user.extra_data.first_message.created_at|dtformatswap:"%b %d, %Y" }}</li>
-          <li>Your last message of the year was "{{ wrapped.user.extra_data.last_message.message }}" sent on {{ wrapped.user.extra_data.last_message.created_at|dtformatswap:"%b %d, %Y" }}</li>
+          <li id="last-msg">Your last message of the year was "{{ wrapped.user.extra_data.last_message.message }}" sent on {{ wrapped.user.extra_data.last_message.created_at|dtformatswap:"%b %d, %Y" }}</li>
         </ul>
       </div>
     </div>
@@ -46,9 +50,9 @@
       </div>
       <div class="page-section">
         <ul>
-          <li>You sent messages to itswillChat a total of {{ wrapped.user.recap.count_at_bot|intcomma }} times this year.</li>
-          <li>{{ wrapped.user.recap.count_q|intcomma }} of your messages were just a bunch of question marks (???).</li>
-          <li>You sent {{ wrapped.user.recap.count_ascii|intcomma }} beautiful pieces of ASCII art this year.</li>
+          <li>You sent messages to itswillChat a total of <b>{{ wrapped.user.recap.count_at_bot|intcomma }}</b> times this year.</li>
+          <li><b>{{ wrapped.user.recap.count_q|intcomma }}</b> of your messages were just a bunch of question marks (???).</li>
+          <li>You sent <b>{{ wrapped.user.recap.count_ascii|intcomma }}</b> beautiful pieces of ASCII art this year.</li>
         </ul>
       </div>
     </div>
@@ -89,6 +93,8 @@
             <span class="stat-value" id="{{ key }}-value">#{{ counterobj.position }}</span>
           </div>
           {% endwith %}
+          {% empty %}
+          You didn't make it onto any leaderboards this year. Gotta yap more in 2025.
           {% endfor %}
         </div>
       </div>
@@ -99,8 +105,8 @@
       </div>
       <div class="page-section">
         <ul>
-          <li>You clipped {{ wrapped.user.recap.count_clips|intcomma }} moments over the course of this past year.</li>
-          <li>Your clips were viewed a total of {{ wrapped.user.recap.count_clip_views|intcomma }} times.</li>
+          <li>You clipped <b>{{ wrapped.user.recap.count_clips|intcomma }}</b> moments over the course of this past year.</li>
+          <li>Your clips were viewed a total of <b>{{ wrapped.user.recap.count_clip_views|intcomma }}</b> times.</li>
           <li>The total watch time on your clips is <b>{{ wrapped.user.clip_watch_time }}</b></li>
         </ul>
       </div>
@@ -120,10 +126,14 @@
       </div>
     </div>
     <div class="page" id="page-7">
+      <div class="page-bigtitle centered">
+        Thanks for chatting in 2024!
+      </div>
+      <div class="centered" style="margin-top: 1em; margin-bottom: 1em;"></div>
       <div class="page-subtitle centered">
         Head back to the <a href="{% url 'itswill_org:wrapped' %}">2024 itswill Community Wrapped</a>
       </div>
-      <div class="centered" style="margin-top: 0.8em; margin-bottom: 0.8em;">or</div>
+      <div class="centered" style="margin-top: 0.4em; margin-bottom: 0.4em;">or</div>
       <div class="page-subtitle centered">
         Find another user's 2024 Wrapped
       </div>
