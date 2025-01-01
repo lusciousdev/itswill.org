@@ -233,13 +233,13 @@ a, a:visited {
   color: var(--accent-color);
 }
 
-#first-msg {
+.new-line-stat {
   display: block;
   padding: 5px 5px 5px 5px;
   max-width: 75%;
 }
 
-#first-msg-value {
+.new-line-stat-value {
   color: var(--accent-color);
   margin: 5px;
 }

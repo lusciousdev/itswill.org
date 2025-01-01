@@ -43,3 +43,35 @@ def month_name(month_number):
 @register.filter
 def field_from_name(obj, field_name):
   return obj._meta.get_field(field_name)
+
+@register.filter
+def time_to_pretty_string(input : int, abbr : bool = False):
+  days, rem = divmod(input, (3600 * 24))
+  hours, rem = divmod(rem, 3600)
+  minutes, rem = divmod(rem, 60)
+  seconds = rem
+  
+  output = ""
+  
+  msd_hit = False
+  if days > 0:
+    output += f"{days}d " if abbr else f"{days} days, "
+    msd_hit = True
+  if msd_hit or hours > 0:
+    output += f"{hours}h " if abbr else f"{hours} hours, "
+    msd_hit = True
+  if msd_hit or minutes > 0:
+    output += f"{minutes}m {seconds}s" if abbr else f"{minutes} minutes and {seconds} seconds"
+   
+  if not msd_hit:
+    output += f"{seconds} seconds"
+  
+  return output
+
+@register.filter
+def divide(numerator : int, divisor : int):
+  return numerator / divisor
+
+@register.filter
+def intdivide(numerator : int, divisor : int):
+  return numerator // divisor

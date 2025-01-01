@@ -87,6 +87,14 @@
         <span class="stat-label" id="msg-count-label">Messages sent:</span>
         <span class="stat-value" id="msg-count-value">{{ recap_data.count_messages|intcomma }}</span>
       </div>
+      <div class="stat-item" id="char-count">
+        <span class="stat-label" id="char-count-label">Characters sent:</span>
+        <span class="stat-value" id="char-count-value">{{ recap_data.count_characters|intcomma }}</span>
+      </div>
+      <div class="stat-item" id="char-count">
+        <span class="stat-label" id="char-count-label">Typing time (60 WPM):</span>
+        <span class="stat-value" id="char-count-value">{{ recap_data.count_characters|intdivide:5|time_to_pretty_string:True }}</span>
+      </div>
       <div class="stat-item" id="clip-count">
         <span class="stat-label" id="clip-count-label">Clips created:</span>
         <span class="stat-value" id="clip-count-value">{{ recap_data.count_clips|intcomma }}</span>
@@ -95,9 +103,13 @@
         <span class="stat-label" id="clip-views-label">Views on those clips:</span>
         <span class="stat-value" id="clip-views-value">{{ recap_data.count_clip_views|intcomma }}</span>
       </div>
-      <div class="stat-item" id="first-msg">
+      <div class="stat-item" id="clip-watch">
+        <span class="stat-label" id="clip-watch-label">Clip watch time:</span>
+        <span class="stat-value" id="clip-watch-value">{{ recap_data.count_clip_watch|time_to_pretty_string:True }}</span>
+      </div>
+      <div class="stat-item new-line-stat" id="first-msg">
         <span class="stat-label" id="first-msg-label">First message:</span>
-        <div class="stat-value" id="first-msg-value">"{{ recap_data.first_message }}"</div>
+        <div class="stat-value new-line-stat-value" id="first-msg-value">"{{ recap_data.first_message }}"</div>
       </div>
       {% for key, value in counters.items %}
       {% with counterobj=counters|keyvalue:key %}
