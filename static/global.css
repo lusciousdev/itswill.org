@@ -1,6 +1,18 @@
 @font-face {
-  font-family: Roobert;
-  src: url(./Roobert-Regular.ttf);
+  font-family:Roobert;
+  font-weight:400;
+  src:url(./Roobert-Regular.woff2) format("woff2"),
+  url(./Roobert-Regular.woff) format("woff");
+}
+@font-face {
+  font-family:Roobert;
+  font-weight:600;
+  src:url(./Roobert-SemiBold.woff2) format("woff2");
+}
+@font-face {
+  font-family:Roobert;
+  font-weight:700;
+  src:url(./Roobert-Bold.woff2) format("woff2");
 }
 
 :root {
