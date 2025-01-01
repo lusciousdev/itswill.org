@@ -83,7 +83,7 @@ def get_last_message_2024_api(request):
     except TwitchUser.DoesNotExist:
       return HttpResponse(f"User \"{altuser}\" does not exist.", 404)
   
-  return JsonResponse(get_last_message(user, (datetime.datetime(2024, 1, 1, 0, 0, 0, 1, TIMEZONE), datetime.datetime(2024, 12, 31, 23, 59, 59, 999999, TIMEZONE)), True))
+  return JsonResponse(get_last_message(user, (datetime.datetime(2024, 1, 1, 0, 0, 0, 1, TIMEZONE), datetime.datetime(2025, 1, 1, 0, 0, 0, 1, TIMEZONE)), True))
   
 
 @csrf_exempt
