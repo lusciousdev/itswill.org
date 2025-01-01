@@ -39,11 +39,12 @@ function handleLastMessage(data)
 {
   if (overall)
   {
-    $("#last-msg").html("The last message of the year was \"{0}\" sent by {1}".format(data["message"], data["commenter"]));
+    $("#last-msg").html("The last message of the year was \"{0}\" sent by {1}".format(escapeHtml(data["message"]), escapeHtml(data["commenter"])));
   }
   else
   {
-    $("#last-msg").html("Your last message of the year was \"{0}\" sent on {1}".format(data["message"], data["prettytime"]));
+    $("#")
+    $("#last-msg").html("Your last message of the year was \"{0}\" sent on {1}".format(escapeHtml(data["message"]), escapeHtml(data["prettytime"])));
   }
 }
 
