@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import F
 
 import datetime
-import pytz
+from dateutil import tz
 import calendar
 import re
 import math
@@ -90,8 +90,8 @@ def get_recent_clips(max_days = 31):
   clip_params = {
     "first": 50,
     "broadcaster_id": settings.USER_ID,
-    "started_at": start_date.astimezone(pytz.utc).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT),
-    "ended_at": end_date.astimezone(pytz.utc).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT)
+    "started_at": start_date.astimezone(tz.UTC).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT),
+    "ended_at": end_date.astimezone(tz.UTC).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT)
   }
 
   continue_fetching = True
@@ -181,7 +181,7 @@ def get_recent_chat_messages(max_days = -1, skip_known_vods = True):
   videos = twitch_api.get_all_videos(video_params)
   
   for video in videos:
-    vod_date = pytz.utc.localize(datetime.datetime.strptime(video['published_at'], luscioustwitch.TWITCH_API_TIME_FORMAT), is_dst = None)
+    vod_date = datetime.datetime.strptime(video['published_at'], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = tz.UTC)
     
     if max_days > 0 and vod_date < start_date:
       continue
@@ -293,7 +293,7 @@ def get_recent_chat_messages(max_days = -1, skip_known_vods = True):
 
 @shared_task
 def get_all_first_messages():
-  localtz = pytz.timezone("America/Los_Angeles")
+  localtz = tz.gettz("America/Los_Angeles")
   
   for overallrecap in OverallRecapData.objects.all():
     firstmsg = None
@@ -382,7 +382,7 @@ def calculate_yearly_stats(year = None):
   if year == 0:
     firstmsg = ChatMessage.objects.order_by("created_at").first()
   else:
-    localtz = pytz.timezone("America/Los_Angeles")
+    localtz = tz.gettz("America/Los_Angeles")
     start_date = datetime.datetime(year, 1, 1, 0, 0, 0, 1, localtz)
     end_date   = datetime.datetime(year, 12, 31, 23, 59, 59, 999, localtz)
     
@@ -421,7 +421,7 @@ def calculate_monthly_stats(year = None, month = None):
   if month is None:
     month = datetime.datetime.now(TIMEZONE).month
   
-  localtz = pytz.timezone("America/Los_Angeles")
+  localtz = tz.gettz("America/Los_Angeles")
   monthrange = calendar.monthrange(year, month)
   
   monthrecap, _ = OverallRecapData.objects.get_or_create(year = year, month = month)  
@@ -556,7 +556,7 @@ def create_wrapped_data(year = None, skip_users = False):
   if year is None:
     year = datetime.datetime.now(TIMEZONE).year
   
-  localtz = pytz.timezone("America/Los_Angeles")
+  localtz = tz.gettz("America/Los_Angeles")
   
   start_year = datetime.datetime(year, 1, 1, 0, 0, 0, 1, localtz)
   end_year = datetime.datetime(year, 12, 31, 23, 59, 59, 999, localtz)

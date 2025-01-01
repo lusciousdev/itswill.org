@@ -6,7 +6,7 @@ import json
 import luscioustwitch
 import datetime
 from django.conf import settings
-import pytz
+from dateutil import tz
 import time
 
 sys.path.append(".")
@@ -30,8 +30,8 @@ continue_fetching = True
 clip_params = {
   "first": 50,
   "broadcaster_id": broadcaster_id,
-  "started_at": start_datetime.astimezone(pytz.utc).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT),
-  "ended_at": end_datetime.astimezone(pytz.utc).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT)
+  "started_at": start_datetime.astimezone(tz.UTC).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT),
+  "ended_at": end_datetime.astimezone(tz.UTC).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT)
 }
 
 while continue_fetching:

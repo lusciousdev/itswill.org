@@ -1,9 +1,9 @@
 import datetime
-import pytz
+from dateutil import tz
 from string import Template
 
 TIMEZONE_NAME = "America/Los_Angeles"
-TIMEZONE = pytz.timezone(TIMEZONE_NAME)
+TIMEZONE = tz.gettz(TIMEZONE_NAME)
 
 class DeltaTemplate(Template):
     delimiter = "%"

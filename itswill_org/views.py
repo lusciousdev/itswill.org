@@ -7,9 +7,9 @@ from django.views import generic
 from django.conf import settings
 
 import typing
+from dateutil import tz
 import datetime
 import calendar
-import pytz
 
 from .models import *
 
@@ -62,7 +62,7 @@ class MonthView(generic.TemplateView):
       print("ERROR: MISSING MONTHLY RECAP, NOT REDIRECTED BY DISPATCH")
       return data
     
-    localtz = pytz.timezone("America/Los_Angeles")
+    localtz = tz.gettz("America/Los_Angeles")
     monthrange = calendar.monthrange(year, month)
     
     start_date = datetime.datetime(year, month, 1, 0, 0, 0, 1, localtz)
