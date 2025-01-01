@@ -73,7 +73,7 @@ class RecapDataMixin(models.Model):
     abstract = True
   
   count_messages = StatField(short_name = "messages", verbose_name = "Messages sent:", default = 0)
-  count_characters = BigStatField(short_name = "characters", show_recap = False, show_leaderboard = False, verbose_name = "Characters typed:", unit = "chatter", default = 0)
+  count_characters = BigStatField(short_name = "characters", show_recap = False, show_leaderboard = True, verbose_name = "Characters typed:", unit = "chatter", default = 0)
   count_clips = StatField(short_name = "clips", verbose_name = "Clips created:", unit = "clip", default = 0)
   count_clip_watch = BigStatField(short_name = "watchtime", show_recap = False, show_leaderboard = False, verbose_name = "Clip watch time:", unit = "second", default = 0)
   count_clip_views = StatField(short_name = "views", verbose_name = "Clip views:", unit = "clip view", default = 0)
@@ -141,12 +141,12 @@ class RecapDataMixin(models.Model):
   
   count_cum     = StringCountField(short_name = "cum", match_list = ["cum", "cumming", "cumb", "cummies", "cumshot"], unit = "cum mention", use_images = False, verbose_name = "Number of cum mentions:", default = 0)
   
-  count_caw     = StringCountField(short_name = "caw", match_list = ["caw"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "CAW:", unit = "CAW", default = 0)
+  count_caw     = StringCountField(short_name = "caw", match_list = ["caw"], use_images = False, show_recap = True, show_leaderboard = True, verbose_name = "CAW:", unit = "CAW", default = 0)
   count_400     = StringCountField(short_name = "400k", match_list = ["400k"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "400k:", unit = "400k", default = 0)
   count_plus1   = StringCountField(short_name = "plusone", match_list = ["+1"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "+1:", unit = "+1", default = 0)
-  count_at_bot  = StringCountField(short_name = "bot", match_list = ["@itswillChat"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "Replies to itswillChat:", unit = "@itswillChat", default = 0)
+  count_at_bot  = StringCountField(short_name = "bot", match_list = ["@itswillChat"], use_images = False, show_recap = True, show_leaderboard = True, verbose_name = "Replies to itswillChat:", unit = "@itswillChat", default = 0)
   count_yt      = StringCountField(short_name = "youtube", match_list = ["(https://)?(www\\.)?youtube.com[/A-Za-z0-9_\\-=]+", "(https://)?(www\\.)?youtu.be[/A-Za-z0-9_\\-=\\?]+"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "YouTube links:", unit = "YouTube link", default = 0)
-  count_q       = StringCountField(short_name = "questions", match_list = ["^\\?+$"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "???:", unit = "question mark message", default = 0)
+  count_q       = StringCountField(short_name = "questions", match_list = ["^\\?+$"], use_images = False, show_recap = True, show_leaderboard = True, verbose_name = "???:", unit = "question mark message", default = 0)
   
   def zero(self, exclude = [], save = True):
     for f in self._meta.get_fields():
