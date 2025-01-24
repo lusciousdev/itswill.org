@@ -11,7 +11,7 @@ import calendar
 import re
 import math
 import requests
-from random import randint
+from random import randint, choice
 import time
 
 from .util.timeutil import *
@@ -26,12 +26,11 @@ def get_mult_word_count(text : str, words : list) -> int:
 
 def get_random_message(user):
   if user != None:
-    user_message_set = ChatMessage.objects.filter(commenter = user).all()
+    message_ids = ChatMessage.objects.filter(commenter = user).values_list("message_id", flat=True)
   else:
-    user_message_set = ChatMessage.objects.all()
+    message_ids = ChatMessage.objects.values_list("message_id", flat=True)
     
-  user_message_count = user_message_set.count()
-  random_message = user_message_set[randint(0, user_message_count - 1)]
+  random_message = ChatMessage.objects.get(message_id = choice(message_ids))
   
   response_str = random_message.localtz_str()
   
