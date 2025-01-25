@@ -259,9 +259,10 @@ class UserWrappedData(WrappedDataMixin):
     unique_together = ('overall_wrapped', 'twitch_user')
   
 class ChatMessage(models.Model):
-  commenter = models.ForeignKey(TwitchUser, on_delete = models.CASCADE)
+  id = models.AutoField(primary_key = True, serialize = False)
   
-  message_id = models.CharField(max_length = 255, primary_key = True, editable = False)
+  commenter = models.ForeignKey(TwitchUser, on_delete = models.CASCADE)
+  message_id = models.CharField(max_length = 255, editable = False)
   content_offset = models.IntegerField(default = 0)
   created_at = models.DateTimeField("created at", default = DEFAULT_DATETIME)
   message = models.CharField(max_length = 1024, default = "")

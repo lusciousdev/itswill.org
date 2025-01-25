@@ -4,6 +4,7 @@ from celery.schedules import crontab
 import luscioustwitch
 from django.core.exceptions import ValidationError
 from django.db.models import F
+from django.db.models.aggregates import Count, Max
 
 import datetime
 from dateutil import tz
@@ -25,12 +26,15 @@ def get_mult_word_count(text : str, words : list) -> int:
   return get_word_count(text, "|".join(words))
 
 def get_random_message(user):
+  messages = ChatMessage.objects
   if user != None:
-    message_ids = ChatMessage.objects.filter(commenter = user).values_list("message_id", flat=True)
-  else:
-    message_ids = ChatMessage.objects.values_list("message_id", flat=True)
+    messages = messages.filter(commenter = user)
     
-  random_message = ChatMessage.objects.get(message_id = choice(message_ids))
+  message_pks = messages.values_list('pk', flat=True)
+  try:
+    random_message = messages.get(pk = randint(1, len(message_pks) - 1))
+  except ChatMessage.DoesNotExist:
+    return "ERROR: randomly selected private key does not exist. ID sequence must be sparsely populated. That's no bueno."
   
   response_str = random_message.localtz_str()
   
