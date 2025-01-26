@@ -32,7 +32,10 @@ def get_random_message(user):
     
   message_pks = messages.values_list('pk', flat=True)
   try:
-    random_message = messages.get(pk = randint(1, len(message_pks) - 1))
+    if user == None:
+      random_message = messages.get(pk = randint(1, len(message_pks) - 1))
+    else:
+      random_message = messages.get(pk = choice(list(message_pks)))
   except ChatMessage.DoesNotExist:
     return "ERROR: randomly selected private key does not exist. ID sequence must be sparsely populated. That's no bueno."
   
