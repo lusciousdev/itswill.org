@@ -47,5 +47,6 @@ urlpatterns = [
   path("api/v1/petsleft/",     api.get_pets_left,             name = "api_pets_left"),
   path("api/v1/randgarf/",     api.get_random_garfield,       name = "api_random_garfield"),
   path("api/v1/five/",         api.get_live_at_five_record,   name = "api_five_record"),
+  path("api/v1/totalkc/",      cache_page(10 * 60)(api.get_boss_count),            name = "api_total_boss_kc"),
   path("api/v1/test/",         api.test_endpoint,             name = "api_test"),
 ]

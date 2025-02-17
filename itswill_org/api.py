@@ -151,6 +151,26 @@ def get_live_at_five_record(request):
   return JsonResponse(record.json())
 
 @csrf_exempt
+def get_boss_count(request):
+  if request.method != "GET":
+    return HttpResponse("Invalid request type.", 501)
+  
+  start_time = time.time()
+  
+  response : requests.Response = requests.get("https://secure.runescape.com/m=hiscore_oldschool/index_lite.json?player=Suede")
+  hiscores_data : dict = response.json()
+  
+  total_kc = 0
+  for activity in hiscores_data.get("activities", []):
+    if any([activity["name"].startswith(part) for part in ["League", "Deadman", "Bounty", "Clue", "LMS", "PvP", "Soul Wars", "Rifts", "Colosseum Glory", "Collections Logged"]]):
+      continue
+    
+    total_kc += activity["score"]
+    
+  return HttpResponse(total_kc)
+  
+
+@csrf_exempt
 def test_endpoint(request):
   if request.method != "GET":
     return HttpResponse("Invalid request type.", 501)
