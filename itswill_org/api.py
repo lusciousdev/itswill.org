@@ -6,6 +6,7 @@ from celery.schedules import crontab
 import requests
 from random import randint
 import time
+import humanize
 
 from .tasks import get_random_message, get_last_message, post_random_message
 from .models import *
@@ -155,6 +156,8 @@ def get_boss_count(request):
   if request.method != "GET":
     return HttpResponse("Invalid request type.", 501)
   
+  humanize_response = ("humanize" in request.GET)
+  
   start_time = time.time()
   
   response : requests.Response = requests.get("https://secure.runescape.com/m=hiscore_oldschool/index_lite.json?player=Suede")
@@ -167,7 +170,10 @@ def get_boss_count(request):
     
     total_kc += activity["score"]
     
-  return HttpResponse(total_kc)
+  if humanize_response:
+    return HttpResponse(humanize.intcomma(total_kc))
+  else:
+    return HttpResponse(total_kc)
   
 
 @csrf_exempt
