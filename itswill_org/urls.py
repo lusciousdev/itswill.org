@@ -39,6 +39,7 @@ urlpatterns = [
   path("ascii/", views.AsciiView.as_view(), name="ascii"),
   
   path("api/v1/randmsg/",      api.get_random_message_api,    name = "api_random_message"),
+  path("api/v1/randuser/",     api.get_random_user_api,       name = "api_random_user"),
   path("api/v1/lastmsg/",      api.get_last_message_api,      name = "api_last_message"),
   path("api/v1/lastmsg/2024/", api.get_last_message_2024_api, name = "api_last_message_2024"),
   path("api/v1/randclip/",     api.get_random_clip,           name = "api_random_clip"),

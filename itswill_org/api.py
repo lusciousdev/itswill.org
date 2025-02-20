@@ -4,7 +4,7 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect, JsonRespons
 from celery import Celery, shared_task
 from celery.schedules import crontab
 import requests
-from random import randint
+from random import randint, choice
 import time
 import humanize
 
@@ -47,6 +47,14 @@ def get_random_message_api(request):
     return HttpResponse(" ", 200)
   
   return HttpResponse(get_random_message(user), 200)
+
+@csrf_exempt
+def get_random_user_api(request):
+  if request.method != "GET":
+    return HttpResponse("Invalid request type.", 501)
+  
+  user_id = TwitchUser.objects.all().values_list('user_id', flat=True)
+  return HttpResponse(TwitchUser.objects.get(user_id = choice(user_id)).login, 200)
 
 @csrf_exempt
 def get_last_message_api(request):
@@ -157,8 +165,6 @@ def get_boss_count(request):
     return HttpResponse("Invalid request type.", 501)
   
   humanize_response = ("humanize" in request.GET)
-  
-  start_time = time.time()
   
   response : requests.Response = requests.get("https://secure.runescape.com/m=hiscore_oldschool/index_lite.json?player=Suede")
   hiscores_data : dict = response.json()

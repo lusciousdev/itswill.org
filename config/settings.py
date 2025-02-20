@@ -15,6 +15,7 @@ from urllib.parse import quote
 from celery.schedules import crontab
 import luscioustwitch
 import datetime
+from django.urls import reverse_lazy
 
 from .secrets import *
 
@@ -50,6 +51,23 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.humanize',
     'django.contrib.staticfiles',
+    
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.twitch',
+    
+    'django.contrib.sites.apps.SitesConfig',
+    'django_nyt.apps.DjangoNytConfig',
+    'mptt',
+    'sekizai',
+    'sorl.thumbnail',
+    'wiki.apps.WikiConfig',
+    'wiki.plugins.attachments.apps.AttachmentsConfig',
+    'wiki.plugins.notifications.apps.NotificationsConfig',
+    'wiki.plugins.images.apps.ImagesConfig',
+    'wiki.plugins.macros.apps.MacrosConfig',
+    
     'itswill_org',
 ]
 
@@ -61,6 +79,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -68,7 +88,9 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+          BASE_DIR / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,12 +99,66 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                "sekizai.context_processors.sekizai",
             ],
         },
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+WIKI_ACCOUNT_HANDLING = False
+WIKI_ACCOUNT_SIGNUP_ALLOWED = False
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = "smtp.fastmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = FASTMAIL_USER
+EMAIL_HOST_PASSWORD = FASTMAIL_PASSWORD
+DEFAULT_FROM_EMAIL = "noreply@luscious.dev"
+SERVER_EMAIL = "django@luscious.dev"
+ADMINS = [ ("luscious", "admin@luscious.dev"), ]
+
+SITE_ID = 1
+
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http" if DEBUG else "https"
+
+LOGIN_URL = reverse_lazy("account_login")
+SIGNUP_URL = reverse_lazy("account_signup")
+LOGOUT_URL = reverse_lazy("account_logout")
+LOGIN_REDIRECT_URL = "/"
 WSGI_APPLICATION = 'config.wsgi.application'
+
+SOCIALACCOUNT_PROVIDERS = {
+  "twitch": {
+    "SCOPE": [
+      "channel:read:polls",
+      "channel:manage:polls",
+      "channel:read:redemptions",
+      "channel:manage:redemptions",
+      "channel:read:predictions",
+      "channel:manage:predictions",
+    ],
+    "APP": {
+      "client_id": TWITCH_API_CLIENT_ID,
+      "secret": TWITCH_API_CLIENT_SECRET,
+    },
+    "AUTH_PARAMS": {
+      "access_type": "offline",
+    }
+  }
+}
+
+SOCIALACCOUNT_STORE_TOKENS = True
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
