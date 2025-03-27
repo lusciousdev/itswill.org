@@ -44,36 +44,37 @@ while continue_fetching:
     
   most_recent_clip_view_count = 0
 
+  clip : luscioustwitch.TwitchClip
   for clip in clips:
-    if clip['id'] in clip_ids:
-      print(f"Got clip {clip['id']} twice while fetching")
+    if clip.clip_id in clip_ids:
+      print(f"Got clip {clip.clip_id} twice while fetching")
       continue
     
-    clip_id = clip["id"]
-    creator_id = int(clip["creator_id"])
+    clip_id = clip.clip_id
+    creator_id = int(clip.creator_id)
       
     try:
       creator = TwitchUser.objects.get(user_id = creator_id)
     except TwitchUser.DoesNotExist:
       try:
-        userdata = twitch_api.get_user_info(id = creator_id)
+        userdata : luscioustwitch.TwitchUser = twitch_api.get_user(id = creator_id)
       
         creator = TwitchUser(
           user_id = creator_id,
-          login = userdata['login'],
-          display_name = userdata['display_name'],
-          user_type = userdata['type'],
-          broadcaster_type = userdata['broadcaster_type'],
-          description = userdata['description'],
-          profile_image_url = userdata['profile_image_url'],
-          offline_image_url = userdata['offline_image_url'],
-          created_at = datetime.datetime.strptime(userdata['created_at'], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
+          login = userdata.login,
+          display_name = userdata.display_name,
+          user_type = userdata.user_type,
+          broadcaster_type = userdata.broadcaster_type,
+          description = userdata.description,
+          profile_image_url = userdata.profile_image_url,
+          offline_image_url = userdata.offline_image_url,
+          created_at = userdata.created_at.replace(tzinfo = datetime.timezone.utc),
         )
       except:
         creator = TwitchUser(
           user_id = creator_id,
-          login = clip["creator_name"],
-          display_name = clip["creator_name"]
+          login = clip.creator_name,
+          display_name = clip.creator_name
         )
       
       creator.save()
@@ -82,19 +83,19 @@ while continue_fetching:
       clip_inst = Clip(
         clip_id = clip_id,
         creator = creator,
-        url = clip["url"],
-        embed_url = clip["embed_url"],
-        broadcaster_id = int(clip["broadcaster_id"]),
-        broadcaster_name = clip["broadcaster_name"],
-        video_id = clip["video_id"],
-        game_id = clip["game_id"],
-        language = clip["language"],
-        title = clip["title"],
-        view_count = int(clip["view_count"]),
-        created_at = datetime.datetime.strptime(clip["created_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
-        thumbnail_url = clip["thumbnail_url"],
-        duration = float(clip["duration"]),
-        vod_offset = -1 if (clip["vod_offset"] == "null" or clip["vod_offset"] is None) else int(clip["vod_offset"])
+        url = clip.url,
+        embed_url = clip.embed_url,
+        broadcaster_id = int(clip.broadcaster_id),
+        broadcaster_name = clip.broadcaster_name,
+        video_id = clip.video_id,
+        game_id = clip.game_id,
+        language = clip.language,
+        title = clip.title,
+        view_count = int(clip.view_count),
+        created_at = clip.created_at.replace(tzinfo = datetime.timezone.utc),
+        thumbnail_url = clip.thumbnail_url,
+        duration = float(clip.duration),
+        vod_offset = -1 if (clip.vod_offset == "null" or clip.vod_offset is None) else int(clip.vod_offset)
       )
       
       clip_inst.save()
@@ -102,9 +103,9 @@ while continue_fetching:
       print(e)
       
     num_clips += 1
-    clip_ids.append(clip['id'])
+    clip_ids.append(clip.clip_id)
 
-    most_recent_clip_view_count = int(clip["view_count"])
+    most_recent_clip_view_count = int(clip.view_count)
     if most_recent_clip_view_count < 1:
       continue_fetching = False
       break

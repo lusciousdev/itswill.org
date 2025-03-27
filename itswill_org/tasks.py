@@ -111,32 +111,33 @@ def get_recent_clips(max_days = 31):
       
     most_recent_clip_view_count = 0
 
+    clip : luscioustwitch.TwitchClip
     for clip in clips:
-      clip_id = clip["id"]
-      creator_id = int(clip["creator_id"])
+      clip_id = clip.clip_id
+      creator_id = int(clip.creator_id)
         
       try:
         creator = TwitchUser.objects.get(user_id = creator_id)
       except TwitchUser.DoesNotExist:
         try:
-          userdata = twitch_api.get_user_info(id = creator_id)
+          userdata : luscioustwitch.TwitchUser = twitch_api.get_user_info(id = creator_id)
         
           creator = TwitchUser(
             user_id = creator_id,
-            login = userdata['login'],
-            display_name = userdata['display_name'],
-            user_type = userdata['type'],
-            broadcaster_type = userdata['broadcaster_type'],
-            description = userdata['description'],
-            profile_image_url = userdata['profile_image_url'],
-            offline_image_url = userdata['offline_image_url'],
-            created_at = datetime.datetime.strptime(userdata['created_at'], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
+            login = userdata.login,
+            display_name = userdata.display_name,
+            user_type = userdata.user_type,
+            broadcaster_type = userdata.broadcaster_type,
+            description = userdata.description,
+            profile_image_url = userdata.profile_image_url,
+            offline_image_url = userdata.offline_image_url,
+            created_at = userdata.created_at.replace(tzinfo = datetime.timezone.utc),
           )
         except:
           creator = TwitchUser(
             user_id = creator_id,
-            login = clip["creator_name"],
-            display_name = clip["creator_name"]
+            login = clip.creator_name,
+            display_name = clip.creator_name
           )
         
         creator.save()
@@ -145,23 +146,23 @@ def get_recent_clips(max_days = 31):
         clip_id = clip_id,
         defaults = {
           "creator": creator,
-          "url": clip["url"],
-          "embed_url": clip["embed_url"],
-          "broadcaster_id": int(clip["broadcaster_id"]),
-          "broadcaster_name": clip["broadcaster_name"],
-          "video_id": clip["video_id"],
-          "game_id": clip["game_id"],
-          "language": clip["language"],
-          "title": clip["title"],
-          "view_count": int(clip["view_count"]),
-          "created_at": datetime.datetime.strptime(clip["created_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
-          "thumbnail_url": clip["thumbnail_url"],
-          "duration": float(clip["duration"]),
-          "vod_offset": -1 if (clip["vod_offset"] == "null" or clip["vod_offset"] is None) else int(clip["vod_offset"])
+          "url": clip.url,
+          "embed_url": clip.embed_url,
+          "broadcaster_id": int(clip.broadcaster_id),
+          "broadcaster_name": clip.broadcaster_name,
+          "video_id": clip.video_id,
+          "game_id": clip.game_id,
+          "language": clip.language,
+          "title": clip.title,
+          "view_count": int(clip.view_count),
+          "created_at": clip.created_at.replace(tzinfo = datetime.timezone.utc),
+          "thumbnail_url": clip.thumbnail_url,
+          "duration": float(clip.duration),
+          "vod_offset": -1 if (clip.vod_offset == "null" or clip.vod_offset is None) else int(clip.vod_offset)
         }
       )
 
-      most_recent_clip_view_count = int(clip["view_count"])
+      most_recent_clip_view_count = int(clip.view_count)
       if most_recent_clip_view_count < 1:
         continue_fetching = False
         break
@@ -187,25 +188,25 @@ def get_recent_chat_messages(max_days = -1, skip_known_vods = True):
   videos = twitch_api.get_all_videos(video_params)
   
   for video in videos:
-    vod_date = datetime.datetime.strptime(video['published_at'], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = tz.UTC)
+    vod_date = video.published_at.replace(tzinfo = tz.UTC)
     
     if max_days > 0 and vod_date < start_date:
       continue
     
     videofound = False
     try:
-      videoinstance = Video.objects.get(vod_id = video['id'])
+      videoinstance = Video.objects.get(vod_id = video.video_id)
       videofound = True
     except Video.DoesNotExist:
       None
       
     if skip_known_vods and videofound:
-      print(f"Skipping {video['id']} as it's in our database already.")
+      print(f"Skipping {video.video_id} as it's in our database already.")
       continue
 
-    print(f'{video["id"]} - {utc_to_local(vod_date, TIMEZONE).strftime("%Y-%m-%d %H:%M:%S")}')
+    print(f'{video.video_id} - {utc_to_local(vod_date, TIMEZONE).strftime("%Y-%m-%d %H:%M:%S")}')
     
-    vid_chat = gql_api.get_chat_messages(video['id'])
+    vid_chat = gql_api.get_chat_messages(video.video_id)
     
     for chatmsg in vid_chat:
       try:
@@ -231,19 +232,19 @@ def get_recent_chat_messages(max_days = -1, skip_known_vods = True):
         commenter.display_name = chatmsg['commenter']['displayName']
       except TwitchUser.DoesNotExist:
         try:
-          userdata = twitch_api.get_user_info(id = commenterid)
+          userdata : luscioustwitch.TwitchUser = twitch_api.get_user(id = commenterid)
         
           commenter, _ = TwitchUser.objects.update_or_create(
             user_id = commenterid,
             defaults = {
-              "login": userdata['login'],
-              "display_name": userdata['display_name'],
-              "user_type": userdata['type'],
-              "broadcaster_type": userdata['broadcaster_type'],
-              "description": userdata['description'],
-              "profile_image_url": userdata['profile_image_url'],
-              "offline_image_url": userdata['offline_image_url'],
-              "created_at": datetime.datetime.strptime(userdata['created_at'], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
+              "login": userdata.login,
+              "display_name": userdata.display_name,
+              "user_type": userdata.user_type,
+              "broadcaster_type": userdata.broadcaster_type,
+              "description": userdata.description,
+              "profile_image_url": userdata.profile_image_url,
+              "offline_image_url": userdata.offline_image_url,
+              "created_at": datetime.datetime.strptime(userdata.created_at, luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
             },
           )
         except:
@@ -278,22 +279,22 @@ def get_recent_chat_messages(max_days = -1, skip_known_vods = True):
         
     if not videofound:
       videoinstance = Video(
-        vod_id = video['id'],
-        stream_id = video["stream_id"],
-        user_id = video["user_id"],
-        user_login = video["user_login"],
-        user_name = video["user_name"],
-        title = video["title"],
-        description = video["description"],
-        created_at = datetime.datetime.strptime(video["created_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
-        published_at = datetime.datetime.strptime(video["published_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
-        url = video["url"],
-        thumbnail_url = video["thumbnail_url"],
-        viewable = video["viewable"],
-        view_count = video["view_count"],
-        language = video["language"],
-        vod_type = video["type"],
-        duration = video["duration"],
+        vod_id = video.video_id,
+        stream_id = video.stream_id,
+        user_id = video.user_id,
+        user_login = video.user_login,
+        user_name = video.user_name,
+        title = video.title,
+        description = video.description,
+        created_at = video.created_at.replace(tzinfo = datetime.timezone.utc),
+        published_at = video.created_at.replace(tzinfo = datetime.timezone.utc),
+        url = video.url,
+        thumbnail_url = video.thumbnail_url,
+        viewable = video.viewable,
+        view_count = video.view_count,
+        language = video.language,
+        vod_type = video.type,
+        duration = video.duration,
       )
       videoinstance.save()
 
