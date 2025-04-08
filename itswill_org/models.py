@@ -436,3 +436,25 @@ class AsciiAdmin(admin.ModelAdmin):
   list_display = ('title', )
   search_fields = ['title']
   ordering = ( 'title', )
+  
+class LetterboxdReview(models.Model):
+  title = models.CharField(max_length = 255)
+  review_id = models.CharField(max_length = 255)
+  link = models.CharField(max_length = 255)
+  pub_date = models.DateTimeField()
+  watched_date = models.DateField()
+  film_title = models.CharField(max_length = 255)
+  film_year = models.IntegerField(null = True)
+  member_rating = models.FloatField(null = True)
+  movie_id = models.IntegerField(null = True)
+  description = models.TextField()
+  creator = models.CharField(max_length = 255)
+  
+  class Meta:
+    unique_together = ('review_id', )
+    ordering = ( "pub_date", )
+    indexes = [
+      models.Index(fields = ["pub_date", ]),
+      models.Index(fields = ["watched_date", ]),
+      models.Index(fields = ["member_rating", ]),
+    ]

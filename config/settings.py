@@ -57,17 +57,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.twitch',
     
-    'django.contrib.sites.apps.SitesConfig',
-    'django_nyt.apps.DjangoNytConfig',
-    'mptt',
-    'sekizai',
-    'sorl.thumbnail',
-    'wiki.apps.WikiConfig',
-    'wiki.plugins.attachments.apps.AttachmentsConfig',
-    'wiki.plugins.notifications.apps.NotificationsConfig',
-    'wiki.plugins.images.apps.ImagesConfig',
-    'wiki.plugins.macros.apps.MacrosConfig',
-    
     'itswill_org',
 ]
 
@@ -99,7 +88,6 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                "sekizai.context_processors.sekizai",
             ],
         },
     },
@@ -112,9 +100,6 @@ AUTHENTICATION_BACKENDS = [
     # `allauth` specific authentication methods, such as login by email
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
-
-WIKI_ACCOUNT_HANDLING = False
-WIKI_ACCOUNT_SIGNUP_ALLOWED = False
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
@@ -279,6 +264,10 @@ CELERY_BEAT_SCHEDULE = {
     "task": "itswill_org.tasks.get_recent_chat_messages",
     "schedule": crontab(minute = 0, hour = 7),
     "args": (5, False,),
+  },
+  "get_recent_letterboxd_reviews": {
+    "task": "itswill_org.tasks.get_letterboxd_reviews",
+    "schedule": crontab(minute = "*/15"),
   },
   "get_recent_clips": {
     "task": "itswill_org.tasks.get_recent_clips",

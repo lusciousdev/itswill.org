@@ -181,6 +181,32 @@ def get_boss_count(request):
   else:
     return HttpResponse(total_kc)
   
+@csrf_exempt
+def get_random_letterboxd_review(request):
+  if request.method != "GET":
+    return HttpResponse("Invalid request type.", 501)
+  
+  review_pks = LetterboxdReview.objects.values_list('pk', flat=True)
+  lbreview = LetterboxdReview.objects.get(pk = randint(1, len(review_pks)))
+  
+  review_str = ""
+  if lbreview.member_rating is None:
+    if lbreview.film_year is None:
+      review_str = f"{lbreview.film_title} - No rating: {lbreview.description}"
+    else:
+      review_str = f"{lbreview.film_title} ({lbreview.film_year}) - No rating: {lbreview.description}"
+  else:
+    if lbreview.film_year is None:
+      review_str = f"{lbreview.film_title} - {lbreview.member_rating:g}/5: {lbreview.description}"
+    else:
+      review_str = f"{lbreview.film_title} ({lbreview.film_year}) - {lbreview.member_rating:g}/5: {lbreview.description}"
+      
+    
+  if len(review_str) > 400:
+    return HttpResponse(f"{review_str[:395]}...")
+  else:
+    return HttpResponse(review_str)
+  
 
 @csrf_exempt
 def test_endpoint(request):

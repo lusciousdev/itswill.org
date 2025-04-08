@@ -10,7 +10,7 @@ import datetime
 from dateutil import tz
 import calendar
 import re
-import math
+import feedparser
 import requests
 from random import randint, choice
 import time
@@ -81,6 +81,58 @@ def post_random_message(user_id, response_url):
   rndmsg = get_random_message(user)
   
   requests.post(response_url, data = { "message": rndmsg })
+  
+@shared_task
+def get_letterboxd_reviews():
+  feed : feedparser.FeedParserDict = feedparser.parse("https://letterboxd.com/itswill/rss")
+  REVIEW_REGEX = re.compile("letterboxd-review-[0-9]+")
+  LETTERBOXD_PUB_FORMAT = "%a, %d %b %Y %H:%M:%S %z"
+  LETTERBOXD_WATCH_DATE_FORMAT = "%Y-%m-%d"
+  SUMMARY_REGEX = re.compile('<.+?>')
+  
+  entry : feedparser.FeedParserDict
+  for entry in feed.get("entries", []):
+    review_id_match : re.Match = REVIEW_REGEX.match(entry.get("id", ""))
+    if not review_id_match:
+      continue
+    
+    title = entry.get("title", "")
+    review_id = review_id_match.group(0)
+    link = entry.get("link", "")
+    pub_date = datetime.datetime.strptime(entry.get("published", datetime.datetime.now().strftime(LETTERBOXD_PUB_FORMAT)), LETTERBOXD_PUB_FORMAT)
+    watched_date = datetime.datetime.strptime(entry.get("letterboxd_watcheddate", datetime.datetime.now().strftime(LETTERBOXD_WATCH_DATE_FORMAT)), LETTERBOXD_WATCH_DATE_FORMAT)
+    film_title = entry.get("letterboxd_filmtitle", "")
+    film_year = entry.get("letterboxd_filmyear", None)
+    film_year = None if film_year is None else int(film_year)
+    member_rating = entry.get("letterboxd_memberrating", None)
+    member_rating = None if member_rating is None else float(member_rating)
+    movie_id = entry.get("tmdb_movieid", None)
+    movie_id = None if movie_id is None else int(movie_id)
+    raw_description = entry.get("summary", "")
+    description : str = re.sub(SUMMARY_REGEX, ' ', raw_description)
+    description = description.strip()
+    creator = entry.get("author", "")
+    
+    obj, created = LetterboxdReview.objects.update_or_create(
+      review_id = review_id,
+      defaults = {
+        "title": title,
+        "link": link,
+        "pub_date": pub_date,
+        "watched_date": watched_date,
+        "film_title": film_title,
+        "film_year": film_year,
+        "member_rating": member_rating,
+        "movie_id": movie_id,
+        "description": description,
+        "creator": creator
+      }
+    )
+    
+    if created:
+      print(f"New review: { film_title } - { member_rating } stars: { description }")
+    else:
+      print(f"Old review: { film_title } - { member_rating } stars: { description }")
 
 @shared_task
 def get_recent_clips(max_days = 31):
