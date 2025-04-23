@@ -1,0 +1,840 @@
+{% extends "itswill_org/base.html" %}
+
+{% load static %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'itswill_org/census.css' %}">
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!--<script type="module" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels" crossorigin="anonymous" referrerpolicy="no-referrer"></script>-->
+<script src="{% static 'itswill_org/census.js' %}"
+        defer
+        data-jsonpath="{% static 'itswill_org/census_charts.json' %}">
+</script>
+{% endblock %}
+
+{% block body %}
+<header>
+  <h2 id="site-title">The itswill Community Census Results</h2>
+</header>
+<div id="charts" class="chart-list">
+  <!-- INTRO -->
+  <div class='chart'>
+    <h2 id='start-watch-title'></h2>
+		<h3 id='start-watch-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='start-watch'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='discovery-title'></h2>
+		<h3 id='discovery-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='discovery'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='video-freq-title'></h2>
+		<h3 id='video-freq-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='video-freq'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='yt-sub-title'></h2>
+		<h3 id='yt-sub-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='yt-sub'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='twitch-freq-title'></h2>
+		<h3 id='twitch-freq-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='twitch-freq'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='experience-title'></h2>
+		<h3 id='experience-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='experience'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='twitch-sub-title'></h2>
+		<h3 id='twitch-sub-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='twitch-sub'></canvas>
+		</div>
+  </div>
+  <!-- QUESTIONS FOR TWITCH SUBSCRIBERS -->
+  <div class='chart'>
+    <h2 id='sub-type-title'></h2>
+		<h3 id='sub-type-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='sub-type'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='gifted-title'></h2>
+		<h3 id='gifted-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='gifted'></canvas>
+		</div>
+  </div>
+  <!-- STREAM CONTENT -->
+  <div class='chart'>
+    <h2 id='banned-title'></h2>
+		<h3 id='banned-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='banned'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='primary-content-title'></h2>
+		<h3 id='primary-content-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='primary-content'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='favorite-content-title'></h2>
+		<h3 id='favorite-content-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='favorite-content'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='video-types-title'></h2>
+		<h3 id='video-types-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='video-types'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='archetype-title'></h2>
+		<h3 id='archetype-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='archetype'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='special-edition-title'></h2>
+		<h3 id='special-edition-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='special-edition'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='fave-games-title'></h2>
+		<h3 id='fave-games-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='fave-games'></canvas>
+		</div>
+  </div>
+  <div class='wide-chart'>
+    <h2 id='fave-stream-title'></h2>
+		<h3 id='fave-stream-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='fave-stream'></canvas>
+		</div>
+    <div class="slideshow-container" id="fave-stream-slideshow">
+      <h3 class="slideshow-title">Selected answers:</h3>
+      <div class="slide-container">
+        <div class="slide">
+          <q>Thief simulator when an npc woman clips through a door and will got scared so he fucking gatted the woman and lost the level. The editor also made it really funny with zoom editing but pure it was probably my favourite itswill moment</q>
+        </div>
+        <div class="slide">
+          <q>Dale &amp; Dawson with Wang Chung, never laughed so hard</q>
+        </div>
+        <div class="slide">
+          <q>this is a tough question :( im gonna cry :( they're all the best :)</q>
+        </div>
+        <div class="slide">
+          <q>Dress to Impress with Squeex, shit was hamburgers. Had me IJBOLing fr</q>
+        </div>
+        <div class="slide">
+          <q>That one! Bro. So good. I told my grandma about it over the phone the next day she had no idea what the fuck I was talking about. LMAO</q>
+        </div>
+        <div class="slide">
+          <q>Poop Killer series is a cinematic masterpiece that deserves to be cemented in the hall of fame of greatest streams of all time.</q>
+        </div>
+        <div class="slide">
+          <q>I don't know I have anxiety I didn't know this would make me have to think for myself</q>
+        </div>
+        <div class="slide">
+          <q>Will u r a rat bitch &lt;3 Jk homie really curious on how long that you let me type here and honestly this is still going holy shit man did you not put a cap on this wow not even adding punctuation right now but my girlfriend and I watch you almost every steam and I even  showed you to my boss at work of whom I am in a group iron man with (I do not want you to even remotely try to make a joke about it ok its really fun fuck you) but I started him on the rat saga full series and he really enjoyed your  content too I really hope that you start doing tempoross streams again because god do I love gambling speaking of which can you put a bet in for me since you live so close to all the action haha jk but seriously dude you really need to add caps to these fields because now your census is going to be all jacked up I really think that your content holds up as variety and as one of the best RuneScape streamers ok I am really starting to get bored typing this so I think that I will end this soon also I am trying to do the Nubbelock challenge and I really think whoever made it is satan and needs to be beaten with a hammer in Minecraft</q>
+        </div>
+      </div>
+      <div class="slideshow-controls">
+        <a class="prev-slide">&#10094;</a>
+        <div class="dot-container"></div>
+        <a class="next-slide">&#10095;</a>
+      </div>
+    </div>
+  </div>
+  <div class='chart'>
+    <h2 id='stream-ideas-title'></h2>
+		<h3 id='stream-ideas-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='stream-ideas'></canvas>
+		</div>
+  </div>
+  <!-- HOW DO YOU WATCH -->
+  <div class='chart'>
+    <h2 id='stream-start-title'></h2>
+		<h3 id='stream-start-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='stream-start'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='extensions-title'></h2>
+		<h3 id='extensions-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='extensions'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='chat-activity-title'></h2>
+		<h3 id='chat-activity-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='chat-activity'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='positive-force-title'></h2>
+		<h3 id='positive-force-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='positive-force'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='discord-member-title'></h2>
+		<h3 id='discord-member-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='discord-member'></canvas>
+		</div>
+  </div>
+  <!-- QUESTIONS FOR DISCORD MEMBERS -->
+  <div class='chart'>
+    <h2 id='discord-interact-title'></h2>
+		<h3 id='discord-interact-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='discord-interact'></canvas>
+		</div>
+  </div>
+  <!-- TWITCH IN GENERAL -->
+  <div class='chart'>
+    <h2 id='time-on-twitch-title'></h2>
+		<h3 id='time-on-twitch-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='time-on-twitch'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='other-streamers-title'></h2>
+		<h3 id='other-streamers-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='other-streamers'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='watching-twitch-title'></h2>
+		<h3 id='watching-twitch-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='watching-twitch'></canvas>
+		</div>
+  </div>
+</div>
+<div id="charts" class="chart-list">
+  <!-- RUNESCAPE QUESTIONS -->
+  <div class='wide-chart'>
+    <h2 id='rs-games-title'></h2>
+		<h3 id='rs-games-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='rs-games'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='osrs-title'></h2>
+		<h3 id='osrs-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='osrs'></canvas>
+		</div>
+  </div>
+  <!-- QUESTIONS FOR OSRS PLAYERS -->
+  <div class='chart'>
+    <h2 id='total-level-title'></h2>
+		<h3 id='total-level-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='total-level'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='game-mode-title'></h2>
+		<h3 id='game-mode-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='game-mode'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='num-accounts-title'></h2>
+		<h3 id='num-accounts-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='num-accounts'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='fire-cape-title'></h2>
+		<h3 id='fire-cape-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='fire-cape'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='infernal-cape-title'></h2>
+		<h3 id='infernal-cape-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='infernal-cape'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='favorite-skill-title'></h2>
+		<h3 id='favorite-skill-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='favorite-skill'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='least-favorite-skill-title'></h2>
+		<h3 id='least-favorite-skill-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='least-favorite-skill'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='osrs-content-title'></h2>
+		<h3 id='osrs-content-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='osrs-content'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='sailing-title'></h2>
+		<h3 id='sailing-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='sailing'></canvas>
+		</div>
+  </div>
+</div>
+<div id="charts" class="chart-list">
+  <!-- PERSONAL INFO -->
+  <div class='chart'>
+    <h2 id='age-title'></h2>
+		<h3 id='age-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='age'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='handedness-title'></h2>
+		<h3 id='handedness-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='handedness'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='lgbt-title'></h2>
+		<h3 id='lgbt-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='lgbt'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='gender-title'></h2>
+		<h3 id='gender-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='gender'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='sexuality-title'></h2>
+		<h3 id='sexuality-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='sexuality'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='relationship-title'></h2>
+		<h3 id='relationship-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='relationship'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='country-origin-title'></h2>
+		<h3 id='country-origin-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='country-origin'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='country-home-title'></h2>
+		<h3 id='country-home-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='country-home'></canvas>
+		</div>
+  </div>
+  <!-- QUESTIONS FOR AMERICANS -->
+  <div class='wide-chart'>
+    <h2 id='state-title'></h2>
+		<h3 id='state-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='state'></canvas>
+		</div>
+  </div>
+  <!-- PERSONAL INFO 2 -->
+  <div class='chart'>
+    <h2 id='drivers-license-title'></h2>
+		<h3 id='drivers-license-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='drivers-license'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='education-title'></h2>
+		<h3 id='education-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='education'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='employment-title'></h2>
+		<h3 id='employment-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='employment'></canvas>
+		</div>
+  </div>
+  <!-- QUESTIONS FOR EMPLOYED PERSONS -->
+  <div class='chart'>
+    <h2 id='full-time-title'></h2>
+		<h3 id='full-time-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='full-time'></canvas>
+		</div>
+  </div>
+  <div class='wide-chart'>
+    <h2 id='field-of-work-title'></h2>
+		<h3 id='field-of-work-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='field-of-work'></canvas>
+		</div>
+  </div>
+  <!-- NON TWITCH ACTIVITIES -->
+  <div class='chart'>
+    <h2 id='sports-watched-title'></h2>
+		<h3 id='sports-watched-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='sports-watched'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='sports-played-title'></h2>
+		<h3 id='sports-played-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='sports-played'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='games-played-title'></h2>
+		<h3 id='games-played-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='games-played'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='hobbies-title'></h2>
+		<h3 id='hobbies-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='hobbies'></canvas>
+		</div>
+    <div class="slideshow-container" id="hobbies-slideshow">
+      <h3 class="slideshow-title">Selected answers:</h3>
+      <div class="slide-container">
+        <div class="slide">
+          <q>Cryptid hunting</q>
+        </div>
+        <div class="slide">
+          <q>Gooning</q>
+        </div>
+        <div class="slide">
+          <q>If jerking off is a hobby then that</q>
+        </div>
+        <div class="slide">
+          <q>Uncorking it, and by it i mean well..</q>
+        </div>
+        <div class="slide">
+          <q>crankin' it</q>
+        </div>
+        <div class="slide">
+          <q>jerkin my thing</q>
+        </div>
+        <div class="slide">
+          <q>Masterbaiting</q>
+        </div>
+        <div class="slide">
+          <q>Cranking the hog</q>
+        </div>
+        <div class="slide">
+          <q>Pulling on my thing</q>
+        </div>
+        <div class="slide">
+          <q>jackin off</q>
+        </div>
+        <div class="slide">
+          <q>jorkin it crazy style</q>
+        </div>
+        <div class="slide">
+          <q>Gooning It #freakystyyle</q>
+        </div>
+        <div class="slide">
+          <q>jelqing it til my peanits falls off</q>
+        </div>
+        <div class="slide">
+          <q>Jorkin</q>
+        </div>
+        <div class="slide">
+          <q>hatewatching itswill</q>
+        </div>
+      </div>
+      <div class="slideshow-controls">
+        <a class="prev-slide">&#10094;</a>
+        <div class="dot-container"></div>
+        <a class="next-slide">&#10095;</a>
+      </div>
+    </div>
+  </div>
+  <div class='wide-chart'>
+    <h2 id='fave-movie-title'></h2>
+		<h3 id='fave-movie-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='fave-movie'></canvas>
+		</div>
+    <div class="slideshow-container" id="fave-movie-slideshow">
+      <h3 class="slideshow-title">Selected answers:</h3>
+      <div class="slide-container">
+        <div class="slide">
+          <q>Lord of the Rings (Picking one of them is like picking my favourite child)</q>
+        </div>
+        <div class="slide">
+          <q>I cant remember what it's called but it's about that guy who invented that one machine but then it turns out it was a bad idea to build that machine</q>
+        </div>
+        <div class="slide">
+          <q>Spy Kids 2: The Island of Lost Dreams</q>
+        </div>
+        <div class="slide">
+          <q>⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢀⣀⣤⣴⣶⣾⣆⠄⠄⠄⠄⠄<br>⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠠⣤⣤⣤⠄⢤⣴⣶⣿⣿⣿⢟⣿⣿⣿⠄⠄⠄⠄⠄<br>⠄⠄⠄⠄⠄⣀⣠⣤⡾⢏⢠⣶⣶⣾⡑⡀⢸⠋⠁⠄⢠⣾⣿⣿⣿⠄⠄⠄⠄⠄<br>⠄⢀⣠⣶⣿⣿⣿⠟⠁⠁⠰⣋⢫⢲⡇⠛⠄⠄⢀⣠⣤⣉⠻⠿⠿⠄⠄⠄⠄⠄<br>⢰⣿⣿⣟⣋⣉⣁⠄⠄⠄⠄⠻⣆⣂⡕⠼⠂⠉⣿⣿⡇⢏⠉⠉⠁⠄⠄⠄⠄⠄<br>⠄⠙⢿⣿⣿⣿⣿⠃⢸⢋⡁⢊⠒⣲⡶⠊⢁⣴⣿⣿⣿⣦⣦⠄⠄⠄⠄⠄⠄⠄<br>⠄⠄⠄⠙⠻⣿⡟⠄⡆⢸⣧⣾⣶⣤⣤⣾⡿⣿⣿⠿⡻⣻⣿⠁⠄⠄⠄⠄⠄⠄ <br>⠄⠄⠄⠄⠄⠄⠄⠘⠠⣾⣿⣿⡿⠿⠿⣥⣾⣿⠿⣛⠅⢰⣗⠄⠄⠄⠄⠄⠄⠄<br> ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠸⣶⣶⣿⣟⣛⣛⣛⠲⠿⣵⣿⣟⢅⠂⠄⠄⠄⠄⠄⠄ <br>⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢹⡟⠋⣠⣤⣤⣤⣍⡑⠂⠬⢉⣾⠄⠄⠄⠄⠄⠄⠄ <br>⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢠⠁⣿⣿⣿⣿⠿⠿⠿⠿⠷⢶⡄⠄⠄⠄⠄⠄⠄⠄ <br>⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠘⠄⢉⣁⣀⣤⣤⣤⣤⣤⣤⣤⠄⠄⠄⠄⠄⠄⠄⠄ <br>⠄⠄⠄⠄⠄⠄⠄⠄⠄⣀⠈⠙⠿⣿⣿⣿⣿⡍⠟⢁⣠⣤⣶⣶⣤⣄⡀⠄⠄⠄ <br>⠄⠄⠄⠄⠄⠄⠄⢀⣾⣿⣿⣷⣦⣀⠉⠿⣿⡇⠄⣾⣿⣿⣿⣿⣿⣿⣿⣶⡀⠄ <br>⠄⠄⠄⠄⠄⠄⢠⣾⣿⣿⣿⣿⣿⣿⣷⡄⠹⠇⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠄ <br>⠄⠄⠄⠄⠄⠄⣾⣿⣿⣿⣿⣿⣿⣿⡿⠋⠄⠄⠈⠙⠿⢿⣿⣿⣿⣿⣿⣿⣿⡇</q>
+        </div>
+        <div class="slide">
+          <q>Contradiction Spot the Liar VOD</q>
+        </div>
+        <div class="slide">
+          <q>Either the LOTRs or Fred Claus starring Vince Vaughn and</q>
+        </div>
+        <div class="slide">
+          <q>i know youll hate me for it but "fight club"</q>
+        </div>
+        <div class="slide">
+          <q>Dude dont give me another opportunity like this because seriously will you ever learn your lesson the answer to the question is probably something you never heard of its a little ditty called Interstellar haha jk but dude I watched I saw the TV glow and what the fuck was that even about ya know because like there was just so much going on and so much sub text but honestly watching your streams make me feel like the main character at the end of the movie but I really don't know what else to say here other than you are really silly for not putting a cap on my ability to just keep typing here other than I stroking my shit rn just straight tuggin on it and that keep staying rock solid big guy</q>
+        </div>
+      </div>
+      <div class="slideshow-controls">
+        <a class="prev-slide">&#10094;</a>
+        <div class="dot-container"></div>
+        <a class="next-slide">&#10095;</a>
+      </div>
+    </div>
+  </div>
+  <div class='chart'>
+    <h2 id='reading-title'></h2>
+		<h3 id='reading-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='reading'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='pet-ownership-title'></h2>
+		<h3 id='pet-ownership-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='pet-ownership'></canvas>
+		</div>
+  </div>
+  <!-- QUESTIONS FOR PET OWNERS -->
+  <div class='chart'>
+    <h2 id='pet-kind-title'></h2>
+		<h3 id='pet-kind-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='pet-kind'></canvas>
+		</div>
+  </div>
+</div>
+<div id="charts" class="chart-list">
+  <!-- FINALE -->
+  <div class='chart'>
+    <h2 id='collab-title'></h2>
+		<h3 id='collab-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='collab'></canvas>
+		</div>
+    <div class="slideshow-container" id="collab-slideshow">
+      <h3 class="slideshow-title">Selected answers:</h3>
+      <div class="slide-container">
+        <div class="slide">
+          <q>I need more Will and Squeex action. Minecraft streams were peak.</q>
+        </div>
+        <div class="slide">
+          <q>A psychologist</q>
+        </div>
+        <div class="slide">
+          <q>hanner (OSRS Streamer)</q>
+        </div>
+        <div class="slide">
+          <q>Jesus, Pope Francis, Oj Simpson (RIP), Takumi Fujiwara from InitialD</q>
+        </div>
+        <div class="slide">
+          <q>anyone, he lacks social interaction</q>
+        </div>
+        <div class="slide">
+          <q>Hauk tuah girl</q>
+        </div>
+        <div class="slide">
+          <q>The Estate of Orenthal James Simpson</q>
+        </div>
+        <div class="slide">
+          <q>The "end stream" button</q>
+        </div>
+      </div>
+      <div class="slideshow-controls">
+        <a class="prev-slide">&#10094;</a>
+        <div class="dot-container"></div>
+        <a class="next-slide">&#10095;</a>
+      </div>
+    </div>
+  </div>
+  <div class='chart'>
+    <h2 id='game-ideas-title'></h2>
+		<h3 id='game-ideas-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='game-ideas'></canvas>
+		</div>
+    <div class="slideshow-container" id="game-ideas-slideshow">
+      <h3 class="slideshow-title">Selected answers:</h3>
+      <div class="slide-container">
+        <div class="slide">
+          <q>More indie games, and occasionally games the viewers can play as well</q>
+        </div>
+        <div class="slide">
+          <q>DARK SOULS 1-3 BLZ BRO</q>
+        </div>
+        <div class="slide">
+          <q>dark souls, we who are about to die</q>
+        </div>
+        <div class="slide">
+          <q>Dark Souls (clueless)</q>
+        </div>
+        <div class="slide">
+          <q>Dark souls you coward</q>
+        </div>
+        <div class="slide">
+          <q>dark souls coward</q>
+        </div>
+        <div class="slide">
+          <q>Dark Souls III at least</q>
+        </div>
+        <div class="slide">
+          <q>dark souls please just do it</q>
+        </div>
+        <div class="slide">
+          <q>play dark souls 1 please please please</q>
+        </div>
+        <div class="slide">
+          <q>dark souls you f*cking coward</q>
+        </div>
+        <div class="slide">
+          <q>dark souls please for fucks sake</q>
+        </div>
+      </div>
+      <div class="slideshow-controls">
+        <a class="prev-slide">&#10094;</a>
+        <div class="dot-container"></div>
+        <a class="next-slide">&#10095;</a>
+      </div>
+    </div>
+  </div>
+  <div class='chart'>
+    <h2 id='emote-title'></h2>
+		<h3 id='emote-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='emote'></canvas>
+		</div>
+    <div class="slideshow-container" id="emote-slideshow">
+      <h3 class="slideshow-title">Selected answers:</h3>
+      <div class="slide-container">
+        <div class="slide">
+          <q>ItsWillSneak by far, silly little guy doing a silly little walk</q>
+        </div>
+        <div class="slide">
+          <q>The 0xtr(whatever) giggle</q>
+        </div>
+        <div class="slide">
+          <q>Just yesterday i found out the girl i've been dating actually knows of you because she watches hanner, i asked her if she knew about the bird nectar and she did.</q>
+        </div>
+        <div class="slide">
+          <q>itswillHorny</q>
+        </div>
+        <div class="slide">
+          <q>idk what it's called but it's him biting into a burger</q>
+        </div>
+        <div class="slide">
+          <q>the simple and humble itswill7</q>
+        </div>
+      </div>
+      <div class="slideshow-controls">
+        <a class="prev-slide">&#10094;</a>
+        <div class="dot-container"></div>
+        <a class="next-slide">&#10095;</a>
+      </div>
+    </div>
+  </div>
+  <div class='chart'>
+    <h2 id='fave-chatter-title'></h2>
+		<h3 id='fave-chatter-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='fave-chatter'></canvas>
+		</div>
+    <div class="slideshow-container" id="fave-chatter-slideshow">
+      <h3 class="slideshow-title">Selected answers:</h3>
+      <div class="slide-container">
+        <div class="slide">
+          <q>hello_snoopy, ban anyone answering otherwise (except maybe Crow but he's dying)</q>
+        </div>
+        <div class="slide">
+          <q>I know the other chatters don't matter and itswill is talking directly to me.</q>
+        </div>
+        <div class="slide">
+          <q>暗殺者の二十五 (Chicken walk guy.  They should be a mod, they are a straight shooter with upper management written all over them.</q>
+        </div>
+        <div class="slide">
+          <q>The Crow Fella for his dedication to his craft</q>
+        </div>
+        <div class="slide">
+          <q>wendyes (If I have glorped harder than others it is by standing on the shoulders of giants)</q>
+        </div>
+        <div class="slide">
+          <q>my wife posts in your chat often and always manages to piss you off and she laughs every time you say like "time that guy out" or something similar</q>
+        </div>
+        <div class="slide">
+          <q>not a chatter but the guy who comments on your youtube about drinking an increasing amount of beers while watching every new video</q>
+        </div>
+        <div class="slide">
+          <q>the girl reading this</q>
+        </div>
+      </div>
+      <div class="slideshow-controls">
+        <a class="prev-slide">&#10094;</a>
+        <div class="dot-container"></div>
+        <a class="next-slide">&#10095;</a>
+      </div>
+    </div>
+  </div>
+  <div class='chart'>
+    <h2 id='buffer-title'></h2>
+		<h3 id='buffer-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='buffer'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='fave-mod-title'></h2>
+		<h3 id='fave-mod-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='fave-mod'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='hot-chocolate-title'></h2>
+		<h3 id='hot-chocolate-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='hot-chocolate'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='cock-n-balls-title'></h2>
+		<h3 id='cock-n-balls-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='cock-n-balls'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='pajamas-title'></h2>
+		<h3 id='pajamas-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='pajamas'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='cheaters-title'></h2>
+		<h3 id='cheaters-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='cheaters'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='theft-title'></h2>
+		<h3 id='theft-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='theft'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='aliens-title'></h2>
+		<h3 id='aliens-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='aliens'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='ghosts-title'></h2>
+		<h3 id='ghosts-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='ghosts'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='furry-title'></h2>
+		<h3 id='furry-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='furry'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='height-title'></h2>
+		<h3 id='height-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='height'></canvas>
+		</div>
+  </div>
+  <div class='chart'>
+    <h2 id='norwood-title'></h2>
+		<h3 id='norwood-subtitle'></h3>
+		<div class='chart-container'>
+			<canvas id='norwood'></canvas>
+		</div>
+  </div>
+</div>
+{% endblock %}

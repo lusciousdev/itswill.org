@@ -1,0 +1,4214 @@
+{
+  "charts": {
+    "start-watch": {
+      "title": "When did you start watching itswill?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Before 2019",
+            "2019",
+            "2020",
+            "2021",
+            "2022",
+            "2023",
+            "2024",
+            "2025"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f2ac48",
+                "#48f250",
+                "#8048f2",
+                "#f24848",
+                "#48f288",
+                "#ec48f2",
+                "#9cf248",
+                "#4858f2"
+              ],
+              "responses": 2448,
+              "data": [
+                193,
+                211,
+                459,
+                323,
+                328,
+                370,
+                446,
+                118
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "discovery": {
+      "title": "How did you discover itswill?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Twitch recommendation",
+            "YouTube recommendation",
+            "Other creator mentioned him",
+            "Recommendation from a friend",
+            "Collaboration with another creator",
+            "YouTube series (i.e. Gielinor Games)",
+            "TikTok"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f24880",
+                "#48f24c",
+                "#5c48f2",
+                "#f248a0",
+                "#74f248",
+                "#4864f2",
+                "#f25048"
+              ],
+              "responses": 2448,
+              "data": [
+                893,
+                514,
+                358,
+                331,
+                212,
+                130,
+                10
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "video-freq": {
+      "title": "How often do you watch itswill YouTube videos?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Never",
+            "Rarely / When I miss a stream",
+            "Often",
+            "Every video"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f2c0",
+                "#cc48f2",
+                "#f2b848",
+                "#48f24c"
+              ],
+              "responses": 2448,
+              "data": [
+                266,
+                401,
+                945,
+                836
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "yt-sub": {
+      "title": "Are you subscribed to itswill on YouTube?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f250",
+                "#8c48f2"
+              ],
+              "responses": 2448,
+              "data": [
+                1990,
+                458
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "twitch-freq": {
+      "title": "How often do you watch itswill?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Less than once per week",
+            "1-2 days per week",
+            "3-5 days per week",
+            "Every stream",
+            "I only watch the vods"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f24c",
+                "#9848f2",
+                "#f28048",
+                "#50f248",
+                "#4888f2"
+              ],
+              "responses": 2448,
+              "data": [
+                134,
+                626,
+                1201,
+                408,
+                79
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "experience": {
+      "title": "How would you rate your overall experience watching itswill?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48e8f2",
+                "#f24888",
+                "#48f268",
+                "#a048f2",
+                "#f2a048"
+              ],
+              "responses": 2448,
+              "data": [
+                84,
+                19,
+                84,
+                632,
+                1629
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "twitch-sub": {
+      "title": "Are you subscribed to itswill on Twitch?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f2c448",
+                "#48d0f2"
+              ],
+              "responses": 2448,
+              "data": [
+                1350,
+                1098
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "banned": {
+      "title": "Are you now or have you ever been banned in the itswill Livestream?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#8048f2",
+                "#f2d848"
+              ],
+              "responses": 2448,
+              "data": [
+                268,
+                2180
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "primary-content": {
+      "title": "What do you primarily watch itswill for?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Old School Runescape",
+            "Variety"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f24884",
+                "#f2ec48"
+              ],
+              "responses": 2448,
+              "data": [
+                1377,
+                1071
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "favorite-content": {
+      "title": "What's your favorite type of stream?",
+      "subtitle": "(2,424 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Variety",
+            "Pet Hunting",
+            "Leagues",
+            "Dead Man Mode"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f26c",
+                "#c448f2",
+                "#f26848",
+                "#48f2b0"
+              ],
+              "responses": 2424,
+              "data": [
+                1465,
+                751,
+                193,
+                15
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "video-types": {
+      "title": "What types of itswill videos do you typically watch?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "Main channel videos",
+            "Stream vods",
+            "None"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#4848f2",
+                "#f24860",
+                "#9cf248"
+              ],
+              "responses": 2448,
+              "data": [
+                1928,
+                1039,
+                162
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "archetype": {
+      "title": "What is your favorite day-specific stream archetype?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Variety Friday",
+            "Scary Saturday",
+            "Skree Sunday",
+            "Royal Titan Tuesday"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#50f248",
+                "#4884f2",
+                "#f248c4",
+                "#f2e848"
+              ],
+              "responses": 2448,
+              "data": [
+                984,
+                904,
+                417,
+                143
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "special-edition": {
+      "title": "What was your favorite itswill Special Edition Livestream?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Christmas Late Night Special 2024",
+            "April Fools [HARDCORE]",
+            "Ratchelor Valentines Day Special",
+            "Christmas Cooking Stream 2023",
+            "$52 Streaming Setup",
+            "Card Grading Special (If you pick this your entire survey will be discarded)"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f26048",
+                "#78f248",
+                "#4860f2",
+                "#f2489c",
+                "#c0f248",
+                "#48f2d8"
+              ],
+              "responses": 2448,
+              "data": [
+                837,
+                545,
+                493,
+                267,
+                232,
+                74
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "fave-games": {
+      "title": "What are your 3 favorite variety games/genres?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "Simulator",
+            "Horror",
+            "Roguelike",
+            "Indie hits",
+            "Minecraft",
+            "Classics",
+            "Soulslikes",
+            "Pokemon",
+            "Themed variety days",
+            "Streamer torture",
+            "Retro games",
+            "Chat involvement games",
+            "Hitman"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f264",
+                "#4884f2",
+                "#f24860",
+                "#8cf248",
+                "#48a4f2",
+                "#f248bc",
+                "#b8f248",
+                "#48f2e0",
+                "#f248d8",
+                "#f2b448",
+                "#48f29c",
+                "#cc48f2",
+                "#f25848"
+              ],
+              "responses": 2448,
+              "data": [
+                1234,
+                1229,
+                820,
+                809,
+                506,
+                471,
+                397,
+                374,
+                325,
+                302,
+                277,
+                272,
+                150
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "fave-stream": {
+      "title": "What is your favorite variety stream of all time?",
+      "subtitle": "(2,382 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "Poop Killer",
+            "Desert Bus",
+            "Minecraft with Squeex",
+            "Amenti",
+            "TCG Card Shop Simulator",
+            "Schedule 1",
+            "Elden Ring",
+            "Dale and Dawson's",
+            "My Summer Car",
+            "Minecraft speedruns",
+            "Nubby",
+            "Dungeons of Blood and Dream",
+            "Hitman",
+            "Coin Game",
+            "Unaccessible",
+            "Bass Landing",
+            "Ratchelor",
+            "Arctic Eggs",
+            "Sniper Killer",
+            "Fallout: New Vegas",
+            "Fears to Fathom",
+            "Balatro",
+            "Minecraft",
+            "Look Outside",
+            "Fallout: New Vegas itswill Mod",
+            "Pumping Simulator 2",
+            "Storage Hunter Simulator",
+            "NFS Most Wanted Crowd Control",
+            "Dark and Darker",
+            "All of them",
+            "Any horror",
+            "cum"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#4874f2",
+                "#f24c48",
+                "#48f278",
+                "#cc48f2",
+                "#f29848",
+                "#48f268",
+                "#4888f2",
+                "#f24858",
+                "#48f2a0",
+                "#e448f2",
+                "#b0f248",
+                "#48d0f2",
+                "#f2487c",
+                "#6cf248",
+                "#4860f2",
+                "#f2485c",
+                "#48f278",
+                "#bc48f2",
+                "#f25048",
+                "#98f248",
+                "#48dcf2",
+                "#f248e4",
+                "#f2d448",
+                "#48f298",
+                "#5c48f2",
+                "#f27848",
+                "#48f2c8",
+                "#e848f2",
+                "#f0f248",
+                "#48a0f2",
+                "#f25048",
+                "#b0f248"
+              ],
+              "responses": 2382,
+              "data": [
+                143,
+                83,
+                70,
+                67,
+                56,
+                54,
+                45,
+                41,
+                34,
+                33,
+                32,
+                31,
+                27,
+                27,
+                27,
+                25,
+                25,
+                22,
+                21,
+                18,
+                17,
+                16,
+                16,
+                15,
+                15,
+                15,
+                15,
+                15,
+                13,
+                13,
+                12,
+                12
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "stream-ideas": {
+      "title": "What stream content would you most like to see come to life?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Undeniable Proof of Aliens Slideshow",
+            "Playing Dark Souls",
+            "Playing every Garfield game",
+            "Mario 64 16 Star",
+            "Every Lays flavor tier list",
+            "IRL Puzzle",
+            "Learn to Juggle",
+            "Mariachi Band",
+            "Building the Robot"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#4860f2",
+                "#f248c8",
+                "#e4f248",
+                "#48f2f0",
+                "#f248e8",
+                "#f2cc48",
+                "#48f278",
+                "#b048f2",
+                "#d4f248"
+              ],
+              "responses": 2448,
+              "data": [
+                508,
+                438,
+                366,
+                282,
+                261,
+                172,
+                150,
+                144,
+                127
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "stream-start": {
+      "title": "How do you typically discover the stream has started?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Twitch sidebar",
+            "I show up at 5pm PST",
+            "Twitch notification",
+            "Discord notification",
+            "I hang out in the offline chat"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f2d048",
+                "#48f27c",
+                "#4848f2",
+                "#f24874",
+                "#48f27c"
+              ],
+              "responses": 2448,
+              "data": [
+                858,
+                837,
+                423,
+                286,
+                44
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "extensions": {
+      "title": "Do you have any Twitch extensions installed?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "BetterTTV",
+            "7TV",
+            "FrankerFaceZ",
+            "None"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f2487c",
+                "#9cf248",
+                "#48acf2",
+                "#f248c8"
+              ],
+              "responses": 2448,
+              "data": [
+                1652,
+                1581,
+                792,
+                456
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "chat-activity": {
+      "title": "How much do you chat?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Lurker",
+            "Occasional chatter",
+            "Active chatter"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#4894f2",
+                "#f24858",
+                "#80f248"
+              ],
+              "responses": 2448,
+              "data": [
+                1024,
+                1230,
+                194
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "positive-force": {
+      "title": "Has the itswill Livestream been a positive force in your life?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48a8f2",
+                "#f2486c"
+              ],
+              "responses": 2448,
+              "data": [
+                2097,
+                351
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "discord-member": {
+      "title": "Are you a member of the itswill Discord server?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48a0f2",
+                "#f248dc"
+              ],
+              "responses": 2448,
+              "data": [
+                1024,
+                1424
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "time-on-twitch": {
+      "title": "How many hours do you spend on Twitch per day? (average)",
+      "subtitle": "(2,234 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "<1",
+            "1-2",
+            "3-4",
+            "5-6",
+            "7-8",
+            "9-10",
+            "10+"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f248b8",
+                "#acf248",
+                "#4c48f2",
+                "#f24898",
+                "#f2e448",
+                "#48f2dc",
+                "#8048f2"
+              ],
+              "responses": 2234,
+              "data": [
+                242,
+                601,
+                689,
+                378,
+                161,
+                40,
+                123
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "other-streamers": {
+      "title": "Other than itswill, how many streamers do you consistently watch?",
+      "subtitle": "(2,234 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "0",
+            "1-2",
+            "3-4",
+            "5-6",
+            "6+"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#58f248",
+                "#5448f2",
+                "#f2487c",
+                "#48f26c",
+                "#4874f2"
+              ],
+              "responses": 2234,
+              "data": [
+                287,
+                872,
+                726,
+                157,
+                192
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "watching-twitch": {
+      "title": "How do you watch Twitch?",
+      "subtitle": "(2,234 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Desktop",
+            "Mobile/Tablet",
+            "Laptop",
+            "TV",
+            "Video game console"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#e048f2",
+                "#f2dc48",
+                "#48c4f2",
+                "#f2487c",
+                "#e4f248"
+              ],
+              "responses": 2234,
+              "data": [
+                1740,
+                199,
+                188,
+                86,
+                21
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "rs-games": {
+      "title": "Which RuneScape games do you play?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "OSRS (main game)",
+            "OSRS (leagues)",
+            "OSRS (DMM)",
+            "RS3",
+            "2004Scape",
+            "RS Classic",
+            "OSRS Private Servers",
+            "None"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#bc48f2",
+                "#f2d448",
+                "#48f280",
+                "#484cf2",
+                "#f2485c",
+                "#c4f248",
+                "#48c4f2",
+                "#f24858"
+              ],
+              "responses": 2448,
+              "data": [
+                2129,
+                1251,
+                165,
+                192,
+                52,
+                20,
+                33,
+                247
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "osrs": {
+      "title": "Do you play Old School RuneScape?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#9cf248",
+                "#4880f2"
+              ],
+              "responses": 2448,
+              "data": [
+                2098,
+                350
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "age": {
+      "title": "What is your current age?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "<18",
+            "18-23",
+            "24-29",
+            "30-35",
+            "36-41",
+            "42-50",
+            "50+"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f24878",
+                "#c4f248",
+                "#48f2c8",
+                "#c048f2",
+                "#d8f248",
+                "#48f0f2",
+                "#d048f2"
+              ],
+              "responses": 2448,
+              "data": [
+                8,
+                142,
+                1420,
+                833,
+                27,
+                4,
+                14
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "handedness": {
+      "title": "Are you right or left handed?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Right",
+            "Left",
+            "Ambidexterous"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f254",
+                "#6048f2",
+                "#f27048"
+              ],
+              "responses": 2448,
+              "data": [
+                2086,
+                270,
+                92
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "lgbt": {
+      "title": "Do you identify as LGBTQ+?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No",
+            "Unsure"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#90f248",
+                "#6448f2",
+                "#f24878"
+              ],
+              "responses": 2448,
+              "data": [
+                444,
+                1885,
+                119
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "gender": {
+      "title": "What is your gender identity?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Male",
+            "Female",
+            "Non-binary",
+            "Other"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f2488c",
+                "#9cf248",
+                "#5848f2",
+                "#f2487c"
+              ],
+              "responses": 2448,
+              "data": [
+                2140,
+                195,
+                84,
+                29
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "sexuality": {
+      "title": "What is your sexuality?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Straight",
+            "Bisexual",
+            "Pansexual",
+            "Gay",
+            "Lesbian",
+            "Asexual",
+            "Other"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f2cc48",
+                "#48f2bc",
+                "#6048f2",
+                "#f24878",
+                "#48f27c",
+                "#a048f2",
+                "#f2d848"
+              ],
+              "responses": 2448,
+              "data": [
+                1906,
+                255,
+                90,
+                58,
+                50,
+                46,
+                43
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "relationship": {
+      "title": "What is your current relationship status?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Single",
+            "In a relationship",
+            "Divorced",
+            "It's Complicated"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48b4f2",
+                "#f248c8",
+                "#a4f248",
+                "#48c0f2"
+              ],
+              "responses": 2448,
+              "data": [
+                1109,
+                1187,
+                41,
+                111
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "country-origin": {
+      "title": "What country are you from?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "United States",
+            "Canada",
+            "Australia",
+            "United Kingdom",
+            "New Zealand",
+            "Brazil",
+            "Netherlands",
+            "Norway",
+            "Finland",
+            "Sweden",
+            "Germany",
+            "Antarctica"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f2bc",
+                "#f248e0",
+                "#f2a048",
+                "#48f2cc",
+                "#f248d8",
+                "#ecf248",
+                "#48c4f2",
+                "#f24898",
+                "#acf248",
+                "#48c4f2",
+                "#f248ac",
+                "#f2d448"
+              ],
+              "responses": 2448,
+              "data": [
+                1808,
+                208,
+                106,
+                77,
+                33,
+                20,
+                14,
+                14,
+                14,
+                9,
+                9,
+                7
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "country-home": {
+      "title": "What country do you currently live in?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "United States",
+            "Canada",
+            "Australia",
+            "United Kingdom",
+            "New Zealand",
+            "Brazil",
+            "Netherlands",
+            "Norway",
+            "Finland",
+            "Germany",
+            "Sweden",
+            "Denmark"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#7cf248",
+                "#48c4f2",
+                "#e048f2",
+                "#f2d848",
+                "#48d0f2",
+                "#f248ec",
+                "#d8f248",
+                "#48a8f2",
+                "#f248c4",
+                "#c0f248",
+                "#48ecf2",
+                "#a448f2"
+              ],
+              "responses": 2448,
+              "data": [
+                1835,
+                212,
+                117,
+                68,
+                27,
+                17,
+                12,
+                12,
+                12,
+                10,
+                10,
+                7
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "drivers-license": {
+      "title": "Do you have a driver's license?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#8cf248",
+                "#48acf2"
+              ],
+              "responses": 2448,
+              "data": [
+                2197,
+                251
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "education": {
+      "title": "Highest education level?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Less than high school",
+            "High school",
+            "Associates degree",
+            "Bachelor's degree",
+            "Master's degree",
+            "Doctorate"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#e8f248",
+                "#48a4f2",
+                "#f248bc",
+                "#f2d848",
+                "#48b4f2",
+                "#e448f2"
+              ],
+              "responses": 2448,
+              "data": [
+                34,
+                586,
+                359,
+                1110,
+                247,
+                112
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "employment": {
+      "title": "What is your current employment status?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Employed",
+            "Unemployed",
+            "Student",
+            "NEET"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f2bc",
+                "#9448f2",
+                "#f24848",
+                "#50f248"
+              ],
+              "responses": 2448,
+              "data": [
+                1879,
+                240,
+                196,
+                133
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "sports-watched": {
+      "title": "What sports do you watch?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "American Football",
+            "Basketball",
+            "None",
+            "Hockey",
+            "Baseball",
+            "Soccer / Football",
+            "F1 / Motorsports",
+            "Cricket",
+            "Golf",
+            "MMA",
+            "Esports",
+            "UFC",
+            "Sumo",
+            "Tennis",
+            "Rugby",
+            "AFL",
+            "disc golf",
+            "Rugby League",
+            "Lacrosse",
+            "Cycling"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f27c",
+                "#bc48f2",
+                "#c8f248",
+                "#48f2c4",
+                "#f248b8",
+                "#d0f248",
+                "#48f2bc",
+                "#b848f2",
+                "#f2b848",
+                "#48f2d4",
+                "#f248bc",
+                "#98f248",
+                "#48a8f2",
+                "#f248a0",
+                "#78f248",
+                "#8048f2",
+                "#f28c48",
+                "#48f2bc",
+                "#d848f2",
+                "#c8f248"
+              ],
+              "responses": 2448,
+              "data": [
+                954,
+                680,
+                626,
+                549,
+                540,
+                408,
+                386,
+                62,
+                44,
+                23,
+                20,
+                17,
+                16,
+                15,
+                12,
+                10,
+                7,
+                7,
+                6,
+                6
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "sports-played": {
+      "title": "What sports do you play?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "None",
+            "Basketball",
+            "Soccer / Football",
+            "Baseball",
+            "American Football",
+            "Hockey",
+            "Golf",
+            "F1 / Motorsports",
+            "Tennis",
+            "Cricket",
+            "Volleyball",
+            "disc golf",
+            "Swimming",
+            "Lacrosse",
+            "Pickleball",
+            "Ultimate Frisbee",
+            "lol",
+            "rock climbing",
+            "Rugby",
+            "Running"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f2a848",
+                "#48f2b0",
+                "#9c48f2",
+                "#f29848",
+                "#48f258",
+                "#8c48f2",
+                "#f25c48",
+                "#a0f248",
+                "#48d0f2",
+                "#f248e4",
+                "#dcf248",
+                "#48c8f2",
+                "#d048f2",
+                "#f29048",
+                "#48f248",
+                "#ac48f2",
+                "#f26048",
+                "#48f268",
+                "#4868f2",
+                "#f24878"
+              ],
+              "responses": 2448,
+              "data": [
+                1285,
+                303,
+                263,
+                170,
+                150,
+                97,
+                74,
+                52,
+                38,
+                32,
+                24,
+                17,
+                10,
+                9,
+                9,
+                8,
+                8,
+                8,
+                7,
+                7
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "games-played": {
+      "title": "What types of games do you play?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "RuneScape",
+            "RPGs",
+            "FPS",
+            "Roguelikes",
+            "Indie",
+            "Other MMOs",
+            "Board Games",
+            "MOBA",
+            "Fighting Games",
+            "Sports Video Games",
+            "None"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48c4f2",
+                "#f2489c",
+                "#8cf248",
+                "#4880f2",
+                "#f24848",
+                "#78f248",
+                "#48d0f2",
+                "#f248cc",
+                "#f2e448",
+                "#48a0f2",
+                "#f2488c"
+              ],
+              "responses": 2448,
+              "data": [
+                2042,
+                1398,
+                1359,
+                1340,
+                1270,
+                797,
+                653,
+                543,
+                347,
+                342,
+                33
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "hobbies": {
+      "title": "What hobbies do you enjoy?",
+      "subtitle": "(2,445 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "Gaming",
+            "Listening to music",
+            "Watching movies",
+            "Watching television",
+            "Working out",
+            "Cooking",
+            "Hiking",
+            "Reading",
+            "Running",
+            "Playing an instrument",
+            "Drawing or Art",
+            "Photography",
+            "Writing",
+            "None",
+            "Gooning",
+            "Gardening",
+            "Golf",
+            "Cycling",
+            "fishing",
+            "Crochet"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#8448f2",
+                "#f24878",
+                "#e4f248",
+                "#48f28c",
+                "#a048f2",
+                "#f26048",
+                "#48f2cc",
+                "#c848f2",
+                "#f2b448",
+                "#48f2a8",
+                "#f248d4",
+                "#84f248",
+                "#5848f2",
+                "#f24858",
+                "#48f268",
+                "#489cf2",
+                "#f24860",
+                "#48f26c",
+                "#b048f2",
+                "#f2dc48"
+              ],
+              "responses": 2445,
+              "data": [
+                2183,
+                1713,
+                1261,
+                1114,
+                1004,
+                909,
+                864,
+                792,
+                405,
+                395,
+                281,
+                241,
+                192,
+                24,
+                8,
+                7,
+                7,
+                7,
+                6,
+                5
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "fave-movie": {
+      "title": "What's your favorite movie?",
+      "subtitle": "(2,434 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "Interstellar",
+            "The Lord of the Rings",
+            "Pulp Fiction",
+            "LOTR: ROTK",
+            "Good Will Hunting",
+            "The Grand Budapest Hotel",
+            "Shawshank Redemption",
+            "Whiplash",
+            "Princess Mononoke",
+            "Inglorious Basterds",
+            "Goodfellas",
+            "The Minecraft Movie",
+            "The Departed",
+            "Inception",
+            "The Dark Knight",
+            "LOTR: The Fellowship of the Ring",
+            "No Country for Old Men",
+            "Scott Pilgrim vs The World",
+            "Donnie Darko",
+            "Arrival",
+            "Gladiator",
+            "Shrek 2",
+            "The Lighthouse",
+            "Hot Rod",
+            "Fight Club",
+            "Eternal Sunshine of the Spotless Mind",
+            "The Big Lebowski",
+            "The Prestige",
+            "Heat",
+            "Spirited Away"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f2e0",
+                "#f248e4",
+                "#9cf248",
+                "#4884f2",
+                "#f24848",
+                "#48f294",
+                "#d848f2",
+                "#f29448",
+                "#48f280",
+                "#ec48f2",
+                "#c8f248",
+                "#48f2d0",
+                "#e048f2",
+                "#98f248",
+                "#4884f2",
+                "#f25848",
+                "#88f248",
+                "#48d0f2",
+                "#f24868",
+                "#48f28c",
+                "#c048f2",
+                "#f27448",
+                "#48f294",
+                "#4864f2",
+                "#f248d4",
+                "#f2b448",
+                "#48f2a8",
+                "#a848f2",
+                "#f2e448",
+                "#48b0f2"
+              ],
+              "responses": 2434,
+              "data": [
+                78,
+                59,
+                25,
+                22,
+                20,
+                20,
+                20,
+                19,
+                18,
+                17,
+                17,
+                16,
+                15,
+                15,
+                15,
+                14,
+                14,
+                14,
+                14,
+                13,
+                13,
+                13,
+                13,
+                12,
+                12,
+                12,
+                12,
+                12,
+                11,
+                11
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "reading": {
+      "title": "Have you read a book in the last 5 years?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48c8f2",
+                "#bc48f2"
+              ],
+              "responses": 2448,
+              "data": [
+                1844,
+                604
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "pet-ownership": {
+      "title": "Do you have a pet?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f248",
+                "#9848f2"
+              ],
+              "responses": 2448,
+              "data": [
+                1671,
+                777
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "sub-type": {
+      "title": "Type of subscription?",
+      "subtitle": "(1,350 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Prime",
+            "Tier 1",
+            "Tier 2",
+            "Tier 3"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#6448f2",
+                "#f24864",
+                "#48f264",
+                "#6448f2"
+              ],
+              "responses": 1350,
+              "data": [
+                736,
+                578,
+                30,
+                6
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "gifted": {
+      "title": "Was your subscription gifted?",
+      "subtitle": "(1,350 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f24c48",
+                "#48f2a8"
+              ],
+              "responses": 1350,
+              "data": [
+                83,
+                1267
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "discord-interact": {
+      "title": "How often do you interact with the itswill Discord?",
+      "subtitle": "(1,024 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Never",
+            "Infrequently",
+            "Daily"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#dcf248",
+                "#48a0f2",
+                "#f24898"
+              ],
+              "responses": 1024,
+              "data": [
+                487,
+                450,
+                87
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "total-level": {
+      "title": "What is your current total level in OSRS?",
+      "subtitle": "(2,098 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "< 750",
+            "750-1250",
+            "1251-1500",
+            "1501-1750",
+            "1751-2000",
+            "2001-2100",
+            "2101-2200",
+            "2201-2276",
+            "2277"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#74f248",
+                "#4854f2",
+                "#f26448",
+                "#48f25c",
+                "#4c48f2",
+                "#f2a048",
+                "#48f260",
+                "#c048f2",
+                "#f26048"
+              ],
+              "responses": 2098,
+              "data": [
+                26,
+                28,
+                43,
+                103,
+                399,
+                354,
+                371,
+                346,
+                428
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "game-mode": {
+      "title": "What game mode do you spend most of your time playing?",
+      "subtitle": "(2,098 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Main",
+            "Iron Man",
+            "Group Ironman",
+            "Ultimate Ironman",
+            "Hardcore Ironman",
+            "Hardcore Group Ironman"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f2a4",
+                "#5848f2",
+                "#f2488c",
+                "#c4f248",
+                "#48f2e4",
+                "#8448f2"
+              ],
+              "responses": 2098,
+              "data": [
+                1312,
+                520,
+                201,
+                38,
+                23,
+                4
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "num-accounts": {
+      "title": "How many OSRS accounts do you have?",
+      "subtitle": "(2,098 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6+"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#ec48f2",
+                "#f2c848",
+                "#48e0f2",
+                "#f248bc",
+                "#f2c048",
+                "#48f294"
+              ],
+              "responses": 2098,
+              "data": [
+                703,
+                828,
+                346,
+                109,
+                26,
+                86
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "fire-cape": {
+      "title": "Have you ever gotten a fire cape?",
+      "subtitle": "(2,098 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#5cf248",
+                "#7848f2"
+              ],
+              "responses": 2098,
+              "data": [
+                1944,
+                154
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "infernal-cape": {
+      "title": "Have you ever gotten an infernal cape?",
+      "subtitle": "(2,098 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#5448f2",
+                "#f29048"
+              ],
+              "responses": 2098,
+              "data": [
+                568,
+                1530
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "favorite-skill": {
+      "title": "What is your favorite skill in OSRS?",
+      "subtitle": "(2,098 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Slayer",
+            "Farming",
+            "Hunter",
+            "Magic",
+            "fishing",
+            "Runecraft",
+            "Agility",
+            "Woodcutting",
+            "Ranged",
+            "Strength",
+            "Mining",
+            "Thieving"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f2c048",
+                "#48b8f2",
+                "#b848f2",
+                "#e0f248",
+                "#48f2c4",
+                "#6848f2",
+                "#f24860",
+                "#48f28c",
+                "#4868f2",
+                "#f28048",
+                "#48f2e8",
+                "#f248d0"
+              ],
+              "responses": 2098,
+              "data": [
+                699,
+                214,
+                206,
+                121,
+                115,
+                107,
+                103,
+                101,
+                83,
+                59,
+                52,
+                45
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "least-favorite-skill": {
+      "title": "What is your least favorite skill in OSRS?",
+      "subtitle": "(2,098 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Agility",
+            "Runecraft",
+            "Mining",
+            "Thieving",
+            "Herblore",
+            "Slayer",
+            "Firemaking",
+            "Farming",
+            "Fletching",
+            "Construction",
+            "Smithing",
+            "Hunter"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f26c",
+                "#4854f2",
+                "#f248ac",
+                "#8cf248",
+                "#4890f2",
+                "#f24858",
+                "#a8f248",
+                "#48f2f0",
+                "#bc48f2",
+                "#f28448",
+                "#48f248",
+                "#4880f2"
+              ],
+              "responses": 2098,
+              "data": [
+                542,
+                390,
+                192,
+                114,
+                93,
+                93,
+                87,
+                87,
+                87,
+                77,
+                71,
+                70
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "osrs-content": {
+      "title": "What OSRS content do you enjoy?",
+      "subtitle": "(2,098 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "Bossing",
+            "Slayer",
+            "Skilling",
+            "Raiding",
+            "Pet Hunting",
+            "Collection log hunting",
+            "PvP"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48bcf2",
+                "#f248b0",
+                "#b8f248",
+                "#4898f2",
+                "#f248ec",
+                "#a4f248",
+                "#4874f2"
+              ],
+              "responses": 2098,
+              "data": [
+                1753,
+                1488,
+                1356,
+                1201,
+                1002,
+                794,
+                203
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "sailing": {
+      "title": "How do you feel about Sailing?",
+      "subtitle": "(2,098 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f24880",
+                "#9cf248",
+                "#48d8f2",
+                "#f248d8",
+                "#f2e848"
+              ],
+              "responses": 2098,
+              "data": [
+                276,
+                197,
+                889,
+                566,
+                170
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "title": "What state do you live in?",
+      "subtitle": "(1,835 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "California",
+            "Texas",
+            "Ohio",
+            "New York",
+            "Pennsylvania[B]",
+            "Washington",
+            "Florida",
+            "Illinois",
+            "Colorado",
+            "Minnesota",
+            "Michigan",
+            "Arizona",
+            "Massachusetts[B]",
+            "North Carolina",
+            "New Jersey",
+            "Wisconsin",
+            "Virginia[B]",
+            "Georgia",
+            "Missouri",
+            "Indiana",
+            "Kansas",
+            "Connecticut",
+            "Kentucky",
+            "Oregon",
+            "Utah",
+            "Tennessee",
+            "Maryland",
+            "Iowa",
+            "Alabama",
+            "South Carolina",
+            "Nevada",
+            "Idaho",
+            "Oklahoma",
+            "New Hampshire",
+            "New Mexico",
+            "Maine",
+            "Nebraska",
+            "Louisiana",
+            "Washington D.C.",
+            "Arkansas",
+            "West Virginia",
+            "South Dakota",
+            "Wyoming",
+            "North Dakota",
+            "Rhode Island",
+            "U.S. Virgin Islands",
+            "Alaska",
+            "Mississippi",
+            "Vermont",
+            "Delaware",
+            "Hawaii",
+            "Montana",
+            "Puerto Rico",
+            "Guam",
+            "Northern Mariana Islands"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#4c48f2",
+                "#f24864",
+                "#c8f248",
+                "#48f2d4",
+                "#7448f2",
+                "#f24868",
+                "#48f25c",
+                "#c048f2",
+                "#f2d048",
+                "#48b4f2",
+                "#f248e4",
+                "#d4f248",
+                "#48f2c8",
+                "#d448f2",
+                "#f28448",
+                "#48f2d0",
+                "#f248b0",
+                "#94f248",
+                "#48f2e8",
+                "#a448f2",
+                "#ecf248",
+                "#48acf2",
+                "#f248d0",
+                "#acf248",
+                "#48f2d0",
+                "#9848f2",
+                "#f2c448",
+                "#48f264",
+                "#7448f2",
+                "#f28848",
+                "#48f2e4",
+                "#a048f2",
+                "#f28c48",
+                "#48f278",
+                "#e448f2",
+                "#f2e448",
+                "#48d0f2",
+                "#f248e0",
+                "#f2dc48",
+                "#48f27c",
+                "#8448f2",
+                "#f2b848",
+                "#48f290",
+                "#b848f2",
+                "#f25c48",
+                "#48f2c4",
+                "#9c48f2",
+                "#f2cc48",
+                "#48f27c",
+                "#b848f2",
+                "#f29048",
+                "#48f2c4",
+                "#9448f2",
+                "#f25c48",
+                "#48f29c"
+              ],
+              "responses": 1835,
+              "data": [
+                145,
+                133,
+                90,
+                88,
+                83,
+                81,
+                75,
+                74,
+                60,
+                58,
+                57,
+                56,
+                56,
+                56,
+                53,
+                50,
+                48,
+                46,
+                45,
+                45,
+                30,
+                27,
+                26,
+                26,
+                25,
+                25,
+                23,
+                20,
+                19,
+                18,
+                18,
+                16,
+                16,
+                15,
+                14,
+                14,
+                13,
+                10,
+                10,
+                8,
+                7,
+                6,
+                6,
+                6,
+                6,
+                5,
+                5,
+                5,
+                4,
+                3,
+                3,
+                3,
+                2,
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "full-time": {
+      "title": "Do you work part or full time?",
+      "subtitle": "(1,879 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Part time",
+            "Full time"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f2a048",
+                "#48f27c"
+              ],
+              "responses": 1879,
+              "data": [
+                166,
+                1713
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "field-of-work": {
+      "title": "What's your field of work?",
+      "subtitle": "(1,879 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "Software Development",
+            "Engineering",
+            "IT",
+            "Retail",
+            "Finance",
+            "Healthcare",
+            "Technology",
+            "Science and Research",
+            "Manufacturing",
+            "Education",
+            "Construction",
+            "Hospitality",
+            "Military and Defense",
+            "Law",
+            "Automotive",
+            "Marketing",
+            "Insurance",
+            "Transportation",
+            "Arts",
+            "Telecommunications",
+            "Administration",
+            "Public Administration",
+            "Air Traffic Controller",
+            "Entertainment",
+            "Design"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f248c0",
+                "#90f248",
+                "#48ccf2",
+                "#c848f2",
+                "#f2c448",
+                "#48ecf2",
+                "#a848f2",
+                "#f2cc48",
+                "#48f2b4",
+                "#f248d4",
+                "#80f248",
+                "#48c8f2",
+                "#f248a8",
+                "#b0f248",
+                "#48c8f2",
+                "#f2487c",
+                "#6cf248",
+                "#6048f2",
+                "#f28448",
+                "#80f248",
+                "#4874f2",
+                "#f24848",
+                "#48f25c",
+                "#6848f2",
+                "#f24880"
+              ],
+              "responses": 1879,
+              "data": [
+                184,
+                160,
+                142,
+                104,
+                102,
+                96,
+                90,
+                66,
+                65,
+                63,
+                61,
+                61,
+                38,
+                34,
+                29,
+                29,
+                26,
+                25,
+                24,
+                21,
+                20,
+                18,
+                17,
+                17,
+                16
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "pet-kind": {
+      "title": "Which kind of pets do you have?",
+      "subtitle": "(1,671 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "Cat",
+            "Dog",
+            "Fish",
+            "Lizard",
+            "bird",
+            "Snake",
+            "Rabbit",
+            "Rat",
+            "Spider",
+            "Guinea pig",
+            "Horse",
+            "Turtle",
+            "Shrimp",
+            "Hamster",
+            "Mouse",
+            "Ferret",
+            "Chickens",
+            "Frogs",
+            "rock",
+            "Fox"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f0f2",
+                "#f248d0",
+                "#f2bc48",
+                "#48f2d4",
+                "#c048f2",
+                "#d8f248",
+                "#48f0f2",
+                "#f24888",
+                "#64f248",
+                "#48b4f2",
+                "#f048f2",
+                "#b8f248",
+                "#48f2d8",
+                "#c848f2",
+                "#b0f248",
+                "#48d0f2",
+                "#c848f2",
+                "#c0f248",
+                "#48d0f2",
+                "#f048f2"
+              ],
+              "responses": 1671,
+              "data": [
+                1004,
+                951,
+                61,
+                34,
+                30,
+                25,
+                18,
+                13,
+                11,
+                11,
+                10,
+                9,
+                7,
+                6,
+                5,
+                5,
+                4,
+                3,
+                2,
+                2
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "collab": {
+      "title": "Who would you like to see itswill collaborate with?",
+      "subtitle": "(1,373 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "Squeex",
+            "Hanner",
+            "Northernlion",
+            "Ludwig",
+            "chiblee",
+            "B0aty",
+            "moonmoon",
+            "Paymoneywubby",
+            "SkillSpecs",
+            "J1mmy",
+            "emilycupholda",
+            "Mr Mammal",
+            "Jerma",
+            "Mr Beast",
+            "Hasanabi",
+            "Caseoh",
+            "Clipper",
+            "Kai Cenat",
+            "Clint Stevens",
+            "Boaty"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#b848f2",
+                "#f24c48",
+                "#8cf248",
+                "#48f0f2",
+                "#f24884",
+                "#48f268",
+                "#488cf2",
+                "#f048f2",
+                "#f2b048",
+                "#48d8f2",
+                "#f24874",
+                "#48f27c",
+                "#e448f2",
+                "#a8f248",
+                "#4860f2",
+                "#f2487c",
+                "#70f248",
+                "#6c48f2",
+                "#f24874",
+                "#a4f248"
+              ],
+              "responses": 1373,
+              "data": [
+                167,
+                80,
+                65,
+                43,
+                41,
+                27,
+                25,
+                18,
+                17,
+                14,
+                14,
+                14,
+                12,
+                10,
+                10,
+                9,
+                9,
+                9,
+                9,
+                9
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "game-ideas": {
+      "title": "What games would you like to see itswill play?",
+      "subtitle": "(1,274 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "Dark Souls",
+            "OSRS",
+            "Minecraft",
+            "Old School Runescape",
+            "Stardew Valley",
+            "League of Legends",
+            "Terraria",
+            "Pokemon",
+            "RS3",
+            "Outer Wilds",
+            "Valheim",
+            "Fortnite",
+            "Dark Souls 3",
+            "bloodborne",
+            "Rocket League",
+            "RuneScape",
+            "Subnautica",
+            "Sekiro",
+            "repo",
+            "World of Warcraft"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f24874",
+                "#88f248",
+                "#489cf2",
+                "#f248a4",
+                "#84f248",
+                "#48d4f2",
+                "#a448f2",
+                "#f28848",
+                "#48f248",
+                "#6848f2",
+                "#f24854",
+                "#70f248",
+                "#8048f2",
+                "#f2e848",
+                "#48f2d4",
+                "#f248ec",
+                "#f29c48",
+                "#48dcf2",
+                "#ec48f2",
+                "#a0f248"
+              ],
+              "responses": 1274,
+              "data": [
+                79,
+                32,
+                26,
+                16,
+                15,
+                15,
+                14,
+                11,
+                11,
+                9,
+                9,
+                9,
+                8,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "emote": {
+      "title": "What's your favorite emote?",
+      "subtitle": "(1,278 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "itswill7",
+            "glorp",
+            "CokeShakey",
+            "itswillSneak",
+            "BURGER",
+            "itswillGun",
+            "IJBOL",
+            "x0r6ztGiggle",
+            "chickenWalk",
+            "itswillStogie",
+            "EEK",
+            "Bippin",
+            "glorpShakey",
+            "CAUGHT",
+            "itswillHammer",
+            "Kirbeter",
+            "itswillPound",
+            "GriddyGoose",
+            "itswillSPEED",
+            "BirdBoy"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#4874f2",
+                "#f26c48",
+                "#48f2c0",
+                "#4c48f2",
+                "#f28c48",
+                "#48f27c",
+                "#6448f2",
+                "#f2a048",
+                "#54f248",
+                "#4854f2",
+                "#f29c48",
+                "#48f2ac",
+                "#4c48f2",
+                "#f248b4",
+                "#f2cc48",
+                "#48f2ec",
+                "#f24890",
+                "#9cf248",
+                "#484cf2",
+                "#f29c48"
+              ],
+              "responses": 1278,
+              "data": [
+                115,
+                99,
+                55,
+                35,
+                34,
+                33,
+                32,
+                25,
+                19,
+                18,
+                17,
+                16,
+                15,
+                15,
+                15,
+                14,
+                14,
+                14,
+                12,
+                12
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "fave-chatter": {
+      "title": "Who's your favorite chatter?",
+      "subtitle": "(1,256 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "hello_snoopy",
+            "ACrowOutside",
+            "BigRobbiesBBQ",
+            "itswillChat",
+            "Snoopy",
+            "me",
+            "twenty_five",
+            "MOON2MILF",
+            "Nightbot",
+            "wendyes",
+            "clipperr",
+            "itswill",
+            "Hanner",
+            "Clipper",
+            "miagooper",
+            "DivineZaros",
+            "lusciousdev",
+            "Not BigRobbiesBBQ",
+            "Big Robbie",
+            "you"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f2d448",
+                "#48d0f2",
+                "#f2487c",
+                "#ecf248",
+                "#48d4f2",
+                "#f2487c",
+                "#48f248",
+                "#8448f2",
+                "#f26848",
+                "#48f29c",
+                "#9448f2",
+                "#f2a848",
+                "#48f28c",
+                "#9c48f2",
+                "#f28848",
+                "#48f288",
+                "#7448f2",
+                "#f2d848",
+                "#48f2a4",
+                "#b848f2"
+              ],
+              "responses": 1256,
+              "data": [
+                237,
+                230,
+                86,
+                64,
+                57,
+                54,
+                27,
+                14,
+                13,
+                12,
+                12,
+                12,
+                11,
+                10,
+                9,
+                9,
+                8,
+                7,
+                7,
+                6
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "buffer": {
+      "title": "When should the 15 minute buffer start?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "5:00:01 (5:15:01 should be late)",
+            "5:01:00 (5:16:00 should be late)"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#60f248",
+                "#4884f2"
+              ],
+              "responses": 2448,
+              "data": [
+                1708,
+                740
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "fave-mod": {
+      "title": "Who's your favorite mod?",
+      "subtitle": "(2,024 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "AMAB",
+            "hello_snoopy",
+            "lusciousdev",
+            "VtheVictim",
+            "amehzyn",
+            "CloudWizard",
+            "timelion",
+            "Burraki197",
+            "MrNiceRS",
+            "Fong",
+            "Teenagers",
+            "yeet_dan",
+            "hugh_jasRS",
+            "Crilp_",
+            "ZeldaKrazy"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f26c",
+                "#487cf2",
+                "#f248a8",
+                "#c0f248",
+                "#4860f2",
+                "#f25048",
+                "#48f29c",
+                "#6c48f2",
+                "#f28c48",
+                "#48f2f0",
+                "#f248b8",
+                "#f2c048",
+                "#48f260",
+                "#5048f2",
+                "#f29048"
+              ],
+              "responses": 2024,
+              "data": [
+                754,
+                657,
+                226,
+                79,
+                78,
+                68,
+                45,
+                25,
+                20,
+                18,
+                18,
+                14,
+                11,
+                8,
+                3
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "hot-chocolate": {
+      "title": "Is hot chocolate a candy?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f248c0",
+                "#f2b448"
+              ],
+              "responses": 2448,
+              "data": [
+                394,
+                2054
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "cock-n-balls": {
+      "title": "Is \"cock and balls\" redundant? Are the balls included in the definition of cock?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#4cf248",
+                "#4884f2"
+              ],
+              "responses": 2448,
+              "data": [
+                258,
+                2190
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "pajamas": {
+      "title": "Have you ever worn pajama pants outside your house?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#e848f2",
+                "#f2e448"
+              ],
+              "responses": 2448,
+              "data": [
+                1345,
+                1103
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "cheaters": {
+      "title": "Have you ever cheated on a test?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#4874f2",
+                "#f24898"
+              ],
+              "responses": 2448,
+              "data": [
+                1842,
+                606
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "theft": {
+      "title": "Have you ever stolen something from the supermarket?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#94f248",
+                "#48f2e4"
+              ],
+              "responses": 2448,
+              "data": [
+                1222,
+                1226
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "aliens": {
+      "title": "Do you think aliens exist?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#48f24c",
+                "#9c48f2"
+              ],
+              "responses": 2448,
+              "data": [
+                1966,
+                482
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "ghosts": {
+      "title": "Do you think ghosts exist?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f24874",
+                "#48f24c"
+              ],
+              "responses": 2448,
+              "data": [
+                768,
+                1680
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "furry": {
+      "title": "Are you a furry?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "doughnut",
+        "data": {
+          "labels": [
+            "Yes",
+            "No"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#4cf248",
+                "#8c48f2"
+              ],
+              "responses": 2448,
+              "data": [
+                134,
+                2314
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": true,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "height": {
+      "title": "How tall are you?",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "< 5' (< 152cm)",
+            "5'-5'3\" (152cm-160cm)",
+            "5'4\"-5'7\" (162cm-170cm)",
+            "5'8\"-5'11 (172cm-180cm)",
+            "6'-6'3\" (183cm-190cm)",
+            "> 6'3 (> 190cm)"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#a8f248",
+                "#48d0f2",
+                "#f24874",
+                "#48f250",
+                "#8c48f2",
+                "#f25448"
+              ],
+              "responses": 2448,
+              "data": [
+                18,
+                67,
+                270,
+                1057,
+                844,
+                192
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    },
+    "norwood": {
+      "title": "What's your number? Be honest.",
+      "subtitle": "(2,448 responses)",
+      "data": {
+        "type": "bar",
+        "data": {
+          "labels": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7"
+          ],
+          "datasets": [
+            {
+              "label": "",
+              "backgroundColor": [
+                "#f2489c",
+                "#f2d848",
+                "#48c8f2",
+                "#f248a0",
+                "#48f248",
+                "#8048f2",
+                "#f2e448"
+              ],
+              "responses": 2448,
+              "data": [
+                1465,
+                599,
+                246,
+                41,
+                14,
+                25,
+                58
+              ]
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false,
+              "position": "right"
+            }
+          }
+        }
+      }
+    }
+  }
+}

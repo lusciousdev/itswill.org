@@ -17,6 +17,9 @@ from .models import *
 
 class IndexView(generic.TemplateView):
   template_name = "itswill_org/index.html"
+
+class CensusView(generic.TemplateView):
+  template_name = "itswill_org/census.html"
   
 class MonthListView(generic.TemplateView):
   template_name = "itswill_org/monthlist.html"

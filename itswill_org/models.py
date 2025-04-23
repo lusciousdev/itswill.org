@@ -1,11 +1,8 @@
 from django.db import models
 import django.contrib.admin as admin
-from django.db.models.signals import m2m_changed, post_delete, post_save, pre_delete
-from django.dispatch import receiver
 import datetime
 import re
 import typing
-import json
 import luscioustwitch
 
 from .util.timeutil import *
@@ -458,3 +455,9 @@ class LetterboxdReview(models.Model):
       models.Index(fields = ["watched_date", ]),
       models.Index(fields = ["member_rating", ]),
     ]
+    
+class Census(models.Model):
+  date = models.DateField()
+  respondents = models.IntegerField()
+  raw_results = models.JSONField()
+  chart_data = models.JSONField()
