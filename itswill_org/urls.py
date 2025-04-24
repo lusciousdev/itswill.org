@@ -36,6 +36,7 @@ urlpatterns = [
   path("wrapped/redirect/", views.get_wrapped, name = "wrapped_redirect"),
   
   path("census/", views.CensusView.as_view(), name="census"),
+  path("census/present/", views.CensusPresentationView.as_view(), name="census_present"),
   
   path("pasta/", views.CopyPasteView.as_view(), name="pasta"),
   path("ascii/", views.AsciiView.as_view(), name="ascii"),

@@ -13,6 +13,29 @@ a {
   color: var(--accent-color);
 }
 
+.reveal * {
+  line-height: 1 !important;
+}
+
+.reveal section h1 {
+  font-family: Roobert, sans-serif;
+  text-transform: none;
+}
+
+.reveal section h2 {
+  font-family: Roobert, sans-serif;
+  text-transform: none;
+  font-size: 1.1em!important;
+  margin-bottom: 0.2em;
+}
+
+.reveal section h3 {
+  font-family: Roobert, sans-serif;
+  text-transform: none;
+  font-size: 0.9em!important;
+  margin-top: 0px;
+}
+
 .chart-list {
   display: flex;
   flex-flow: row wrap;
@@ -41,11 +64,15 @@ a {
   width: 90%;
 }
 
-.chart > h1 {
+.presentation-chart {
+  width: 100%;
+}
+
+.chart > h2, .wide-chart > h2, .presentation-chart > h2 {
   margin-bottom: 0.2em;
 }
 
-.chart > h3 {
+.chart > h3, .wide-chart > h3, .presentation-chart > h3 {
   margin-top: 0px;
 }
 
@@ -65,13 +92,18 @@ canvas {
   flex-direction: column;
 }
 
-.slide {
+.my-slide {
   display: none;
-  padding: 1.2em;
+  padding: 1.2em 0.5em;
   text-align: center;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
 }
 
-.slide q {
+.my-slide q {
   font-style: italic;
 }
 
@@ -103,4 +135,23 @@ canvas {
 
 .active, .slideshow-dot:hover {
   background-color: #717171;
+}
+
+.reveal section q {
+  font-family: Roobert, sans-serif;
+  text-transform: none;
+  font-size: 0.5em!important;
+  line-height: 1.2!important;
+}
+
+.reveal section a {
+  font-family: Roobert, sans-serif;
+  text-transform: none;
+  font-size: 0.3em!important;
+  display: flex;
+}
+
+.reveal section .slideshow-dot {
+  height: 0.25em!important;
+  width: 0.25em!important;
 }

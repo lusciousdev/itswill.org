@@ -19,7 +19,7 @@ function goToSlide(slideshowId, n) {
 function showSlide(slideshowId) {
   var sc = $("#{0}".format(slideshowId))
   
-  var slides = sc.find(".slide");
+  var slides = sc.find(".my-slide");
   var dots = sc.find(".slideshow-dot");
 
   var idx = slideshow_indexes[slideshowId]
@@ -37,7 +37,7 @@ function showSlide(slideshowId) {
   slides.css({ "display": "none" });
   dots.removeClass("active");
 
-  $(slides[idx]).css({ "display": "block" });
+  $(slides[idx]).css({ "display": "flex" });
   $(dots[idx]).addClass("active");
 } 
 
@@ -52,7 +52,7 @@ function addDots() {
     $(element).find(".prev-slide").click(function () { incrementSlide(slideshowID, -1); });
     $(element).find(".next-slide").click(function () { incrementSlide(slideshowID, 1); });
 
-    for (var i = 0; i < $(element).find(".slide").length; i++)
+    for (var i = 0; i < $(element).find(".my-slide").length; i++)
     {
       dotContainer.append("<span class='slideshow-dot' onclick='goToSlide(\"{0}\", {1})'></span>".format(slideshowID, i));
     }
@@ -96,4 +96,17 @@ $(window).on('load', function() {
       $("#{0}-subtitle".format(key)).html(subtitle)
     }
   });
+
+  if (typeof Reveal !== 'undefined')
+  {
+    Reveal.initialize({
+      width: 1000,
+      height: 700,
+      slideNumber: true,
+      hash: true,
+      hashOneBasedIndex: true,
+      maxScale: 1,
+      center: true,
+    });
+  }
 });

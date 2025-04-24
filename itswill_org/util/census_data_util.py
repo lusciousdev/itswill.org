@@ -921,7 +921,7 @@ if __name__ == '__main__':
   args = parser.parse_args()
   
   if args.cmd == 'count':
-    dataframe : pd.DataFrame = pd.read_csv(args.csv_path)
+    dataframe : pd.DataFrame = pd.read_csv(args.csv_path, encoding = "UTF-8")
     dataframe.drop("Timestamp", axis = 1, inplace = True)
     
     input_results = {}
@@ -934,7 +934,7 @@ if __name__ == '__main__':
     if not args.skip_condense:
       counted = condense_results(counted)
 
-    with open(args.out_path, 'w') as fp:
+    with open(args.out_path, 'w', encoding = "UTF-8") as fp:
       json.dump(counted, fp, indent = 2, ensure_ascii = False)
   
   elif args.cmd == 'condense':

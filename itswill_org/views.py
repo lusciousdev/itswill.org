@@ -21,6 +21,9 @@ class IndexView(generic.TemplateView):
 class CensusView(generic.TemplateView):
   template_name = "itswill_org/census.html"
   
+class CensusPresentationView(generic.TemplateView):
+  template_name = "itswill_org/census-presentation.html"
+  
 class MonthListView(generic.TemplateView):
   template_name = "itswill_org/monthlist.html"
   
