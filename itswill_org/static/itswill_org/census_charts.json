@@ -2,7 +2,7 @@
   "charts": {
     "start-watch": {
       "title": "When did you start watching itswill?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -20,24 +20,24 @@
             {
               "label": "",
               "backgroundColor": [
-                "#b21111",
-                "#11b262",
-                "#b211b2",
-                "#7ee55b",
-                "#7e5be5",
-                "#e5c35b",
-                "#5bc3e5",
-                "#e55b7e"
+                "#a05be5",
+                "#e5e55b",
+                "#5ba0e5",
+                "#e55b5b",
+                "#5be5a0",
+                "#e55be5",
+                "#3ab211",
+                "#3a11b2"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
                 201,
-                225,
-                476,
-                332,
-                348,
-                400,
-                466,
+                227,
+                480,
+                335,
+                352,
+                403,
+                470,
                 120
               ]
             }
@@ -57,7 +57,7 @@
     },
     "discovery": {
       "title": "How did you discover itswill?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -74,22 +74,22 @@
             {
               "label": "",
               "backgroundColor": [
-                "#6247b2",
-                "#b29747",
-                "#4797b2",
-                "#b24762",
-                "#47b262",
-                "#9747b2",
-                "#97b247"
+                "#e55b7e",
+                "#5be57e",
+                "#c35be5",
+                "#c3e55b",
+                "#5b7ee5",
+                "#e57e5b",
+                "#5be5c3"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                930,
-                547,
-                373,
-                349,
-                220,
-                139,
+                936,
+                552,
+                376,
+                352,
+                222,
+                140,
                 10
               ]
             }
@@ -109,7 +109,7 @@
     },
     "video-freq": {
       "title": "How often do you watch itswill YouTube videos?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -123,17 +123,17 @@
             {
               "label": "",
               "backgroundColor": [
-                "#4762b2",
-                "#b26247",
-                "#47b297",
-                "#b24797"
+                "#47b247",
+                "#7c47b2",
+                "#b2b247",
+                "#477cb2"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                275,
-                425,
-                989,
-                879
+                279,
+                428,
+                996,
+                885
               ]
             }
           ]
@@ -152,7 +152,7 @@
     },
     "yt-sub": {
       "title": "Are you subscribed to itswill on YouTube?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -164,13 +164,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#7e5be5",
-                "#e5c35b"
+                "#8a11b2",
+                "#8ab211"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                2091,
-                477
+                2108,
+                480
               ]
             }
           ]
@@ -189,7 +189,7 @@
     },
     "twitch-freq": {
       "title": "How often do you watch itswill?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -204,19 +204,19 @@
             {
               "label": "",
               "backgroundColor": [
-                "#b116e5",
-                "#b1e516",
-                "#164ae5",
-                "#e54a16",
-                "#16e5b1"
+                "#7c47b2",
+                "#b2b247",
+                "#477cb2",
+                "#b24747",
+                "#47b27c"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                149,
-                670,
-                1249,
+                155,
+                678,
+                1254,
                 414,
-                86
+                87
               ]
             }
           ]
@@ -235,7 +235,7 @@
     },
     "experience": {
       "title": "How would you rate your overall experience watching itswill?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -250,19 +250,19 @@
             {
               "label": "",
               "backgroundColor": [
-                "#b2b247",
-                "#477cb2",
-                "#b24747",
-                "#47b27c",
-                "#b247b2"
+                "#5ba0e5",
+                "#e55b5b",
+                "#5be5a0",
+                "#e55be5",
+                "#3ab211"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
                 89,
                 19,
-                88,
-                664,
-                1708
+                89,
+                672,
+                1719
               ]
             }
           ]
@@ -281,7 +281,7 @@
     },
     "twitch-sub": {
       "title": "Are you subscribed to itswill on Twitch?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -293,13 +293,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#5be5a0",
-                "#e55be5"
+                "#7e16e5",
+                "#e5e516"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1408,
-                1160
+                1414,
+                1174
               ]
             }
           ]
@@ -318,7 +318,7 @@
     },
     "banned": {
       "title": "Are you now or have you ever been banned in the itswill Livestream?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -330,13 +330,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#e54a16",
-                "#16e5b1"
+                "#5be57e",
+                "#c35be5"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                283,
-                2285
+                286,
+                2302
               ]
             }
           ]
@@ -355,7 +355,7 @@
     },
     "primary-content": {
       "title": "What do you primarily watch itswill for?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -367,13 +367,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#47b262",
-                "#9747b2"
+                "#118ab2",
+                "#b2113a"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1440,
-                1128
+                1447,
+                1141
               ]
             }
           ]
@@ -392,7 +392,7 @@
     },
     "favorite-content": {
       "title": "What's your favorite type of stream?",
-      "subtitle": "(2,544 responses)",
+      "subtitle": "(2,564 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -406,15 +406,15 @@
             {
               "label": "",
               "backgroundColor": [
-                "#7ee516",
-                "#1616e5",
-                "#e57e16",
-                "#16e5e5"
+                "#4762b2",
+                "#b26247",
+                "#47b297",
+                "#b24797"
               ],
-              "responses": 2544,
+              "responses": 2564,
               "data": [
-                1539,
-                788,
+                1558,
+                789,
                 200,
                 17
               ]
@@ -435,7 +435,7 @@
     },
     "video-types": {
       "title": "What types of itswill videos do you typically watch?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -448,15 +448,15 @@
             {
               "label": "",
               "backgroundColor": [
-                "#e5164a",
-                "#16e54a",
-                "#b116e5"
+                "#6211b2",
+                "#b2b211",
+                "#1162b2"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                2027,
-                1085,
-                169
+                2043,
+                1092,
+                172
               ]
             }
           ]
@@ -475,7 +475,7 @@
     },
     "archetype": {
       "title": "What is your favorite day-specific stream archetype?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -489,17 +489,17 @@
             {
               "label": "",
               "backgroundColor": [
-                "#b21111",
-                "#11b262",
-                "#b211b2",
-                "#7ee55b"
+                "#b21162",
+                "#11b211",
+                "#6211b2",
+                "#b2b211"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1031,
-                948,
+                1045,
+                953,
                 436,
-                153
+                154
               ]
             }
           ]
@@ -518,7 +518,7 @@
     },
     "special-edition": {
       "title": "What was your favorite itswill Special Edition Livestream?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -541,13 +541,13 @@
                 "#3a11b2",
                 "#b28a11"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                882,
-                569,
-                516,
-                280,
-                240,
+                888,
+                575,
+                521,
+                282,
+                241,
                 81
               ]
             }
@@ -567,15 +567,15 @@
     },
     "fave-games": {
       "title": "What are your 3 favorite variety games/genres?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "bar",
         "data": {
           "labels": [
             "Simulator",
             "Horror",
-            "Roguelike",
             "Indie hits",
+            "Roguelike",
             "Minecraft",
             "Classics",
             "Soulslikes",
@@ -590,35 +590,35 @@
             {
               "label": "",
               "backgroundColor": [
-                "#5be5e5",
-                "#e55ba0",
-                "#5be55b",
-                "#a05be5",
-                "#e5e55b",
-                "#5ba0e5",
-                "#e55b5b",
-                "#5be5a0",
-                "#e55be5",
-                "#3ab211",
-                "#3a11b2",
-                "#b28a11",
-                "#118ab2"
+                "#16e5e5",
+                "#e5167e",
+                "#16e516",
+                "#7e16e5",
+                "#e5e516",
+                "#167ee5",
+                "#e51616",
+                "#16e57e",
+                "#e516e5",
+                "#62b247",
+                "#6247b2",
+                "#b29747",
+                "#4797b2"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1302,
-                1283,
-                850,
-                847,
-                530,
-                500,
-                418,
+                1312,
+                1290,
+                854,
+                853,
+                535,
+                508,
+                424,
                 391,
-                344,
-                316,
-                290,
-                284,
-                156
+                346,
+                318,
+                293,
+                287,
+                158
               ]
             }
           ]
@@ -637,7 +637,7 @@
     },
     "fave-stream": {
       "title": "What is your favorite variety stream of all time?",
-      "subtitle": "(2,465 responses)",
+      "subtitle": "(2,476 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -657,8 +657,8 @@
             "Coin Game",
             "Unaccessible",
             "Hitman",
-            "Bass Landing",
             "Ratchelor",
+            "Bass Landing",
             "Sniper Killer",
             "Arctic Eggs",
             "Fallout: New Vegas",
@@ -679,40 +679,40 @@
             {
               "label": "",
               "backgroundColor": [
-                "#e5e516",
-                "#167ee5",
-                "#e51616",
-                "#16e57e",
-                "#e516e5",
-                "#62b247",
-                "#6247b2",
-                "#b29747",
-                "#4797b2",
-                "#b24762",
-                "#47b262",
-                "#9747b2",
-                "#97b247",
-                "#4762b2",
-                "#b26247",
-                "#47b297",
-                "#b24797",
-                "#a0e55b",
-                "#5b5be5",
-                "#e5a05b",
-                "#5be5e5",
-                "#e55ba0",
-                "#5be55b",
-                "#a05be5",
-                "#e5e55b",
-                "#5ba0e5",
-                "#e55b5b",
-                "#5be5a0",
-                "#e55be5",
-                "#3ab211",
-                "#3a11b2",
-                "#b28a11"
+                "#5be5c3",
+                "#e55bc3",
+                "#7cb247",
+                "#4747b2",
+                "#b27c47",
+                "#47b2b2",
+                "#b2477c",
+                "#47b247",
+                "#7c47b2",
+                "#b2b247",
+                "#477cb2",
+                "#b24747",
+                "#47b27c",
+                "#b247b2",
+                "#4ae516",
+                "#4a16e5",
+                "#e5b116",
+                "#16b1e5",
+                "#e5164a",
+                "#16e54a",
+                "#b116e5",
+                "#b1e516",
+                "#164ae5",
+                "#e54a16",
+                "#16e5b1",
+                "#e516b1",
+                "#7ee516",
+                "#1616e5",
+                "#e57e16",
+                "#16e5e5",
+                "#e5167e",
+                "#16e516"
               ],
-              "responses": 2465,
+              "responses": 2476,
               "data": [
                 149,
                 88,
@@ -729,7 +729,7 @@
                 28,
                 28,
                 28,
-                26,
+                27,
                 26,
                 24,
                 22,
@@ -764,7 +764,7 @@
     },
     "stream-ideas": {
       "title": "What stream content would you most like to see come to life?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -783,23 +783,23 @@
             {
               "label": "",
               "backgroundColor": [
-                "#e5e516",
-                "#167ee5",
-                "#e51616",
-                "#16e57e",
-                "#e516e5",
-                "#62b247",
-                "#6247b2",
-                "#b29747",
-                "#4797b2"
+                "#11b28a",
+                "#b2118a",
+                "#62b211",
+                "#1111b2",
+                "#b26211",
+                "#11b2b2",
+                "#b21162",
+                "#11b211",
+                "#6211b2"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                535,
-                454,
-                387,
-                297,
-                272,
+                537,
+                459,
+                394,
+                301,
+                274,
                 183,
                 156,
                 150,
@@ -822,7 +822,7 @@
     },
     "stream-start": {
       "title": "How do you typically discover the stream has started?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -843,12 +843,12 @@
                 "#b116e5",
                 "#b1e516"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                911,
-                864,
-                448,
-                298,
+                921,
+                866,
+                453,
+                301,
                 47
               ]
             }
@@ -868,7 +868,7 @@
     },
     "extensions": {
       "title": "Do you have any Twitch extensions installed?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -882,17 +882,17 @@
             {
               "label": "",
               "backgroundColor": [
-                "#7e16e5",
-                "#e5e516",
-                "#167ee5",
-                "#e51616"
+                "#4762b2",
+                "#b26247",
+                "#47b297",
+                "#b24797"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1727,
-                1648,
-                826,
-                481
+                1742,
+                1661,
+                835,
+                485
               ]
             }
           ]
@@ -911,7 +911,7 @@
     },
     "chat-activity": {
       "title": "How much do you chat?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -924,15 +924,15 @@
             {
               "label": "",
               "backgroundColor": [
-                "#3ab211",
-                "#3a11b2",
-                "#b28a11"
+                "#e516b1",
+                "#7ee516",
+                "#1616e5"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1071,
-                1297,
-                200
+                1080,
+                1307,
+                201
               ]
             }
           ]
@@ -951,7 +951,7 @@
     },
     "positive-force": {
       "title": "Has the itswill Livestream been a positive force in your life?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -963,13 +963,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#b2b247",
-                "#477cb2"
+                "#e55be5",
+                "#3ab211"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                2201,
-                367
+                2218,
+                370
               ]
             }
           ]
@@ -988,7 +988,7 @@
     },
     "discord-member": {
       "title": "Are you a member of the itswill Discord server?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1000,13 +1000,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#e55b5b",
-                "#5be5a0"
+                "#e57e16",
+                "#16e5e5"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1059,
-                1509
+                1068,
+                1520
               ]
             }
           ]
@@ -1025,7 +1025,7 @@
     },
     "time-on-twitch": {
       "title": "How many hours do you spend on Twitch per day? (average)",
-      "subtitle": "(2,354 responses)",
+      "subtitle": "(2,374 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1042,22 +1042,22 @@
             {
               "label": "",
               "backgroundColor": [
-                "#97b247",
-                "#4762b2",
-                "#b26247",
-                "#47b297",
-                "#b24797",
-                "#a0e55b",
-                "#5b5be5"
+                "#6247b2",
+                "#b29747",
+                "#4797b2",
+                "#b24762",
+                "#47b262",
+                "#9747b2",
+                "#97b247"
               ],
-              "responses": 2354,
+              "responses": 2374,
               "data": [
-                260,
-                640,
-                723,
+                265,
+                648,
+                727,
                 392,
-                168,
-                43,
+                169,
+                45,
                 128
               ]
             }
@@ -1077,7 +1077,7 @@
     },
     "other-streamers": {
       "title": "Other than itswill, how many streamers do you consistently watch?",
-      "subtitle": "(2,354 responses)",
+      "subtitle": "(2,374 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1092,19 +1092,19 @@
             {
               "label": "",
               "backgroundColor": [
-                "#e516e5",
-                "#62b247",
-                "#6247b2",
-                "#b29747",
-                "#4797b2"
+                "#e55be5",
+                "#3ab211",
+                "#3a11b2",
+                "#b28a11",
+                "#118ab2"
               ],
-              "responses": 2354,
+              "responses": 2374,
               "data": [
-                301,
-                922,
-                764,
-                167,
-                200
+                302,
+                934,
+                767,
+                170,
+                201
               ]
             }
           ]
@@ -1123,7 +1123,7 @@
     },
     "watching-twitch": {
       "title": "How do you watch Twitch?",
-      "subtitle": "(2,354 responses)",
+      "subtitle": "(2,374 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1138,17 +1138,17 @@
             {
               "label": "",
               "backgroundColor": [
+                "#47b27c",
                 "#b247b2",
                 "#4ae516",
                 "#4a16e5",
-                "#e5b116",
-                "#16b1e5"
+                "#e5b116"
               ],
-              "responses": 2354,
+              "responses": 2374,
               "data": [
-                1836,
-                208,
-                198,
+                1852,
+                211,
+                199,
                 91,
                 21
               ]
@@ -1169,7 +1169,7 @@
     },
     "rs-games": {
       "title": "Which RuneScape games do you play?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -1187,25 +1187,25 @@
             {
               "label": "",
               "backgroundColor": [
-                "#b2b247",
-                "#477cb2",
-                "#b24747",
-                "#47b27c",
-                "#b247b2",
-                "#4ae516",
-                "#4a16e5",
-                "#e5b116"
+                "#b21111",
+                "#11b262",
+                "#b211b2",
+                "#7ee55b",
+                "#7e5be5",
+                "#e5c35b",
+                "#5bc3e5",
+                "#e55b7e"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                2232,
-                1313,
-                176,
+                2250,
+                1319,
+                177,
                 202,
-                56,
+                57,
                 20,
                 34,
-                259
+                261
               ]
             }
           ]
@@ -1224,7 +1224,7 @@
     },
     "osrs": {
       "title": "Do you play Old School RuneScape?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1236,13 +1236,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#62b211",
-                "#1111b2"
+                "#7e16e5",
+                "#e5e516"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                2202,
-                366
+                2220,
+                368
               ]
             }
           ]
@@ -1261,7 +1261,7 @@
     },
     "age": {
       "title": "What is your current age?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1278,20 +1278,20 @@
             {
               "label": "",
               "backgroundColor": [
+                "#5bc3e5",
+                "#e55b7e",
+                "#5be57e",
                 "#c35be5",
                 "#c3e55b",
                 "#5b7ee5",
-                "#e57e5b",
-                "#5be5c3",
-                "#e55bc3",
-                "#7cb247"
+                "#e57e5b"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
                 9,
-                148,
-                1493,
-                870,
+                150,
+                1504,
+                877,
                 29,
                 4,
                 15
@@ -1313,7 +1313,7 @@
     },
     "handedness": {
       "title": "Are you right or left handed?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1326,15 +1326,15 @@
             {
               "label": "",
               "backgroundColor": [
-                "#4ae516",
-                "#4a16e5",
-                "#e5b116"
+                "#5ba0e5",
+                "#e55b5b",
+                "#5be5a0"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                2188,
-                286,
-                94
+                2202,
+                290,
+                96
               ]
             }
           ]
@@ -1353,7 +1353,7 @@
     },
     "lgbt": {
       "title": "Do you identify as LGBTQ+?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1366,14 +1366,14 @@
             {
               "label": "",
               "backgroundColor": [
-                "#4797b2",
-                "#b24762",
-                "#47b262"
+                "#62b247",
+                "#6247b2",
+                "#b29747"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                471,
-                1970,
+                473,
+                1988,
                 127
               ]
             }
@@ -1393,7 +1393,7 @@
     },
     "gender": {
       "title": "What is your gender identity?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1407,15 +1407,15 @@
             {
               "label": "",
               "backgroundColor": [
-                "#11b2b2",
-                "#b21162",
-                "#11b211",
-                "#6211b2"
+                "#4762b2",
+                "#b26247",
+                "#47b297",
+                "#b24797"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                2245,
-                207,
+                2263,
+                209,
                 86,
                 30
               ]
@@ -1436,7 +1436,7 @@
     },
     "sexuality": {
       "title": "What is your sexuality?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1453,21 +1453,21 @@
             {
               "label": "",
               "backgroundColor": [
-                "#8ab211",
-                "#113ab2",
-                "#b23a11",
-                "#11b28a",
-                "#b2118a",
-                "#62b211",
-                "#1111b2"
+                "#7c47b2",
+                "#b2b247",
+                "#477cb2",
+                "#b24747",
+                "#47b27c",
+                "#b247b2",
+                "#4ae516"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1990,
-                273,
+                2008,
+                274,
                 100,
                 60,
-                52,
+                53,
                 47,
                 46
               ]
@@ -1488,7 +1488,7 @@
     },
     "relationship": {
       "title": "What is your current relationship status?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1502,15 +1502,15 @@
             {
               "label": "",
               "backgroundColor": [
-                "#62b247",
-                "#6247b2",
-                "#b29747",
-                "#4797b2"
+                "#5ba0e5",
+                "#e55b5b",
+                "#5be5a0",
+                "#e55be5"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1157,
-                1250,
+                1170,
+                1257,
                 45,
                 116
               ]
@@ -1531,7 +1531,7 @@
     },
     "country-origin": {
       "title": "What country are you from?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1553,24 +1553,24 @@
             {
               "label": "",
               "backgroundColor": [
-                "#118ab2",
-                "#b2113a",
-                "#11b23a",
-                "#8a11b2",
-                "#8ab211",
-                "#113ab2",
-                "#b23a11",
-                "#11b28a",
-                "#b2118a",
-                "#62b211",
-                "#1111b2",
-                "#b26211"
+                "#4ae516",
+                "#4a16e5",
+                "#e5b116",
+                "#16b1e5",
+                "#e5164a",
+                "#16e54a",
+                "#b116e5",
+                "#b1e516",
+                "#164ae5",
+                "#e54a16",
+                "#16e5b1",
+                "#e516b1"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1883,
-                221,
-                106,
+                1897,
+                225,
+                107,
                 90,
                 35,
                 20,
@@ -1578,7 +1578,7 @@
                 16,
                 15,
                 11,
-                10,
+                11,
                 8
               ]
             }
@@ -1598,7 +1598,7 @@
     },
     "country-home": {
       "title": "What country do you currently live in?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1614,39 +1614,39 @@
             "Norway",
             "Sweden",
             "Germany",
-            "Denmark"
+            "Chile"
           ],
           "datasets": [
             {
               "label": "",
               "backgroundColor": [
-                "#7c47b2",
-                "#b2b247",
-                "#477cb2",
-                "#b24747",
-                "#47b27c",
-                "#b247b2",
-                "#4ae516",
-                "#4a16e5",
-                "#e5b116",
-                "#16b1e5",
-                "#e5164a",
-                "#16e54a"
+                "#16e54a",
+                "#b116e5",
+                "#b1e516",
+                "#164ae5",
+                "#e54a16",
+                "#16e5b1",
+                "#e516b1",
+                "#7ee516",
+                "#1616e5",
+                "#e57e16",
+                "#16e5e5",
+                "#e5167e"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1912,
-                225,
-                117,
+                1925,
+                229,
+                118,
                 82,
                 29,
                 17,
                 14,
                 13,
                 13,
-                12,
+                13,
                 11,
-                7
+                8
               ]
             }
           ]
@@ -1665,7 +1665,7 @@
     },
     "drivers-license": {
       "title": "Do you have a driver's license?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1677,13 +1677,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#b24762",
-                "#47b262"
+                "#b2477c",
+                "#47b247"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                2294,
-                274
+                2312,
+                276
               ]
             }
           ]
@@ -1702,7 +1702,7 @@
     },
     "education": {
       "title": "Highest education level?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1718,20 +1718,20 @@
             {
               "label": "",
               "backgroundColor": [
-                "#e516b1",
-                "#7ee516",
-                "#1616e5",
-                "#e57e16",
-                "#16e5e5",
-                "#e5167e"
+                "#5be5a0",
+                "#e55be5",
+                "#3ab211",
+                "#3a11b2",
+                "#b28a11",
+                "#118ab2"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                35,
-                621,
-                366,
-                1166,
-                262,
+                36,
+                625,
+                368,
+                1178,
+                263,
                 118
               ]
             }
@@ -1751,7 +1751,7 @@
     },
     "employment": {
       "title": "What is your current employment status?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -1765,17 +1765,17 @@
             {
               "label": "",
               "backgroundColor": [
-                "#a05be5",
-                "#e5e55b",
-                "#5ba0e5",
-                "#e55b5b"
+                "#5be5c3",
+                "#e55bc3",
+                "#7cb247",
+                "#4747b2"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1972,
-                250,
-                204,
-                142
+                1985,
+                253,
+                206,
+                144
               ]
             }
           ]
@@ -1794,7 +1794,7 @@
     },
     "sports-watched": {
       "title": "What sports do you watch?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -1824,38 +1824,38 @@
             {
               "label": "",
               "backgroundColor": [
+                "#e55b7e",
+                "#5be57e",
+                "#c35be5",
+                "#c3e55b",
+                "#5b7ee5",
+                "#e57e5b",
+                "#5be5c3",
+                "#e55bc3",
+                "#7cb247",
+                "#4747b2",
+                "#b27c47",
+                "#47b2b2",
+                "#b2477c",
                 "#47b247",
                 "#7c47b2",
                 "#b2b247",
                 "#477cb2",
                 "#b24747",
                 "#47b27c",
-                "#b247b2",
-                "#4ae516",
-                "#4a16e5",
-                "#e5b116",
-                "#16b1e5",
-                "#e5164a",
-                "#16e54a",
-                "#b116e5",
-                "#b1e516",
-                "#164ae5",
-                "#e54a16",
-                "#16e5b1",
-                "#e516b1",
-                "#7ee516"
+                "#b247b2"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                987,
-                705,
-                685,
-                578,
-                563,
-                430,
-                402,
-                62,
-                59,
+                999,
+                715,
+                689,
+                582,
+                566,
+                435,
+                406,
+                63,
+                60,
                 34,
                 28,
                 26,
@@ -1885,7 +1885,7 @@
     },
     "sports-played": {
       "title": "What sports do you play?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -1915,38 +1915,38 @@
             {
               "label": "",
               "backgroundColor": [
-                "#b24762",
-                "#47b262",
-                "#9747b2",
-                "#97b247",
-                "#4762b2",
-                "#b26247",
-                "#47b297",
-                "#b24797",
-                "#a0e55b",
-                "#5b5be5",
-                "#e5a05b",
-                "#5be5e5",
-                "#e55ba0",
-                "#5be55b",
                 "#a05be5",
                 "#e5e55b",
                 "#5ba0e5",
                 "#e55b5b",
                 "#5be5a0",
-                "#e55be5"
+                "#e55be5",
+                "#3ab211",
+                "#3a11b2",
+                "#b28a11",
+                "#118ab2",
+                "#b2113a",
+                "#11b23a",
+                "#8a11b2",
+                "#8ab211",
+                "#113ab2",
+                "#b23a11",
+                "#11b28a",
+                "#b2118a",
+                "#62b211",
+                "#1111b2"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1367,
-                317,
-                280,
+                1375,
+                322,
+                286,
                 177,
                 154,
-                101,
-                93,
+                103,
+                94,
                 52,
-                49,
+                50,
                 41,
                 32,
                 31,
@@ -1976,7 +1976,7 @@
     },
     "games-played": {
       "title": "What types of games do you play?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -1989,39 +1989,39 @@
             "Other MMOs",
             "Board Games",
             "MOBA",
-            "Sports Video Games",
             "Fighting Games",
+            "Sports Video Games",
             "None"
           ],
           "datasets": [
             {
               "label": "",
               "backgroundColor": [
-                "#b2b211",
-                "#1162b2",
-                "#b21111",
-                "#11b262",
-                "#b211b2",
-                "#7ee55b",
-                "#7e5be5",
-                "#e5c35b",
-                "#5bc3e5",
-                "#e55b7e",
-                "#5be57e"
+                "#c35be5",
+                "#c3e55b",
+                "#5b7ee5",
+                "#e57e5b",
+                "#5be5c3",
+                "#e55bc3",
+                "#7cb247",
+                "#4747b2",
+                "#b27c47",
+                "#47b2b2",
+                "#b2477c"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                2145,
-                1471,
-                1425,
-                1406,
-                1336,
-                833,
-                683,
-                570,
-                360,
-                360,
-                36
+                2162,
+                1480,
+                1436,
+                1416,
+                1347,
+                841,
+                688,
+                574,
+                365,
+                361,
+                37
               ]
             }
           ]
@@ -2040,7 +2040,7 @@
     },
     "hobbies": {
       "title": "What hobbies do you enjoy?",
-      "subtitle": "(2,567 responses)",
+      "subtitle": "(2,587 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -2053,8 +2053,8 @@
             "Cooking",
             "Hiking",
             "Reading",
-            "Running",
             "Playing an instrument",
+            "Running",
             "Drawing or Art",
             "Photography",
             "Writing",
@@ -2070,43 +2070,43 @@
             {
               "label": "",
               "backgroundColor": [
-                "#a05be5",
-                "#e5e55b",
-                "#5ba0e5",
-                "#e55b5b",
-                "#5be5a0",
-                "#e55be5",
-                "#3ab211",
-                "#3a11b2",
-                "#b28a11",
-                "#118ab2",
-                "#b2113a",
-                "#11b23a",
-                "#8a11b2",
-                "#8ab211",
-                "#113ab2",
-                "#b23a11",
-                "#11b28a",
-                "#b2118a",
-                "#62b211",
-                "#1111b2"
+                "#11b262",
+                "#b211b2",
+                "#7ee55b",
+                "#7e5be5",
+                "#e5c35b",
+                "#5bc3e5",
+                "#e55b7e",
+                "#5be57e",
+                "#c35be5",
+                "#c3e55b",
+                "#5b7ee5",
+                "#e57e5b",
+                "#5be5c3",
+                "#e55bc3",
+                "#7cb247",
+                "#4747b2",
+                "#b27c47",
+                "#47b2b2",
+                "#b2477c",
+                "#47b247"
               ],
-              "responses": 2567,
+              "responses": 2587,
               "data": [
-                2295,
-                1801,
-                1323,
-                1167,
-                1047,
-                963,
-                905,
-                830,
-                421,
-                421,
-                297,
-                251,
-                201,
-                29,
+                2314,
+                1817,
+                1335,
+                1177,
+                1058,
+                971,
+                914,
+                837,
+                424,
+                422,
+                299,
+                253,
+                203,
+                30,
                 10,
                 10,
                 9,
@@ -2131,7 +2131,7 @@
     },
     "fave-movie": {
       "title": "What's your favorite movie?",
-      "subtitle": "(2,552 responses)",
+      "subtitle": "(2,572 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -2143,15 +2143,15 @@
             "The Grand Budapest Hotel",
             "Inglorious Basterds",
             "Good Will Hunting",
-            "Shawshank Redemption",
             "Whiplash",
+            "Shawshank Redemption",
             "Princess Mononoke",
             "The Minecraft Movie",
             "Goodfellas",
             "Scott Pilgrim vs The World",
             "LOTR: The Fellowship of the Ring",
-            "The Departed",
             "Inception",
+            "The Departed",
             "The Dark Knight",
             "Donnie Darko",
             "No Country for Old Men",
@@ -2171,6 +2171,7 @@
             {
               "label": "",
               "backgroundColor": [
+                "#1162b2",
                 "#b21111",
                 "#11b262",
                 "#b211b2",
@@ -2199,10 +2200,9 @@
                 "#47b27c",
                 "#b247b2",
                 "#4ae516",
-                "#4a16e5",
-                "#e5b116"
+                "#4a16e5"
               ],
-              "responses": 2552,
+              "responses": 2572,
               "data": [
                 83,
                 65,
@@ -2211,18 +2211,18 @@
                 23,
                 23,
                 22,
-                20,
+                21,
                 20,
                 19,
                 18,
+                18,
                 17,
                 17,
-                17,
+                16,
                 15,
                 15,
                 15,
                 15,
-                14,
                 14,
                 14,
                 14,
@@ -2252,7 +2252,7 @@
     },
     "reading": {
       "title": "Have you read a book in the last 5 years?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -2264,13 +2264,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#118ab2",
-                "#b2113a"
+                "#97b247",
+                "#4762b2"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1934,
-                634
+                1952,
+                636
               ]
             }
           ]
@@ -2289,7 +2289,7 @@
     },
     "pet-ownership": {
       "title": "Do you have a pet?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -2301,13 +2301,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#62b211",
-                "#1111b2"
+                "#b2b211",
+                "#1162b2"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1754,
-                814
+                1768,
+                820
               ]
             }
           ]
@@ -2326,7 +2326,7 @@
     },
     "sub-type": {
       "title": "Type of subscription?",
-      "subtitle": "(1,408 responses)",
+      "subtitle": "(1,414 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -2340,15 +2340,15 @@
             {
               "label": "",
               "backgroundColor": [
-                "#b26211",
-                "#11b2b2",
-                "#b21162",
-                "#11b211"
+                "#b24797",
+                "#a0e55b",
+                "#5b5be5",
+                "#e5a05b"
               ],
-              "responses": 1408,
+              "responses": 1414,
               "data": [
-                771,
-                597,
+                776,
+                598,
                 33,
                 7
               ]
@@ -2369,7 +2369,7 @@
     },
     "gifted": {
       "title": "Was your subscription gifted?",
-      "subtitle": "(1,408 responses)",
+      "subtitle": "(1,414 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -2381,13 +2381,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#5bc3e5",
-                "#e55b7e"
+                "#e5e55b",
+                "#5ba0e5"
               ],
-              "responses": 1408,
+              "responses": 1414,
               "data": [
                 86,
-                1322
+                1328
               ]
             }
           ]
@@ -2406,7 +2406,7 @@
     },
     "discord-interact": {
       "title": "How often do you interact with the itswill Discord?",
-      "subtitle": "(1,059 responses)",
+      "subtitle": "(1,068 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -2419,14 +2419,14 @@
             {
               "label": "",
               "backgroundColor": [
-                "#1162b2",
-                "#b21111",
-                "#11b262"
+                "#1616e5",
+                "#e57e16",
+                "#16e5e5"
               ],
-              "responses": 1059,
+              "responses": 1068,
               "data": [
-                505,
-                464,
+                511,
+                467,
                 90
               ]
             }
@@ -2446,7 +2446,7 @@
     },
     "total-level": {
       "title": "What is your current total level in OSRS?",
-      "subtitle": "(2,202 responses)",
+      "subtitle": "(2,220 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -2465,27 +2465,27 @@
             {
               "label": "",
               "backgroundColor": [
-                "#e5a05b",
-                "#5be5e5",
-                "#e55ba0",
-                "#5be55b",
-                "#a05be5",
-                "#e5e55b",
-                "#5ba0e5",
-                "#e55b5b",
-                "#5be5a0"
+                "#e5e516",
+                "#167ee5",
+                "#e51616",
+                "#16e57e",
+                "#e516e5",
+                "#62b247",
+                "#6247b2",
+                "#b29747",
+                "#4797b2"
               ],
-              "responses": 2202,
+              "responses": 2220,
               "data": [
                 27,
                 29,
-                44,
+                45,
                 113,
-                418,
+                423,
+                373,
+                393,
                 370,
-                390,
-                367,
-                444
+                447
               ]
             }
           ]
@@ -2504,7 +2504,7 @@
     },
     "game-mode": {
       "title": "What game mode do you spend most of your time playing?",
-      "subtitle": "(2,202 responses)",
+      "subtitle": "(2,220 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -2520,18 +2520,18 @@
             {
               "label": "",
               "backgroundColor": [
-                "#7ee55b",
-                "#7e5be5",
-                "#e5c35b",
-                "#5bc3e5",
-                "#e55b7e",
-                "#5be57e"
+                "#47b2b2",
+                "#b2477c",
+                "#47b247",
+                "#7c47b2",
+                "#b2b247",
+                "#477cb2"
               ],
-              "responses": 2202,
+              "responses": 2220,
               "data": [
-                1368,
-                548,
-                215,
+                1380,
+                553,
+                216,
                 44,
                 23,
                 4
@@ -2553,7 +2553,7 @@
     },
     "num-accounts": {
       "title": "How many OSRS accounts do you have?",
-      "subtitle": "(2,202 responses)",
+      "subtitle": "(2,220 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -2569,21 +2569,21 @@
             {
               "label": "",
               "backgroundColor": [
-                "#b27c47",
-                "#47b2b2",
-                "#b2477c",
-                "#47b247",
-                "#7c47b2",
-                "#b2b247"
+                "#b211b2",
+                "#7ee55b",
+                "#7e5be5",
+                "#e5c35b",
+                "#5bc3e5",
+                "#e55b7e"
               ],
-              "responses": 2202,
+              "responses": 2220,
               "data": [
-                736,
-                862,
-                367,
-                119,
+                741,
+                870,
+                369,
+                121,
                 28,
-                90
+                91
               ]
             }
           ]
@@ -2602,7 +2602,7 @@
     },
     "fire-cape": {
       "title": "Have you ever gotten a fire cape?",
-      "subtitle": "(2,202 responses)",
+      "subtitle": "(2,220 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -2614,13 +2614,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#3a11b2",
-                "#b28a11"
+                "#e516e5",
+                "#62b247"
               ],
-              "responses": 2202,
+              "responses": 2220,
               "data": [
-                2040,
-                162
+                2057,
+                163
               ]
             }
           ]
@@ -2639,7 +2639,7 @@
     },
     "infernal-cape": {
       "title": "Have you ever gotten an infernal cape?",
-      "subtitle": "(2,202 responses)",
+      "subtitle": "(2,220 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -2651,13 +2651,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#1616e5",
-                "#e57e16"
+                "#b2477c",
+                "#47b247"
               ],
-              "responses": 2202,
+              "responses": 2220,
               "data": [
-                589,
-                1613
+                595,
+                1625
               ]
             }
           ]
@@ -2676,7 +2676,7 @@
     },
     "favorite-skill": {
       "title": "What is your favorite skill in OSRS?",
-      "subtitle": "(2,202 responses)",
+      "subtitle": "(2,220 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -2698,32 +2698,32 @@
             {
               "label": "",
               "backgroundColor": [
-                "#5be5c3",
-                "#e55bc3",
-                "#7cb247",
-                "#4747b2",
-                "#b27c47",
-                "#47b2b2",
-                "#b2477c",
-                "#47b247",
-                "#7c47b2",
-                "#b2b247",
-                "#477cb2",
-                "#b24747"
+                "#62b211",
+                "#1111b2",
+                "#b26211",
+                "#11b2b2",
+                "#b21162",
+                "#11b211",
+                "#6211b2",
+                "#b2b211",
+                "#1162b2",
+                "#b21111",
+                "#11b262",
+                "#b211b2"
               ],
-              "responses": 2202,
+              "responses": 2220,
               "data": [
-                735,
-                231,
-                213,
-                123,
-                122,
-                112,
-                109,
+                738,
+                233,
+                214,
+                124,
+                124,
+                114,
+                110,
                 104,
-                85,
-                60,
-                55,
+                86,
+                61,
+                57,
                 46
               ]
             }
@@ -2743,7 +2743,7 @@
     },
     "least-favorite-skill": {
       "title": "What is your least favorite skill in OSRS?",
-      "subtitle": "(2,202 responses)",
+      "subtitle": "(2,220 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -2765,33 +2765,33 @@
             {
               "label": "",
               "backgroundColor": [
-                "#47b247",
-                "#7c47b2",
-                "#b2b247",
-                "#477cb2",
-                "#b24747",
-                "#47b27c",
-                "#b247b2",
-                "#4ae516",
-                "#4a16e5",
-                "#e5b116",
-                "#16b1e5",
-                "#e5164a"
+                "#16e54a",
+                "#b116e5",
+                "#b1e516",
+                "#164ae5",
+                "#e54a16",
+                "#16e5b1",
+                "#e516b1",
+                "#7ee516",
+                "#1616e5",
+                "#e57e16",
+                "#16e5e5",
+                "#e5167e"
               ],
-              "responses": 2202,
+              "responses": 2220,
               "data": [
-                577,
-                404,
-                199,
-                121,
+                584,
+                407,
+                201,
+                122,
                 99,
                 97,
-                93,
+                94,
+                91,
                 90,
-                89,
-                85,
+                86,
                 74,
-                72
+                73
               ]
             }
           ]
@@ -2810,7 +2810,7 @@
     },
     "osrs-content": {
       "title": "What OSRS content do you enjoy?",
-      "subtitle": "(2,202 responses)",
+      "subtitle": "(2,220 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -2827,23 +2827,23 @@
             {
               "label": "",
               "backgroundColor": [
+                "#e54a16",
                 "#16e5b1",
                 "#e516b1",
                 "#7ee516",
                 "#1616e5",
                 "#e57e16",
-                "#16e5e5",
-                "#e5167e"
+                "#16e5e5"
               ],
-              "responses": 2202,
+              "responses": 2220,
               "data": [
-                1837,
-                1560,
-                1431,
-                1259,
-                1050,
-                839,
-                217
+                1852,
+                1575,
+                1444,
+                1270,
+                1057,
+                845,
+                221
               ]
             }
           ]
@@ -2862,7 +2862,7 @@
     },
     "sailing": {
       "title": "How do you feel about Sailing?",
-      "subtitle": "(2,202 responses)",
+      "subtitle": "(2,220 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -2877,18 +2877,18 @@
             {
               "label": "",
               "backgroundColor": [
+                "#16e5e5",
+                "#e5167e",
                 "#16e516",
                 "#7e16e5",
-                "#e5e516",
-                "#167ee5",
-                "#e51616"
+                "#e5e516"
               ],
-              "responses": 2202,
+              "responses": 2220,
               "data": [
-                282,
-                211,
-                926,
-                599,
+                286,
+                214,
+                934,
+                602,
                 184
               ]
             }
@@ -2908,7 +2908,7 @@
     },
     "state": {
       "title": "What state do you live in?",
-      "subtitle": "(1,912 responses)",
+      "subtitle": "(1,925 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -2930,9 +2930,9 @@
             "New Jersey",
             "Wisconsin",
             "Virginia[B]",
-            "Missouri",
             "Indiana",
             "Georgia",
+            "Missouri",
             "Kansas",
             "Connecticut",
             "Oregon",
@@ -2973,42 +2973,6 @@
             {
               "label": "",
               "backgroundColor": [
-                "#5b7ee5",
-                "#e57e5b",
-                "#5be5c3",
-                "#e55bc3",
-                "#7cb247",
-                "#4747b2",
-                "#b27c47",
-                "#47b2b2",
-                "#b2477c",
-                "#47b247",
-                "#7c47b2",
-                "#b2b247",
-                "#477cb2",
-                "#b24747",
-                "#47b27c",
-                "#b247b2",
-                "#4ae516",
-                "#4a16e5",
-                "#e5b116",
-                "#16b1e5",
-                "#e5164a",
-                "#16e54a",
-                "#b116e5",
-                "#b1e516",
-                "#164ae5",
-                "#e54a16",
-                "#16e5b1",
-                "#e516b1",
-                "#7ee516",
-                "#1616e5",
-                "#e57e16",
-                "#16e5e5",
-                "#e5167e",
-                "#16e516",
-                "#7e16e5",
-                "#e5e516",
                 "#167ee5",
                 "#e51616",
                 "#16e57e",
@@ -3027,20 +2991,56 @@
                 "#b24797",
                 "#a0e55b",
                 "#5b5be5",
-                "#e5a05b"
+                "#e5a05b",
+                "#5be5e5",
+                "#e55ba0",
+                "#5be55b",
+                "#a05be5",
+                "#e5e55b",
+                "#5ba0e5",
+                "#e55b5b",
+                "#5be5a0",
+                "#e55be5",
+                "#3ab211",
+                "#3a11b2",
+                "#b28a11",
+                "#118ab2",
+                "#b2113a",
+                "#11b23a",
+                "#8a11b2",
+                "#8ab211",
+                "#113ab2",
+                "#b23a11",
+                "#11b28a",
+                "#b2118a",
+                "#62b211",
+                "#1111b2",
+                "#b26211",
+                "#11b2b2",
+                "#b21162",
+                "#11b211",
+                "#6211b2",
+                "#b2b211",
+                "#1162b2",
+                "#b21111",
+                "#11b262",
+                "#b211b2",
+                "#7ee55b",
+                "#7e5be5",
+                "#e5c35b"
               ],
-              "responses": 1912,
+              "responses": 1925,
               "data": [
                 149,
-                137,
+                139,
+                94,
                 93,
-                92,
                 85,
-                84,
+                85,
                 79,
                 76,
+                66,
                 65,
-                62,
                 59,
                 58,
                 58,
@@ -3048,17 +3048,17 @@
                 55,
                 51,
                 50,
+                48,
+                48,
                 47,
-                47,
-                47,
-                31,
+                32,
                 28,
                 28,
                 27,
                 27,
                 26,
                 26,
-                21,
+                22,
                 20,
                 19,
                 18,
@@ -3104,7 +3104,7 @@
     },
     "full-time": {
       "title": "Do you work part or full time?",
-      "subtitle": "(1,972 responses)",
+      "subtitle": "(1,985 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -3116,13 +3116,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#1111b2",
-                "#b26211"
+                "#5bc3e5",
+                "#e55b7e"
               ],
-              "responses": 1972,
+              "responses": 1985,
               "data": [
                 174,
-                1798
+                1811
               ]
             }
           ]
@@ -3141,7 +3141,7 @@
     },
     "field-of-work": {
       "title": "What's your field of work?",
-      "subtitle": "(1,972 responses)",
+      "subtitle": "(1,985 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -3151,11 +3151,11 @@
             "IT",
             "Retail",
             "Finance",
-            "Healthcare",
             "Technology",
+            "Healthcare",
             "Science and Research",
-            "Manufacturing",
             "Construction",
+            "Manufacturing",
             "Education",
             "Hospitality",
             "Military and Defense",
@@ -3176,43 +3176,43 @@
             {
               "label": "",
               "backgroundColor": [
-                "#11b262",
-                "#b211b2",
-                "#7ee55b",
-                "#7e5be5",
-                "#e5c35b",
-                "#5bc3e5",
-                "#e55b7e",
-                "#5be57e",
-                "#c35be5",
-                "#c3e55b",
-                "#5b7ee5",
-                "#e57e5b",
-                "#5be5c3",
-                "#e55bc3",
-                "#7cb247",
-                "#4747b2",
-                "#b27c47",
-                "#47b2b2",
-                "#b2477c",
-                "#47b247",
-                "#7c47b2",
-                "#b2b247",
-                "#477cb2",
-                "#b24747",
-                "#47b27c"
+                "#a0e55b",
+                "#5b5be5",
+                "#e5a05b",
+                "#5be5e5",
+                "#e55ba0",
+                "#5be55b",
+                "#a05be5",
+                "#e5e55b",
+                "#5ba0e5",
+                "#e55b5b",
+                "#5be5a0",
+                "#e55be5",
+                "#3ab211",
+                "#3a11b2",
+                "#b28a11",
+                "#118ab2",
+                "#b2113a",
+                "#11b23a",
+                "#8a11b2",
+                "#8ab211",
+                "#113ab2",
+                "#b23a11",
+                "#11b28a",
+                "#b2118a",
+                "#62b211"
               ],
-              "responses": 1972,
+              "responses": 1985,
               "data": [
-                197,
-                165,
-                152,
-                108,
+                199,
+                167,
+                155,
+                109,
                 107,
-                99,
+                101,
                 99,
                 69,
-                67,
+                69,
                 67,
                 63,
                 63,
@@ -3247,7 +3247,7 @@
     },
     "pet-kind": {
       "title": "Which kind of pets do you have?",
-      "subtitle": "(1,754 responses)",
+      "subtitle": "(1,768 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -3277,6 +3277,11 @@
             {
               "label": "",
               "backgroundColor": [
+                "#e5e55b",
+                "#5ba0e5",
+                "#e55b5b",
+                "#5be5a0",
+                "#e55be5",
                 "#3ab211",
                 "#3a11b2",
                 "#b28a11",
@@ -3291,22 +3296,17 @@
                 "#b2118a",
                 "#62b211",
                 "#1111b2",
-                "#b26211",
-                "#11b2b2",
-                "#b21162",
-                "#11b211",
-                "#6211b2",
-                "#b2b211"
+                "#b26211"
               ],
-              "responses": 1754,
+              "responses": 1768,
               "data": [
-                1052,
-                997,
+                1060,
+                1006,
                 64,
                 35,
                 32,
                 25,
-                21,
+                22,
                 13,
                 13,
                 11,
@@ -3338,7 +3338,7 @@
     },
     "collab": {
       "title": "Who would you like to see itswill collaborate with?",
-      "subtitle": "(1,436 responses)",
+      "subtitle": "(1,445 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -3356,8 +3356,8 @@
             "J1mmy",
             "Mr Mammal",
             "Hasan",
-            "emilycupholda",
             "me",
+            "emilycupholda",
             "Clipperr",
             "Brettdog_",
             "Odablock",
@@ -3368,43 +3368,43 @@
             {
               "label": "",
               "backgroundColor": [
-                "#e55be5",
-                "#3ab211",
-                "#3a11b2",
-                "#b28a11",
-                "#118ab2",
-                "#b2113a",
-                "#11b23a",
-                "#8a11b2",
-                "#8ab211",
-                "#113ab2",
-                "#b23a11",
-                "#11b28a",
-                "#b2118a",
-                "#62b211",
-                "#1111b2",
-                "#b26211",
-                "#11b2b2",
-                "#b21162",
-                "#11b211",
-                "#6211b2"
+                "#b2477c",
+                "#47b247",
+                "#7c47b2",
+                "#b2b247",
+                "#477cb2",
+                "#b24747",
+                "#47b27c",
+                "#b247b2",
+                "#4ae516",
+                "#4a16e5",
+                "#e5b116",
+                "#16b1e5",
+                "#e5164a",
+                "#16e54a",
+                "#b116e5",
+                "#b1e516",
+                "#164ae5",
+                "#e54a16",
+                "#16e5b1",
+                "#e516b1"
               ],
-              "responses": 1436,
+              "responses": 1445,
               "data": [
-                218,
+                220,
                 109,
                 79,
                 57,
                 53,
                 46,
                 28,
-                25,
+                26,
                 23,
                 20,
                 19,
                 18,
                 16,
-                15,
+                16,
                 15,
                 15,
                 14,
@@ -3429,7 +3429,7 @@
     },
     "game-ideas": {
       "title": "What games would you like to see itswill play?",
-      "subtitle": "(1,329 responses)",
+      "subtitle": "(1,337 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -3459,32 +3459,32 @@
             {
               "label": "",
               "backgroundColor": [
-                "#e57e16",
-                "#16e5e5",
-                "#e5167e",
-                "#16e516",
-                "#7e16e5",
-                "#e5e516",
-                "#167ee5",
-                "#e51616",
-                "#16e57e",
-                "#e516e5",
-                "#62b247",
-                "#6247b2",
-                "#b29747",
-                "#4797b2",
-                "#b24762",
-                "#47b262",
-                "#9747b2",
-                "#97b247",
-                "#4762b2",
-                "#b26247"
+                "#3a11b2",
+                "#b28a11",
+                "#118ab2",
+                "#b2113a",
+                "#11b23a",
+                "#8a11b2",
+                "#8ab211",
+                "#113ab2",
+                "#b23a11",
+                "#11b28a",
+                "#b2118a",
+                "#62b211",
+                "#1111b2",
+                "#b26211",
+                "#11b2b2",
+                "#b21162",
+                "#11b211",
+                "#6211b2",
+                "#b2b211",
+                "#1162b2"
               ],
-              "responses": 1329,
+              "responses": 1337,
               "data": [
                 113,
                 32,
-                27,
+                28,
                 17,
                 16,
                 16,
@@ -3520,7 +3520,7 @@
     },
     "emote": {
       "title": "What's your favorite emote?",
-      "subtitle": "(1,337 responses)",
+      "subtitle": "(1,342 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -3550,30 +3550,30 @@
             {
               "label": "",
               "backgroundColor": [
-                "#5b7ee5",
-                "#e57e5b",
-                "#5be5c3",
-                "#e55bc3",
-                "#7cb247",
-                "#4747b2",
-                "#b27c47",
-                "#47b2b2",
-                "#b2477c",
-                "#47b247",
-                "#7c47b2",
-                "#b2b247",
-                "#477cb2",
-                "#b24747",
-                "#47b27c",
-                "#b247b2",
-                "#4ae516",
-                "#4a16e5",
-                "#e5b116",
-                "#16b1e5"
+                "#e55ba0",
+                "#5be55b",
+                "#a05be5",
+                "#e5e55b",
+                "#5ba0e5",
+                "#e55b5b",
+                "#5be5a0",
+                "#e55be5",
+                "#3ab211",
+                "#3a11b2",
+                "#b28a11",
+                "#118ab2",
+                "#b2113a",
+                "#11b23a",
+                "#8a11b2",
+                "#8ab211",
+                "#113ab2",
+                "#b23a11",
+                "#11b28a",
+                "#b2118a"
               ],
-              "responses": 1337,
+              "responses": 1342,
               "data": [
-                120,
+                121,
                 101,
                 56,
                 36,
@@ -3611,7 +3611,7 @@
     },
     "fave-chatter": {
       "title": "Who's your favorite chatter?",
-      "subtitle": "(1,299 responses)",
+      "subtitle": "(1,309 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -3641,35 +3641,35 @@
             {
               "label": "",
               "backgroundColor": [
-                "#7ee55b",
-                "#7e5be5",
-                "#e5c35b",
-                "#5bc3e5",
-                "#e55b7e",
-                "#5be57e",
-                "#c35be5",
-                "#c3e55b",
-                "#5b7ee5",
-                "#e57e5b",
-                "#5be5c3",
-                "#e55bc3",
-                "#7cb247",
-                "#4747b2",
-                "#b27c47",
-                "#47b2b2",
-                "#b2477c",
-                "#47b247",
-                "#7c47b2",
-                "#b2b247"
+                "#16e516",
+                "#7e16e5",
+                "#e5e516",
+                "#167ee5",
+                "#e51616",
+                "#16e57e",
+                "#e516e5",
+                "#62b247",
+                "#6247b2",
+                "#b29747",
+                "#4797b2",
+                "#b24762",
+                "#47b262",
+                "#9747b2",
+                "#97b247",
+                "#4762b2",
+                "#b26247",
+                "#47b297",
+                "#b24797",
+                "#a0e55b"
               ],
-              "responses": 1299,
+              "responses": 1309,
               "data": [
                 240,
                 238,
                 88,
-                70,
-                58,
-                54,
+                71,
+                60,
+                56,
                 27,
                 14,
                 13,
@@ -3677,7 +3677,7 @@
                 13,
                 12,
                 11,
-                10,
+                11,
                 9,
                 9,
                 8,
@@ -3702,7 +3702,7 @@
     },
     "buffer": {
       "title": "When should the 15 minute buffer start?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -3714,13 +3714,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#11b211",
-                "#6211b2"
+                "#4762b2",
+                "#b26247"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1799,
-                769
+                1812,
+                776
               ]
             }
           ]
@@ -3739,7 +3739,7 @@
     },
     "fave-mod": {
       "title": "Who's your favorite mod?",
-      "subtitle": "(2,124 responses)",
+      "subtitle": "(2,142 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -3764,36 +3764,36 @@
             {
               "label": "",
               "backgroundColor": [
-                "#5be5e5",
-                "#e55ba0",
-                "#5be55b",
-                "#a05be5",
-                "#e5e55b",
-                "#5ba0e5",
-                "#e55b5b",
-                "#5be5a0",
-                "#e55be5",
-                "#3ab211",
-                "#3a11b2",
-                "#b28a11",
-                "#118ab2",
-                "#b2113a",
-                "#11b23a"
+                "#c35be5",
+                "#c3e55b",
+                "#5b7ee5",
+                "#e57e5b",
+                "#5be5c3",
+                "#e55bc3",
+                "#7cb247",
+                "#4747b2",
+                "#b27c47",
+                "#47b2b2",
+                "#b2477c",
+                "#47b247",
+                "#7c47b2",
+                "#b2b247",
+                "#477cb2"
               ],
-              "responses": 2124,
+              "responses": 2142,
               "data": [
-                792,
-                690,
+                802,
+                695,
                 235,
                 86,
                 81,
-                71,
+                72,
                 45,
-                26,
+                27,
                 22,
                 21,
                 19,
-                14,
+                15,
                 11,
                 8,
                 3
@@ -3815,7 +3815,7 @@
     },
     "hot-chocolate": {
       "title": "Is hot chocolate a candy?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -3827,13 +3827,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#477cb2",
-                "#b24747"
+                "#5be5c3",
+                "#e55bc3"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                422,
-                2146
+                426,
+                2162
               ]
             }
           ]
@@ -3852,7 +3852,7 @@
     },
     "cock-n-balls": {
       "title": "Is \"cock and balls\" redundant? Are the balls included in the definition of cock?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -3864,13 +3864,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#e57e16",
-                "#16e5e5"
+                "#47b2b2",
+                "#b2477c"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                274,
-                2294
+                278,
+                2310
               ]
             }
           ]
@@ -3889,7 +3889,7 @@
     },
     "pajamas": {
       "title": "Have you ever worn pajama pants outside your house?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -3901,13 +3901,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#c35be5",
-                "#c3e55b"
+                "#5be55b",
+                "#a05be5"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1407,
-                1161
+                1419,
+                1169
               ]
             }
           ]
@@ -3926,7 +3926,7 @@
     },
     "cheaters": {
       "title": "Have you ever cheated on a test?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -3938,13 +3938,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#4747b2",
-                "#b27c47"
+                "#b26211",
+                "#11b2b2"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1935,
-                633
+                1949,
+                639
               ]
             }
           ]
@@ -3963,7 +3963,7 @@
     },
     "theft": {
       "title": "Have you ever stolen something from the supermarket?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -3975,13 +3975,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#5bc3e5",
-                "#e55b7e"
+                "#b116e5",
+                "#b1e516"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1293,
-                1275
+                1303,
+                1285
               ]
             }
           ]
@@ -4000,7 +4000,7 @@
     },
     "aliens": {
       "title": "Do you think aliens exist?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -4012,13 +4012,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#1111b2",
-                "#b26211"
+                "#164ae5",
+                "#e54a16"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                2064,
-                504
+                2082,
+                506
               ]
             }
           ]
@@ -4037,7 +4037,7 @@
     },
     "ghosts": {
       "title": "Do you think ghosts exist?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -4049,13 +4049,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#b24762",
-                "#47b262"
+                "#7ee516",
+                "#1616e5"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                796,
-                1772
+                801,
+                1787
               ]
             }
           ]
@@ -4074,7 +4074,7 @@
     },
     "furry": {
       "title": "Are you a furry?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "doughnut",
         "data": {
@@ -4086,13 +4086,13 @@
             {
               "label": "",
               "backgroundColor": [
-                "#b24747",
-                "#47b27c"
+                "#b21162",
+                "#11b211"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                144,
-                2424
+                145,
+                2443
               ]
             }
           ]
@@ -4111,7 +4111,7 @@
     },
     "height": {
       "title": "How tall are you?",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -4127,21 +4127,21 @@
             {
               "label": "",
               "backgroundColor": [
-                "#a05be5",
-                "#e5e55b",
-                "#5ba0e5",
-                "#e55b5b",
-                "#5be5a0",
-                "#e55be5"
+                "#1111b2",
+                "#b26211",
+                "#11b2b2",
+                "#b21162",
+                "#11b211",
+                "#6211b2"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
                 18,
                 69,
-                280,
-                1106,
-                891,
-                204
+                281,
+                1114,
+                901,
+                205
               ]
             }
           ]
@@ -4160,7 +4160,7 @@
     },
     "norwood": {
       "title": "What's your number? Be honest.",
-      "subtitle": "(2,568 responses)",
+      "subtitle": "(2,588 responses)",
       "data": {
         "type": "bar",
         "data": {
@@ -4177,23 +4177,23 @@
             {
               "label": "",
               "backgroundColor": [
-                "#6211b2",
-                "#b2b211",
-                "#1162b2",
-                "#b21111",
-                "#11b262",
-                "#b211b2",
-                "#7ee55b"
+                "#5be57e",
+                "#c35be5",
+                "#c3e55b",
+                "#5b7ee5",
+                "#e57e5b",
+                "#5be5c3",
+                "#e55bc3"
               ],
-              "responses": 2568,
+              "responses": 2588,
               "data": [
-                1537,
-                630,
-                258,
+                1549,
+                636,
+                259,
                 43,
                 14,
                 27,
-                59
+                60
               ]
             }
           ]
