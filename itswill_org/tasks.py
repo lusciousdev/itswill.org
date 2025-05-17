@@ -133,6 +133,92 @@ def get_letterboxd_reviews():
       print(f"New review: { film_title } - { member_rating } stars: { description }")
     else:
       print(f"Old review: { film_title } - { member_rating } stars: { description }")
+  
+def add_clip_to_db(twitch_api : luscioustwitch.TwitchAPI, clip : luscioustwitch.TwitchClip):
+  clip_id = clip.clip_id
+  creator_id = int(clip.creator_id)
+    
+  try:
+    creator = TwitchUser.objects.get(user_id = creator_id)
+  except TwitchUser.DoesNotExist:
+    try:
+      userdata : luscioustwitch.TwitchUser = twitch_api.get_user(id = creator_id)
+    
+      creator = TwitchUser(
+        user_id = creator_id,
+        login = userdata.login,
+        display_name = userdata.display_name,
+        user_type = userdata.user_type,
+        broadcaster_type = userdata.broadcaster_type,
+        description = userdata.description,
+        profile_image_url = userdata.profile_image_url,
+        offline_image_url = userdata.offline_image_url,
+        created_at = userdata.created_at.replace(tzinfo = datetime.timezone.utc),
+      )
+    except:
+      creator = TwitchUser(
+        user_id = creator_id,
+        login = clip.creator_name,
+        display_name = clip.creator_name
+      )
+    
+    creator.save()
+    
+  clip_inst, _ = Clip.objects.update_or_create(
+    clip_id = clip_id,
+    defaults = {
+      "creator": creator,
+      "url": clip.url,
+      "embed_url": clip.embed_url,
+      "broadcaster_id": int(clip.broadcaster_id),
+      "broadcaster_name": clip.broadcaster_name,
+      "video_id": clip.video_id,
+      "game_id": clip.game_id,
+      "language": clip.language,
+      "title": clip.title,
+      "view_count": int(clip.view_count),
+      "created_at": clip.created_at.replace(tzinfo = datetime.timezone.utc),
+      "thumbnail_url": clip.thumbnail_url,
+      "duration": float(clip.duration),
+      "vod_offset": -1 if (clip.vod_offset == "null" or clip.vod_offset is None) else int(clip.vod_offset)
+    }
+  )
+  
+def get_all_clips(twitch_api : luscioustwitch.TwitchAPI, sdt : datetime.datetime, edt : datetime.datetime) -> int:
+  clip_params = {
+    "first": 50,
+    "broadcaster_id": settings.USER_ID,
+    "started_at": sdt.strftime(luscioustwitch.TWITCH_API_TIME_FORMAT),
+    "ended_at": edt.strftime(luscioustwitch.TWITCH_API_TIME_FORMAT)
+  }
+  
+  continue_fetching = True
+  clip_count = 0
+  while continue_fetching:
+    try:
+      clips, cursor = twitch_api.get_clips(params=clip_params)
+    except Exception as e:
+      print(e)
+      time.sleep(120)
+      print("Continuing search...")
+      continue
+
+    if cursor != "":
+      clip_params["after"] = cursor
+    else:
+      continue_fetching = False
+
+    clip : luscioustwitch.TwitchClip
+    for clip in clips:
+      clip_count += 1
+      add_clip_to_db(twitch_api, clip)
+      
+  
+  if clip_count > 900:
+    print(f"POTENTIAL ERROR: CLIPS FOUND IN RANGE {sdt.strftime(luscioustwitch.TWITCH_API_TIME_FORMAT)} to {edt.strftime(luscioustwitch.TWITCH_API_TIME_FORMAT)}: {clip_count} (API CAPS AROUND 1000)")
+  else:
+    print(f"Clips found in range {sdt.strftime(luscioustwitch.TWITCH_API_TIME_FORMAT)} to {edt.strftime(luscioustwitch.TWITCH_API_TIME_FORMAT)}: {clip_count}")
+        
 
 @shared_task
 def get_recent_clips(max_days = 31):
@@ -143,83 +229,26 @@ def get_recent_clips(max_days = 31):
   else:
     start_date = datetime.datetime(1971, 1, 1, 0, 0, 0, 1, tzinfo = datetime.timezone.utc)
     
-  end_date = datetime.datetime.now()
+  end_date = datetime.datetime.now() + datetime.timedelta(days = 1)
   
-  clip_params = {
-    "first": 50,
-    "broadcaster_id": settings.USER_ID,
-    "started_at": start_date.astimezone(tz.UTC).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT),
-    "ended_at": end_date.astimezone(tz.UTC).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT)
-  }
+  segment_increment = datetime.timedelta(days = 4)
+  segment_length = datetime.timedelta(days = 5)
+  
+  segment_start = start_date
+  segment_end   = segment_start + segment_length
 
   continue_fetching = True
   while continue_fetching:
-    clips, cursor = twitch_api.get_clips(params=clip_params)
-
-    if cursor != "":
-      clip_params["after"] = cursor
-    else:
+    get_all_clips(twitch_api, segment_start, segment_end)
+    
+    segment_start = segment_start + segment_increment
+    segment_end = segment_start + segment_length
+    
+    if segment_end > end_date:
+      segment_end = end_date
+      
+    if segment_start > end_date:
       continue_fetching = False
-      
-    most_recent_clip_view_count = 0
-
-    clip : luscioustwitch.TwitchClip
-    for clip in clips:
-      clip_id = clip.clip_id
-      creator_id = int(clip.creator_id)
-        
-      try:
-        creator = TwitchUser.objects.get(user_id = creator_id)
-      except TwitchUser.DoesNotExist:
-        try:
-          userdata : luscioustwitch.TwitchUser = twitch_api.get_user_info(id = creator_id)
-        
-          creator = TwitchUser(
-            user_id = creator_id,
-            login = userdata.login,
-            display_name = userdata.display_name,
-            user_type = userdata.user_type,
-            broadcaster_type = userdata.broadcaster_type,
-            description = userdata.description,
-            profile_image_url = userdata.profile_image_url,
-            offline_image_url = userdata.offline_image_url,
-            created_at = userdata.created_at.replace(tzinfo = datetime.timezone.utc),
-          )
-        except:
-          creator = TwitchUser(
-            user_id = creator_id,
-            login = clip.creator_name,
-            display_name = clip.creator_name
-          )
-        
-        creator.save()
-        
-      clip_inst, _ = Clip.objects.update_or_create(
-        clip_id = clip_id,
-        defaults = {
-          "creator": creator,
-          "url": clip.url,
-          "embed_url": clip.embed_url,
-          "broadcaster_id": int(clip.broadcaster_id),
-          "broadcaster_name": clip.broadcaster_name,
-          "video_id": clip.video_id,
-          "game_id": clip.game_id,
-          "language": clip.language,
-          "title": clip.title,
-          "view_count": int(clip.view_count),
-          "created_at": clip.created_at.replace(tzinfo = datetime.timezone.utc),
-          "thumbnail_url": clip.thumbnail_url,
-          "duration": float(clip.duration),
-          "vod_offset": -1 if (clip.vod_offset == "null" or clip.vod_offset is None) else int(clip.vod_offset)
-        }
-      )
-
-      most_recent_clip_view_count = int(clip.view_count)
-      if most_recent_clip_view_count < 1:
-        continue_fetching = False
-        break
-      
-    print(f"Most recent clip view count: {most_recent_clip_view_count}")
   
 
 @shared_task

@@ -161,7 +161,7 @@ open_input_questions = [
 ]
 
 skip_question = [
-  "Do you have any recommendations for overlay features? (optional)",
+ # "Do you have any recommendations for overlay features? (optional)",
 ]
 
 chart_info = {
