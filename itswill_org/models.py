@@ -254,6 +254,12 @@ class UserWrappedData(WrappedDataMixin):
   
   class Meta:
     unique_together = ('overall_wrapped', 'twitch_user')
+    
+class TwitchEmote(models.Model):
+  id = models.AutoField(primary_key = True, serialize = False)
+  
+  emote_id = models.CharField(max_length = 255)
+  name = models.CharField(max_length = 255)
   
 class ChatMessage(models.Model):
   id = models.AutoField(primary_key = True, serialize = False)
@@ -263,6 +269,7 @@ class ChatMessage(models.Model):
   content_offset = models.IntegerField(default = 0)
   created_at = models.DateTimeField("created at", default = DEFAULT_DATETIME)
   message = models.CharField(max_length = 1024, default = "")
+  emotes = models.ManyToManyField(TwitchEmote)
   
   class Meta:
     ordering = ( "created_at", )
@@ -455,9 +462,3 @@ class LetterboxdReview(models.Model):
       models.Index(fields = ["watched_date", ]),
       models.Index(fields = ["member_rating", ]),
     ]
-    
-class Census(models.Model):
-  date = models.DateField()
-  respondents = models.IntegerField()
-  raw_results = models.JSONField()
-  chart_data = models.JSONField()

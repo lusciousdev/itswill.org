@@ -302,8 +302,12 @@ def get_recent_chat_messages(max_days = -1, skip_known_vods = True):
       except:
         continue
       
+      emote_list = []
       msgtext = ""
       for frag in frags:
+        if frag["emote"] is not None:
+          emote, _ = TwitchEmote.objects.get_or_create(emote_id = frag["emote"]["emoteID"], defaults = { "name": frag["text"] })
+          emote_list.append(emote)
         msgtext += frag["text"]
         
       try:
@@ -355,6 +359,9 @@ def get_recent_chat_messages(max_days = -1, skip_known_vods = True):
           "message": msgtext,
         },
       )
+      
+      for emote in emote_list:
+        chatmsgmodel.emotes.add(emote)
       
       chatmsgmodel.save()
         

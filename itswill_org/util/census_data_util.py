@@ -739,6 +739,9 @@ def float_rgb_to_hex(color : typing.Tuple[int, int, int]):
     
 def count_results(dataframe : pd.DataFrame, start_index = 0, input_results = None) -> dict:
   results = {} if input_results is None else input_results
+  # dataframe = dataframe[(dataframe["How tall are you?"] == "> 6'3 (> 190cm)") & (dataframe["What's your number? Be honest."] == 1) & (dataframe["What hobbies do you enjoy?"].str.contains("Working out"))]
+  dataframe = dataframe[((dataframe["Highest education level?"] == "Less than high school"))] # | (dataframe["What is your sexuality?"] == "Pansexual"))  & (dataframe["Are you right or left handed?"] == "Ambidexterous")]
+  # dataframe = dataframe[["What is your favorite variety stream of all time?"]]
   for key in dataframe.keys():
     old_key = key
     key = key.strip()
