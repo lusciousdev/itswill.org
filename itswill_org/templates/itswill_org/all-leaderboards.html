@@ -16,54 +16,31 @@
     <div class="row-wrap-section" id="leaderboards">
       <div class="row-wrap-section-title" id="leaderboards-title">Leaderboards</div>
       {% if recap_data.year == 0 %}
-      <div class="row-wrap-section-note" id="recap-link">(<a href="{% url 'itswill_org:recap' %}">Click to go back to the recap</a>)</div>
+        <div class="row-wrap-section-note" id="recap-link">(<a href="{% url 'itswill_org:recap' %}">Click to go back to the recap</a>)</div>
       {% else %}
-      {% if recap_data.month == 0 %}
-      <div class="row-wrap-section-note" id="recap-link">(<a href="{% url 'itswill_org:recap_year' recap_data.year %}">Click to go back to the recap</a>)</div>
-      {% else %}
-      <div class="row-wrap-section-note" id="recap-link">(<a href="{% url 'itswill_org:recap_month' recap_data.year recap_data.month %}">Click to go back to the recap</a>)</div>
+        {% if recap_data.month == 0 %}
+          <div class="row-wrap-section-note" id="recap-link">(<a href="{% url 'itswill_org:recap_year' recap_data.year %}">Click to go back to the recap</a>)</div>
+        {% else %}
+          <div class="row-wrap-section-note" id="recap-link">(<a href="{% url 'itswill_org:recap_month' recap_data.year recap_data.month %}">Click to go back to the recap</a>)</div>
+        {% endif %}
       {% endif %}
-      {% endif %}
-      {% for key, value in recap_data.leaderboards.items %}
-      {% with labelobj=labels|keyvalue:key %}
-      {% if key == "messages" %}
-      <div class="single-line" id="{{ key }}-wrap">
-      {% endif %}
-        <div class="leaderboard-item" id="{{ key }}">
-          <div class="leaderboard-label" id="itswillPound-label">
-            {% if labelobj.image_list %}
-            {% for name in labelobj.image_list %}
-            {% with imageurl="itswill_org/recap_img/"|add:name|add:'.webp' %}
-            <img class="emote-img" id="{{ name }}-img" src="{% static imageurl %}" title="{{ name }}">
-            {% endwith %}
-            {% endfor %}
-            {% else %}
-            <div class="leaderboard-label" id="{{ key }}-label">{{ labelobj.label }}</div>
-            {% endif %}
-            {% if recap_data.year == 0 %}
-            <div class="leaderboard-note" id="{{ key }}-full-link"><a href="{% url 'itswill_org:single_leaderboard' key %}">Full list</a></div>
-            {% else %}
-            {% if recap_data.month == 0 %}
-            <div class="leaderboard-note" id="{{ key }}-full-link"><a href="{% url 'itswill_org:single_leaderboard_year' recap_data.year key %}">Full list</a></div>
-            {% else %}
-            <div class="leaderboard-note" id="{{ key }}-full-link"><a href="{% url 'itswill_org:single_leaderboard_month' recap_data.year recap_data.month key %}">Full list</a></div>
-            {% endif %}
-            {% endif %}
-          </div>
-          <table class="stat-leaderboard" id="{{ key }}-leaderboard">
-            {% for entry in value|filter_on_not_index:2|firstn:limit %}
-              <tr class='leaderboard-table'>
-                <td>{{ forloop.counter }}.</td>
-                <td>{{ entry.0 }}</td>
-                <td>{{ entry.1|intcomma }}</td>
-              </tr>
-            {% endfor %}
-          </table>
-        </div>
-      {% if key == "messages" %}
-      </div>
-      {% endif %}
-      {% endwith %}
+      {% for key, value in non_fragment_leaderboards.items %}
+        {% with leaderboard=recap_data.leaderboards|keyvalue:key %}
+          {% if key == "messages" %}
+            <div class="single-line" id="{{ fg.group_id }}-wrap">
+          {% endif %}
+          {% include "itswill_org/leaderboard.html" with leaderboard_id=key unit=value leaderboard=leaderboard %}
+          {% if key == "messages" %}
+            </div>
+          {% endif %}
+        {% endwith %}
+      {% endfor %}
+      {% for fg in fragment_groups %}
+        {% if fg.group_id in recap_data.leaderboards %}
+          {% with leaderboard=recap_data.leaderboards|keyvalue:fg.group_id %}
+            {% include "itswill_org/leaderboard.html" with leaderboard_id=fg.group_id unit=fg.unit fg=fg leaderboard=leaderboard %}
+          {% endwith %}
+        {% endif %}
       {% endfor %}
     </div>
   </div>

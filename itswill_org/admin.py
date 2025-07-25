@@ -6,3 +6,4 @@ from .models import *
 admin.site.register(Pet)
 admin.site.register(CopyPasteGroup, CopyPasteGroupAdmin)
 admin.site.register(Ascii, AsciiAdmin)
+admin.site.register(FragmentGroup, FragmentGroupAdmin)

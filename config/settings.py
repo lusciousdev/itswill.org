@@ -126,6 +126,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 SOCIALACCOUNT_PROVIDERS = {
   "twitch": {
     "SCOPE": [
+      "user:bot",
+      "user:read:chat",
+      "user:write:chat",
+      "channel:bot",
       "channel:read:polls",
       "channel:manage:polls",
       "channel:read:redemptions",
@@ -229,7 +233,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "handlers": {
         "file": {
-            "level": "DEBUG",
+            "level": "WARNING",
             "class": "logging.FileHandler",
             "filename": "./logs/debug.log",
             "encoding": "utf-8",
@@ -238,7 +242,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["file"],
-            "level": "DEBUG",
+            "level": "WARNING",
             "propagate": True,
         },
     },

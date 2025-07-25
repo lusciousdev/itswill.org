@@ -2,6 +2,7 @@ from django.conf import settings
 from celery import Celery, shared_task
 from celery.schedules import crontab
 import luscioustwitch
+from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.db.models import F
 from django.db.models.aggregates import Count, Max
@@ -10,6 +11,7 @@ import datetime
 from dateutil import tz
 import calendar
 import re
+import humanize
 import feedparser
 import requests
 from random import randint, choice
@@ -425,203 +427,299 @@ def get_all_first_messages():
     userrecap.save()
 
 @shared_task
-def set_yearly_stat_user_count(year):
-  try:
-    yearrecap = OverallRecapData.objects.get(year = year, month = 0)
-  except OverallRecapData.DoesNotExist:
-    yearrecap = OverallRecapData(year = year, month = 0)
-    yearrecap.save()
-      
-  yearrecap.count_chatters = yearrecap.userrecapdata_set.all().count()
-  yearrecap.save()
+def find_fragment_matches(perf : bool = True):
+  if perf: start = time.perf_counter()
   
-@shared_task
-def calculate_alltime_stats():
-  alltimerecap, _ = OverallRecapData.objects.get_or_create(year = 0, month = 0)
-  alltimerecap.zero()
+  print("Calculating: fragments")
   
-  firstmsg = ChatMessage.objects.order_by("created_at").first()
+  queryset = ChatMessage.objects.values_list("id", "message", "commenter_id", "created_at").all()
+  paginator = Paginator(queryset, 500_000)
   
-  alltimerecap.first_message = "" if firstmsg is None else firstmsg.message
+  fragments = Fragment.objects.all()
+  fragment_regex = { f.pretty_name: f.match_regex for f in fragments }
   
-  yearrecaps = OverallRecapData.objects.filter(year__gte = 1, month = 0).prefetch_related("userrecapdata_set").all()
+  message_count = 0
+  for pgnum in paginator.page_range:
+    page = paginator.page(pgnum)
+    new_fragment_matches : list[FragmentMatch] = []
+    for msg_obj_id, message, commenter_id, created_at in page.object_list:
+      message_count += 1
+      f : Fragment
+      for f in fragments:
+        frag_count = len(fragment_regex[f.pretty_name].findall(message))
+        if frag_count > 0:
+          fm = FragmentMatch(fragment = f, 
+                             message_id = msg_obj_id, 
+                             count = frag_count if f.group.count_multiples else 1, 
+                             timestamp = created_at, 
+                             commenter_id = commenter_id)
+          new_fragment_matches.append(fm)
+    FragmentMatch.objects.bulk_create(new_fragment_matches, update_conflicts = True, update_fields = [ "count", "timestamp", "commenter_id" ])
   
-  userrecap : UserRecapData = alltimerecap.userrecapdata_set.first()
-  if userrecap:
-    for field in userrecap._meta.get_fields():
-      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in ["year", "month"]):
-        alltimerecap.userrecapdata_set.update(**{field.name: 0})
-  
-  recap : OverallRecapData
-  for recap in yearrecaps:
-    alltimerecap.add(recap, exclude = ["year", "month", "count_chatters"])
-    
-    userrecap : UserRecapData
-    for userrecap in recap.userrecapdata_set.all():
-      useryear, _ = UserRecapData.objects.get_or_create(overall_recap = alltimerecap, twitch_user = userrecap.twitch_user)
-      useryear.add(userrecap)
-  
-  alltimerecap.count_chatters = alltimerecap.userrecapdata_set.all().count()
-  alltimerecap.save()
-  
+  if perf: print(f"fragments took {time.perf_counter() - start:.3f} seconds")
 
-@shared_task
-def calculate_yearly_stats(year = None):
-  if year is None:
-    year = datetime.datetime.now(TIMEZONE).year
+def calculate_recap_stats(year : int = None, month : int = None, user_id : int = None, perf : bool = False):
+  if perf: start = time.perf_counter()
   
-  yearrecap, _ = OverallRecapData.objects.get_or_create(year = year, month = 0)
-  yearrecap.zero()
-  
-  firstmsg = ""
-  if year == 0:
-    firstmsg = ChatMessage.objects.order_by("created_at").first()
-  else:
-    localtz = tz.gettz("America/Los_Angeles")
-    start_date = datetime.datetime(year, 1, 1, 0, 0, 0, 1, localtz)
-    end_date   = datetime.datetime(year, 12, 31, 23, 59, 59, 999, localtz)
-    
-    firstmsg = ChatMessage.objects.filter(created_at__range = (start_date, end_date)).order_by("created_at").first()
-    
-  yearrecap.first_message = "" if firstmsg is None else firstmsg.message
-
-  if (year == 0):
-    monthrecaps = OverallRecapData.objects.filter(year__gte = 1, month__gte = 1).prefetch_related("userrecapdata_set").all()
-  else:
-    monthrecaps = OverallRecapData.objects.filter(year = year, month__gte = 1).prefetch_related("userrecapdata_set").all()
-  
-  userrecap : UserRecapData = yearrecap.userrecapdata_set.first()
-  if userrecap:
-    for field in userrecap._meta.get_fields():
-      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in ["year", "month"]):
-        yearrecap.userrecapdata_set.update(**{field.name: 0})
-  
-  recap : OverallRecapData
-  for recap in monthrecaps:
-    yearrecap.add(recap, exclude = ["year", "month", "count_chatters"])
-    
-    userrecap : UserRecapData
-    for userrecap in recap.userrecapdata_set.all():
-      useryear, _ = UserRecapData.objects.get_or_create(overall_recap = yearrecap, twitch_user = userrecap.twitch_user)
-      useryear.add(userrecap)
-  
-  yearrecap.count_chatters = yearrecap.userrecapdata_set.all().count()
-  yearrecap.save()
-        
-
-@shared_task
-def calculate_monthly_stats(year = None, month = None):
   if year is None:
     year = datetime.datetime.now(TIMEZONE).year
   if month is None:
     month = datetime.datetime.now(TIMEZONE).month
   
+  chat_messages = ChatMessage.objects
+  videos = Video.objects
+  clips = Clip.objects
+  
+  if user_id is None:
+    recap, _ = OverallRecapData.objects.get_or_create(year = year, month = month)
+  else:
+    overall_recap, _ = OverallRecapData.objects.get_or_create(year = year, month = month)
+    recap, _ = UserRecapData.objects.get_or_create(overall_recap = overall_recap, twitch_user_id = user_id)
+    
+    chat_messages = chat_messages.filter(commenter_id = user_id)
+    clips = clips.filter(creator_id = user_id)
+  
+  if year > 0:
+    chat_messages = chat_messages.filter(created_at__range = (recap.start_date, recap.end_date))
+    videos = videos.filter(created_at__range = (recap.start_date, recap.end_date))
+    clips = clips.filter(created_at__range = (recap.start_date, recap.end_date))
+  
+  
+  recap.count_messages = chat_messages.count()
+  recap.count_characters = sum([len(m) for m in chat_messages.values_list("message", flat = True).all()])
+  recap.count_clips = clips.count()
+  
+  cv = 0
+  cw = 0
+  for c in clips.all():
+    cv += c.view_count
+    cw += c.view_count * c.duration
+    
+  recap.count_clip_views = cv
+  recap.count_clip_watch = int(cw)
+  
+  if user_id is None:
+    recap.count_videos = videos.count()
+    recap.count_chatters = chat_messages.values("commenter").distinct().count()
+  
+  firstmsg = chat_messages.order_by("created_at").first()
+  recap.first_message = "" if firstmsg is None else firstmsg.message
+  
+  for fg in FragmentGroup.objects.order_by("ordering").all():
+    recap.counters[fg.group_id] = { 
+      "total": 0,
+      "members": { f.pretty_name: 0 for f in fg.fragment_set.all() }
+    }
+    total = 0
+    f : Fragment
+    for f in fg.fragment_set.all():
+      if user_id is None:
+        fms = FragmentMatch.objects.filter(fragment = f, timestamp__range = (recap.start_date, recap.end_date)).all()
+        f_count = sum([fm.count for fm in fms])
+      else:
+        fms = FragmentMatch.objects.filter(fragment = f, timestamp__range = (recap.start_date, recap.end_date), commenter_id = user_id).all()
+        f_count = sum([fm.count for fm in fms])
+      recap.counters[fg.group_id]["members"][f.pretty_name] = f_count
+      total += f_count
+    recap.counters[fg.group_id]["total"] = total
+    
+  recap.save()
+  if perf: print(f"calc took {time.perf_counter() - start:.3f} seconds")
+  
+def sum_recap_stats(year : int|None = None, user_id : int = None, perf : bool = False):
+  if perf: start = time.perf_counter()
+  
+  if year is None:
+    year = datetime.datetime.now(TIMEZONE).year
+    
+  if year == 0:
+    monthrecaps = OverallRecapData.objects.filter(year__gte = 1, month__gte = 1).all()
+  else:
+    monthrecaps = OverallRecapData.objects.filter(year = year, month__gte = 1).all()
+  
+  chat_messages = ChatMessage.objects
+  
+  if user_id is None:
+    recap, _ = OverallRecapData.objects.get_or_create(year = year, month = 0)
+  else:
+    overall_recap, _ = OverallRecapData.objects.get_or_create(year = year, month = 0)
+    recap, _ = UserRecapData.objects.get_or_create(overall_recap = overall_recap, twitch_user_id = user_id)
+    
+    chat_messages = chat_messages.filter(commenter_id = user_id)
+    
+    monthrecaps = UserRecapData.objects.filter(overall_recap__in = monthrecaps, twitch_user_id = user_id).all()
+    
+  if year > 0:
+    chat_messages = chat_messages.filter(created_at__range = (recap.start_date, recap.end_date))
+    
+  if user_id is None:
+    recap.count_chatters = chat_messages.values("commenter").distinct().count()
+  
+  firstmsg = chat_messages.order_by("created_at").first()
+  recap.first_message = "" if firstmsg is None else firstmsg.message
+    
+  recap.count_messages = 0
+  recap.count_characters = 0
+  recap.count_clips = 0
+  recap.count_clip_watch = 0
+  recap.count_clip_views = 0
+  recap.count_videos = 0
+  
+  fgs = FragmentGroup.objects.order_by("ordering").prefetch_related("fragment_set").all()
+  
+  for fg in fgs:
+    recap.counters[fg.group_id] = { 
+      "total": 0,
+      "members": { f.pretty_name: 0 for f in fg.fragment_set.all() }
+    }
+    
+  for mr in monthrecaps:
+    recap.count_messages += mr.count_messages
+    recap.count_characters += mr.count_messages
+    recap.count_clips += mr.count_clips
+    recap.count_clip_watch += mr.count_clip_watch
+    recap.count_clip_views += mr.count_clip_views
+    recap.count_videos += mr.count_videos
+    
+    for fg in fgs:
+      recap.counters[fg.group_id]["total"] += mr.counters.get(fg.group_id, {}).get("total", 0)
+      
+      f : Fragment
+      for f in fg.fragment_set.all():
+        recap.counters[fg.group_id]["members"][f.pretty_name] += mr.counters.get(fg.group_id, {}).get("members", {}).get(f.pretty_name, 0)
+        
+  recap.save()
+  if perf: print(f"sum took {time.perf_counter() - start:.3f} seconds")
+
+@shared_task
+def calculate_monthly_stats(year = None, month = None, perf : bool = False):
+  if perf: start = time.perf_counter()
+  
+  if year is None:
+    year = datetime.datetime.now(TIMEZONE).year
+  if month is None:
+    month = datetime.datetime.now(TIMEZONE).month
+    
+  print(f"Calculating: {year}-{month}")
+    
   localtz = tz.gettz("America/Los_Angeles")
   monthrange = calendar.monthrange(year, month)
   
-  monthrecap, _ = OverallRecapData.objects.get_or_create(year = year, month = month)  
-  monthrecap.zero()
-  
   start_date = datetime.datetime(year, month, 1, 0, 0, 0, 1, localtz)
   end_date = datetime.datetime(year, month, monthrange[1], 23, 59, 59, 999, localtz)
-    
-  firstmsg = ChatMessage.objects.filter(created_at__range = (start_date, end_date)).order_by("created_at").first()
-  videos = Video.objects.filter(created_at__range = (start_date, end_date))
-  
-  monthrecap.count_videos = videos.count()
-  
-  monthrecap.first_message = "" if firstmsg is None else firstmsg.message
-  
-  userrecap : UserRecapData = monthrecap.userrecapdata_set.first()
-  if userrecap:
-    for field in userrecap._meta.get_fields():
-      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in ["year", "month"]):
-        monthrecap.userrecapdata_set.update(**{field.name: 0})
-  
-  for chatter in TwitchUser.objects.prefetch_related("chatmessage_set", "clip_set").all():
-    chatter_messages = chatter.chatmessage_set.filter(created_at__range = (start_date, end_date)).order_by("created_at")
-    chatter_clips    = chatter.clip_set.filter(created_at__range = (start_date, end_date))
-    
-    chatter_msg_count  = chatter_messages.count()
-    chatter_clip_count = chatter_clips.count()
-    
-    chatter_clip_watch_time = 0
-    
-    for clip in chatter_clips:
-      chatter_clip_watch_time += round(clip.duration) * clip.view_count
-    
-    chatter_clip_views = 0
-    for clip in chatter_clips:
-      chatter_clip_views += clip.view_count
-    
-    if chatter_msg_count > 0 or chatter_clip_count > 0:
-      monthrecap.count_messages      += chatter_msg_count
-      monthrecap.count_clips         += chatter_clip_count
-      monthrecap.count_clip_watch    += chatter_clip_watch_time
-      monthrecap.count_clip_views    += chatter_clip_views
-      monthrecap.count_chatters      += 1
-      
-      chatter_recap, _ = UserRecapData.objects.get_or_create(overall_recap = monthrecap, twitch_user = chatter)
         
-      chatter_recap.count_clips         = chatter_clip_count
-      chatter_recap.count_clip_watch    = chatter_clip_watch_time
-      chatter_recap.count_clip_views    = chatter_clip_views
+  if perf: overallstart = time.perf_counter()
+  
+  calculate_recap_stats(year, month)
+  
+  if perf: print(f"\toverall: {time.perf_counter() - overallstart:.3f}s")
+  if perf: usersstart = time.perf_counter()
+  
+  user_set = set(ChatMessage.objects.filter(created_at__range = (start_date, end_date)).values_list("commenter", flat = True).distinct().all()) | set(Clip.objects.filter(created_at__range = (start_date, end_date)).values_list("creator", flat = True).distinct().all())
+  for user in user_set:
+    calculate_recap_stats(year, month, user_id = user)
+  
+  if perf: print(f"\tusers: {time.perf_counter() - usersstart:.3f}s")
+  if perf: print(f"\ttotal: {time.perf_counter() - start:.3f}s")
+  
+@shared_task
+def calculate_yearly_stats(year = None, recalculate = False, perf : bool = False):
+  if perf: start = time.perf_counter()
+  
+  if year is None:
+    year = datetime.datetime.now(TIMEZONE).year
+    
+  print(f"Calculating: {year}")
+    
+  localtz = tz.gettz("America/Los_Angeles")
+  start_date = datetime.datetime(year, 1, 1, 0, 0, 0, 1, localtz)
+  end_date = datetime.datetime(year, 12, 31, 23, 59, 59, 999, localtz)
+        
+  if perf: overallstart = time.perf_counter()
+  
+  if recalculate:
+    calculate_recap_stats(year, 0)
+  else:
+    sum_recap_stats(year)
+    
+  if perf: print(f"\toverall: {time.perf_counter() - overallstart:.3f}s")
+  if perf: usersstart = time.perf_counter()
+  
+  user_set = set(ChatMessage.objects.filter(created_at__range = (start_date, end_date)).values_list("commenter", flat = True).distinct().all()) | set(Clip.objects.filter(created_at__range = (start_date, end_date)).values_list("creator", flat = True).distinct().all())
+  if recalculate:
+    for user in user_set:
+      calculate_recap_stats(year, 0, user_id = user)
+  else:
+    for user in user_set:
+      sum_recap_stats(year, user_id = user)
       
-      firstmsg : ChatMessage = chatter_messages.first()
-      chatter_recap.first_message = "" if firstmsg is None else firstmsg.message
+  if perf: print(f"\tusers: {time.perf_counter() - usersstart:.3f}s")
+  if perf: print(f"\ttotal: {time.perf_counter() - start:.3f}s")
+  
+@shared_task
+def calculate_alltime_stats(recalculate : bool = False, perf : bool = False):
+  if perf: start = time.perf_counter()
+  
+  print(f"Calculating: all time")
+        
+  if perf: overallstart = time.perf_counter()
+  
+  if recalculate:
+    calculate_recap_stats(0, 0)
+  else:
+    sum_recap_stats(0)
+    
+  if perf: print(f"\toverall: {time.perf_counter() - overallstart:.3f}s")
+  if perf: usersstart = time.perf_counter()
+  
+  user_set = TwitchUser.objects.all()
+  if recalculate:
+    for user in user_set:
+      calculate_recap_stats(0, 0, user_id = user)
+  else:
+    for user in user_set:
+      sum_recap_stats(0, user_id = user)
       
-      msg : ChatMessage
-      for msg in chatter_messages:
-        chatter_recap.process_message(msg.message, save = False)
-      
-      chatter_recap.save()
-      
-      monthrecap.add(chatter_recap, ["year", "month", "count_messages", "count_clips", "count_clip_views", "count_clip_watch", "count_chatters"])
-      
-      monthrecap.save()
+  if perf: print(f"\tusers: {time.perf_counter() - usersstart:.3f}s")
+  if perf: print(f"\ttotal: {time.perf_counter() - start:.3f}s")
       
 @shared_task
-def calculate_all_leaderboards():
+def calculate_all_leaderboards(perf : bool = True):
+  if perf: start = time.perf_counter()
+  
+  print("Calculating: leaderboards")
+  
   for overallrecap in OverallRecapData.objects.all():
     leaderboards_dict = {}
     for field in overallrecap._meta.get_fields():
-      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField") and field.name not in ["year", "month", "count_chatters", "count_videos"]):
-        if type(field) in [StatField, BigStatField, StringCountField]:
-          if not field.show_leaderboard:
-            continue
-          leaderboards_dict[field.short_name] = [(userrecap.twitch_user.display_name, getattr(userrecap, field.name), userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.all().order_by("-" + field.name)[:250]]
-        else:
-          leaderboards_dict[field.name] = [(userrecap.twitch_user.display_name, getattr(userrecap, field.name), userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.all().order_by("-" + field.name)[:250]]
+      if type(field) in [StatField, BigStatField] and field.name not in ["year", "month", "count_chatters", "count_videos"]:
+        if not field.show_leaderboard:
+          continue
+        leaderboards_dict[field.short_name] = [(userrecap.twitch_user.display_name, getattr(userrecap, field.name), userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.all().order_by("-" + field.name)[:250]]
+    
+    for fg in FragmentGroup.objects.order_by("ordering").filter(show_leaderboard = True).all():
+      leaderboards_dict[fg.group_id] = [(userrecap.twitch_user.display_name, userrecap.counters[fg.group_id]["total"], userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.order_by(f"-counters__{fg.group_id}__total")[:250]]
         
     overallrecap.leaderboards = leaderboards_dict
     overallrecap.save()
     
+  if perf: print(f"leaderboards took {time.perf_counter() - start:.3f} seconds")
+    
 @shared_task
-def calculate_everything():
-  start = time.perf_counter()
-  
+def calculate_everything(find_fragments : bool = False):
   year = datetime.datetime.now(TIMEZONE).year
+  
+  if find_fragments:
+    find_fragment_matches(perf = True)
   
   for y in range(2023, year+1):
     for m in range(1, 13):
-      calculate_monthly_stats(y, m)
-      print(f"{y}-{m}: calc took {time.perf_counter() - start} seconds")
-      start = time.perf_counter()
-    calculate_yearly_stats(y)
-    print(f"{y}-{m}: calc took {time.perf_counter() - start} seconds")
-    start = time.perf_counter()
+      calculate_monthly_stats(y, m, perf = True)
+    calculate_yearly_stats(y, perf = True)
     
-  calculate_alltime_stats()
-  print(f"alltime: calc took {time.perf_counter() - start} seconds")
-  start = time.perf_counter()
-  
-  calculate_all_leaderboards()
-  print(f"leaderboards: calc took {time.perf_counter() - start} seconds")
-  start = time.perf_counter()
-  
-  create_wrapped_data()
-  print(f"wrapped: calc took {time.perf_counter() - start} seconds")
-  start = time.perf_counter()
+  calculate_alltime_stats(perf = True)
+  calculate_all_leaderboards(perf = True)
+  create_wrapped_data(perf = True)
     
 def seconds_to_duration(input : int, abbr : bool = False):
   days, rem = divmod(input, (3600 * 24))
@@ -647,20 +745,24 @@ def seconds_to_duration(input : int, abbr : bool = False):
   return output
     
 @shared_task
-def create_wrapped_data(year = None, skip_users = False):
+def create_wrapped_data(year = None, skip_users = False, perf : bool = True):
+  if perf: start = time.perf_counter()
+  
+  print("Calculating: wrapped")
+  
   if year is None:
     year = datetime.datetime.now(TIMEZONE).year
   
   localtz = tz.gettz("America/Los_Angeles")
-  
-  start_year = datetime.datetime(year, 1, 1, 0, 0, 0, 1, localtz)
-  end_year = datetime.datetime(year, 12, 31, 23, 59, 59, 999, localtz)
   
   try:
     overallrecap = OverallRecapData.objects.get(year = year, month = 0)
   except OverallRecapData.DoesNotExist:
     print("No recap for that year.")
     return
+  
+  start_year = overallrecap.start_date
+  end_year = overallrecap.end_date
   
   overall_wrapped, _ = OverallWrappedData.objects.get_or_create(year = year)
   
@@ -1016,3 +1118,5 @@ def create_wrapped_data(year = None, skip_users = False):
     
     user_wrapped.extra_data = user_dict
     user_wrapped.save()
+    
+  if perf: print(f"wrapped took {time.perf_counter() - start:.3f} seconds")

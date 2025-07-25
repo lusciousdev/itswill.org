@@ -197,20 +197,8 @@ class RecapView(generic.TemplateView):
       data["overall_recap"] = False
       data["recap_data"] = userrecap
       data["twitchuser"] = twitchuser
-    
-    data["counters"] = {}
-    for field in data["recap_data"]._meta.get_fields():
-      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField")):
-        if (type(field) == StringCountField):
-          data["counters"][field.name] = {}
-          data["counters"][field.name]["label"] = field.verbose_name
-          data["counters"][field.name]["count"] = getattr(data["recap_data"], field.name)
-          data["counters"][field.name]["show"] = field.show_recap
-          if field.use_images:
-            data["counters"][field.name]["image_list"] = field.emote_list
-          else:
-            data["counters"][field.name]["image_list"] = None
       
+    data["fragment_groups"] = FragmentGroup.objects.order_by("ordering").prefetch_related("fragment_set").all()
     return data
     
 @csrf_exempt
@@ -359,20 +347,14 @@ class LeaderboardView(generic.TemplateView):
     
     data["recap_data"] = overallrecap
     data["limit"] = 10
+    data["fragment_groups"] = FragmentGroup.objects.order_by("ordering").filter(show_leaderboard = True).prefetch_related("fragment_set").all()
     
-    data["labels"] = {}
+    data["non_fragment_leaderboards"] = {}
     
     for field in overallrecap._meta.get_fields():
-      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField")):
-        labelkey = field.name
-        if type(field) in [StatField, BigStatField, StringCountField]:
-          labelkey = field.short_name
-        data["labels"][labelkey] = {}
-        data["labels"][labelkey]["label"] = field.verbose_name
-        if (type(field) == StringCountField and field.use_images):
-          data["labels"][labelkey]["image_list"] = field.emote_list
-        else:
-          data["labels"][labelkey]["image_list"] = None
+      if type(field) in [StatField, BigStatField]:
+        if field.show_leaderboard:
+          data["non_fragment_leaderboards"][field.short_name] = field.verbose_name
     
     return data
   

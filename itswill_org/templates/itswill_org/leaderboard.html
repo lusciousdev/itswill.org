@@ -1,0 +1,35 @@
+{% load static %}
+{% load index %}
+{% load humanize %}
+
+<div class="leaderboard-item" id="{{ leaderboard_id }}">
+  <div class="leaderboard-label" id="itswillPound-label">
+    {% if fg and fg.use_images %}
+      {% for frag in fg.fragment_set.all %}
+        {% if frag.image %}
+          <img class="emote-img" id="{{ frag.pretty_name }}-img" src="{{ frag.image.url }}" title="{{ frag.match }}">
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <div class="leaderboard-label" id="{{ leaderboard_id }}-label">{{ unit }}</div>
+    {% endif %}
+    {% if recap_data.year == 0 %}
+      <div class="leaderboard-note" id="{{ leaderboard_id }}-full-link"><a href="{% url 'itswill_org:single_leaderboard' leaderboard_id %}">Full list</a></div>
+    {% else %}
+      {% if recap_data.month == 0 %}
+      <div class="leaderboard-note" id="{{ leaderboard_id }}-full-link"><a href="{% url 'itswill_org:single_leaderboard_year' recap_data.year leaderboard_id %}">Full list</a></div>
+      {% else %}
+      <div class="leaderboard-note" id="{{ leaderboard_id }}-full-link"><a href="{% url 'itswill_org:single_leaderboard_month' recap_data.year recap_data.month leaderboard_id %}">Full list</a></div>
+      {% endif %}
+    {% endif %}
+  </div>
+  <table class="stat-leaderboard" id="{{ leaderboard_id }}-leaderboard">
+    {% for entry in leaderboard|filter_on_not_index:2|firstn:limit %}
+      <tr class='leaderboard-table'>
+        <td>{{ forloop.counter }}.</td>
+        <td>{{ entry.0 }}</td>
+        <td>{{ entry.1|intcomma }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>

@@ -1,5 +1,8 @@
 from django.db import models
 import django.contrib.admin as admin
+from django.utils import timezone
+
+import calendar
 import datetime
 import re
 import typing
@@ -64,128 +67,6 @@ class StringCountField(StatField):
   @property
   def non_db_attrs(self):
     return super().non_db_attrs + ("match_list", "match_regex", "use_images", "show_recap")
-
-class RecapDataMixin(models.Model):
-  class Meta:
-    abstract = True
-  
-  count_messages = StatField(short_name = "messages", verbose_name = "Messages sent:", default = 0)
-  count_characters = BigStatField(short_name = "characters", show_recap = False, show_leaderboard = True, verbose_name = "Characters typed:", unit = "chatter", default = 0)
-  count_clips = StatField(short_name = "clips", verbose_name = "Clips created:", unit = "clip", default = 0)
-  count_clip_watch = BigStatField(short_name = "watchtime", show_recap = False, show_leaderboard = False, verbose_name = "Clip watch time:", unit = "second", default = 0)
-  count_clip_views = StatField(short_name = "views", verbose_name = "Clip views:", unit = "clip view", default = 0)
-  count_ascii = StatField(short_name = "ascii", verbose_name = "ASCIIs sent:", unit = "ASCII", default = 0)
-  count_chatters = StatField(short_name = "chatters", verbose_name = "Number of chatters:", unit = "chatter", default = 0)
-  count_videos = StatField(short_name = "videos", verbose_name = "Number of videos:", unit = "video", default = 0)
-  
-  first_message = models.CharField(verbose_name = "First message:", max_length = 1024, default = "")
-  last_message = models.CharField(verbose_name = "Last message:", max_length = 1024, default = "")
-  
-  count_seven   = StringCountField(short_name = "seven", match_list = ["itswill7", "itswillFreeTrial"], unit = "itswill7", default = 0)
-  count_pound   = StringCountField(short_name = "pound", match_list = ["itswillPound", "itswill4"], unit = "pounder", default = 0)
-  count_love    = StringCountField(short_name = "love", match_list = ["itswillL", "hannLOVE", "peepoLove", "itswillLove"], unit = "love emote", default = 0)
-  count_sad     = StringCountField(short_name = "sad", match_list = ["itswillSad", "Sadge", "widepeepoSad", "hannSADGE", "peepoSad"], unit = "sad emote", default = 0)
-  count_mad     = StringCountField(short_name = "mad", match_list = ["UltraMad", "ReallyGun", "MadgeLate"], unit = "mad emote", default = 0)
-  
-  count_etsmg   = StringCountField(short_name = "ETSMG", match_list = ["itswillEndTheStreamMyGuy"], unit = "itswillEndTheStreamMyGuy", default = 0)
-  count_ksmg    = StringCountField(short_name = "KSMG", match_list = ["itswillKeepStreamingMyGuy"], unit = "itswillKeepStreamingMyGuy", default = 0)
-  count_stsmg   = StringCountField(short_name = "STSMG", match_list = ["StartTheStreamMyGuy"], unit = "StartTheStreamMyGuy", default = 0)
-  
-  count_pog     = StringCountField(short_name = "pog", match_list = ["Pog", "PogChamp", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"], unit = "Pog", emote_list = ["Pog", "PogChamp", "POGCHAMP2", "POGGIES", "POGGERS", "itswillPog", "PagU", "PagMan"], default = 0)
-  count_goop    = StringCountField(short_name = "gooper", match_list = ["GooperGang"], unit = "GooperGang", default = 0)
-  count_bork    = StringCountField(short_name = "bork", match_list = ["hannBORK", "hannAAAA"], unit = "hannBORK", default = 0)
-  count_shoop   = StringCountField(short_name = "shoop", match_list = ["ShoopDaWhoop"], unit = "ShoopDaWhoop", default = 0)
-  count_gasp    = StringCountField(short_name = "gasp", match_list = ["D\\:", "hannD"], emote_list = ["GASP", "hannD"], unit = "gasp emote", default = 0)
-  count_what    = StringCountField(short_name = "what", match_list = ["WHAT"], unit = "WHAT", default = 0)
-  count_pogo    = StringCountField(short_name = "pogo", match_list = ["PogO", "WeirdChamp", "itswillO", "itswillWeird", "WeirdPause", "UHM"], unit = "weird emote", default = 0)
-  count_monka   = StringCountField(short_name = "monka", match_list = ["monkaS", "monkaW", "monkaEyes", "monkaGun", "monkaSTEER", "monkaH"], unit = "monka", default = 0)
-  count_monka2  = StringCountField(short_name = "eek", match_list = ["MONKA", "EEK"], unit = "EEK", default = 0)
-  
-  count_ijbol   = StringCountField(short_name = "IJBOL", match_list = ["IJBOL"], unit = "IJBOL", default = 0)
-  count_lmao    = StringCountField(short_name = "lmao", match_list = ["LMAO"], unit = "LMAO", default = 0)
-  count_hehe    = StringCountField(short_name = "hehe", match_list = ["hehe"], unit = "hehe", default = 0)
-  count_giggle  = StringCountField(short_name = "giggle", match_list = ["x0r6ztGiggle", "willGiggle", "itswillGiggle"], unit = "giggle", default = 0)
-  count_lul     = StringCountField(short_name = "lul", match_list = ["LUL", "LULW", "OMEGALUL", "OMEGADANCE", "OMEGALULftCloudWizard"], unit = "LUL", default = 0)
-  
-  count_first   = StringCountField(short_name = "chatter", match_list = ["FirstTimeChadder", "FirstTimeChedda", "LastTimeChatter"], unit = "first time chatter emote", default = 0)
-  
-  count_sneak   = StringCountField(short_name = "sneak", match_list = ["itswillSneak", "itswillFollow", "Sneak"], unit = "sneak emote", default = 0)
-  count_sit     = StringCountField(short_name = "sit", match_list = ["itswillSit"], unit = "itswillSit", default = 0)
-  
-  count_sludge  = StringCountField(short_name = "sludge", match_list = ["SLUDGE"], unit = "SLUDGE", default = 0)
-  count_gludge  = StringCountField(short_name = "gludge", match_list = ["GLUDGE"], unit = "GLUDGE", default = 0)
-  
-  count_mmylc   = StringCountField(short_name = "MMYLC", match_list = ["MusicMakeYouLoseControl"], unit = "MusicMakeYouLoseControl", default = 0)
-  count_nessie  = StringCountField(short_name = "nessie", match_list = ["nessiePls"], unit = "nessie", default = 0)
-  count_happi   = StringCountField(short_name = "happi", match_list = ["Happi"], unit = "Happi", default = 0)
-  count_goodboy = StringCountField(short_name = "goodboy", match_list = ["GoodBoy"], unit = "GoodBoy", default = 0)
-  count_dance   = StringCountField(short_name = "dance", match_list = ["itswillPls", "pepeD", "PepePls", "daemonDj", "willDJ", "SourPls"], unit = "dance emote", default = 0)
-  count_vvkool  = StringCountField(short_name = "vvkool", match_list = ["VVKool", "VVotate", "VVKoolMini"], unit = "VVKool", default = 0)
-  
-  count_spin    = StringCountField(short_name = "spin", match_list = ["itswillSpin", "willSpin", "borpaSpin", "YourMom"], unit = "spin emote", default = 0)
-  count_burger  = StringCountField(short_name = "burger", match_list = ["BURGER"], unit = "BURGER", default = 0)
-  count_chicken = StringCountField(short_name = "chicken", match_list = ["chickenWalk"], unit = "chickenWalk", default = 0)
-  count_sonic   = StringCountField(short_name = "sonic", match_list = ["itsWillCoolSonic", "CoolSonic"], emote_list = ["CoolSonic"], unit = "CoolSonic", default = 0)
-  count_chedda  = StringCountField(short_name = "chedda", match_list = ["MrChedda"], unit = "MrChedda", default = 0)
-  count_glorp   = StringCountField(short_name = "glorp", match_list = ["glorp"], unit = "glorp", default = 0)
-  count_wlorp   = StringCountField(short_name = "wlorp", match_list = ["Wlorp"], unit = "Wlorp", default = 0)
-  count_kirb    = StringCountField(short_name = "kirb", match_list = ["Kirbeter"], unit = "Kirbeter", default = 0)
-  count_goose   = StringCountField(short_name = "goose", match_list = ["GriddyGoose", "GriddyCrow"], unit = "griddy emote", default = 0)
-  count_joel    = StringCountField(short_name = "joel", match_list = ["Joel", "EvilJoel", "Joelver", "jlorp"], unit = "Joel emote", default = 0)
-  count_cinema  = StringCountField(short_name = "cinema", match_list = ["Cinema", "Cheddama", "Willema"], unit = "cinema emote", default = 0)
-  count_lift    = StringCountField(short_name = "lift", match_list = ["antLift", "WillLift"], unit = "lift emote", default = 0)
-  count_dankies = StringCountField(short_name = "dankies", match_list = ["DANKIES", "HYPERS"], unit = "DANKIES & HYPERS", default = 0)
-  
-  count_cum     = StringCountField(short_name = "cum", match_list = ["cum", "cumming", "cumb", "cummies", "cumshot"], unit = "cum mention", use_images = False, verbose_name = "Number of cum mentions:", default = 0)
-  
-  count_caw     = StringCountField(short_name = "caw", match_list = ["caw"], use_images = False, show_recap = True, show_leaderboard = True, verbose_name = "CAW:", unit = "CAW", default = 0)
-  count_400     = StringCountField(short_name = "400k", match_list = ["400k"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "400k:", unit = "400k", default = 0)
-  count_plus1   = StringCountField(short_name = "plusone", match_list = ["+1"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "+1:", unit = "+1", default = 0)
-  count_at_bot  = StringCountField(short_name = "bot", match_list = ["@itswillChat"], use_images = False, show_recap = True, show_leaderboard = True, verbose_name = "Replies to itswillChat:", unit = "@itswillChat", default = 0)
-  count_yt      = StringCountField(short_name = "youtube", match_list = ["(https://)?(www\\.)?youtube.com[/A-Za-z0-9_\\-=]+", "(https://)?(www\\.)?youtu.be[/A-Za-z0-9_\\-=\\?]+"], use_images = False, show_recap = False, show_leaderboard = False, verbose_name = "YouTube links:", unit = "YouTube link", default = 0)
-  count_q       = StringCountField(short_name = "questions", match_list = ["^\\?+$"], use_images = False, show_recap = True, show_leaderboard = True, verbose_name = "???:", unit = "question mark message", default = 0)
-  
-  def zero(self, exclude = [], save = True):
-    for f in self._meta.get_fields():
-      if (f.get_internal_type() == "IntegerField" or f.get_internal_type() == "BigIntegerField") and (f.name not in exclude):
-        setattr(self, f.name, 0)
-    
-    if save:
-      self.save()
-  
-  def add(self, other_recap : "RecapDataMixin", exclude = [], save = True):
-    for f in self._meta.get_fields():
-      if (f.get_internal_type() == "IntegerField" or f.get_internal_type() == "BigIntegerField") and (f.name not in exclude):
-        setattr(self, f.name, getattr(self, f.name) + getattr(other_recap, f.name))
-    
-    if save:
-      self.save()
-    
-  def process_message(self, message : str, save = True):
-    self.count_messages += 1
-    self.count_characters += len(message)
-    
-    if len(message) > 200 and len(ASCII_REGEX.findall(message)) > 0:
-      self.count_ascii += 1
-    
-    for f in self._meta.get_fields():
-      if (type(f) == StringCountField):
-        setattr(self, f.name, getattr(self, f.name) + len(f.match_regex.findall(message)))
-    
-    if save:
-      self.save()
-  
-class OverallRecapData(RecapDataMixin):
-  year = models.IntegerField(default = 1971)
-  month = models.IntegerField(default = 1)
-  
-  leaderboards = models.JSONField(default = dict)
-  
-  class Meta:
-    unique_together = ('year', 'month')
-    
-  def zero(self, exclude = ["year", "month"]):
-    super().zero(exclude)
   
 class TwitchUser(models.Model):
   user_id = models.IntegerField(primary_key = True, editable = False)
@@ -220,41 +101,6 @@ class TwitchUser(models.Model):
       "created_at": self.created_at.astimezone(TIMEZONE).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT),
     }
     
-class UserRecapData(RecapDataMixin):
-  overall_recap = models.ForeignKey(OverallRecapData, on_delete = models.CASCADE)
-  twitch_user = models.ForeignKey(TwitchUser, on_delete = models.DO_NOTHING)
-  
-  class Meta:
-    unique_together = ('overall_recap', 'twitch_user')
-
-class WrappedDataMixin(models.Model):
-  class Meta:
-    abstract = True
-  
-  typing_time = models.CharField(max_length = 255, default = "0 seconds")
-  clip_watch_time = models.CharField(max_length = 255, default = "0 seconds")
-  
-  jackass_count = models.IntegerField(default = 0)
-  
-  extra_data = models.JSONField(default = dict)
-    
-class OverallWrappedData(WrappedDataMixin):
-  year = models.IntegerField(default = 1971)
-  
-  recap = models.ForeignKey(OverallRecapData, on_delete=models.CASCADE, null = True, blank = True)
-  
-  class Meta:
-    unique_together = ('year', )
-    
-class UserWrappedData(WrappedDataMixin):
-  overall_wrapped = models.ForeignKey(OverallWrappedData, on_delete = models.CASCADE)
-  twitch_user = models.ForeignKey(TwitchUser, on_delete = models.CASCADE)
-  
-  recap = models.ForeignKey(UserRecapData, on_delete=models.CASCADE, null = True, blank = True)
-  
-  class Meta:
-    unique_together = ('overall_wrapped', 'twitch_user')
-    
 class TwitchEmote(models.Model):
   id = models.AutoField(primary_key = True, serialize = False)
   
@@ -265,16 +111,20 @@ class ChatMessage(models.Model):
   id = models.AutoField(primary_key = True, serialize = False)
   
   commenter = models.ForeignKey(TwitchUser, on_delete = models.CASCADE)
-  message_id = models.CharField(max_length = 255, editable = False)
+  message_id = models.CharField(max_length = 255, editable = False, unique = True)
   content_offset = models.IntegerField(default = 0)
   created_at = models.DateTimeField("created at", default = DEFAULT_DATETIME)
+  logged_at = models.DateTimeField("logged at", default = timezone.now)
   message = models.CharField(max_length = 1024, default = "")
   emotes = models.ManyToManyField(TwitchEmote)
   
   class Meta:
     ordering = ( "created_at", )
     indexes = [
+      models.Index(fields = ["message_id", ]),
+      models.Index(fields = ["commenter", ]),
       models.Index(fields = ["created_at", ]),
+      models.Index(fields = ["logged_at", ]),
     ]
   
   def __str__(self):
@@ -295,6 +145,82 @@ class ChatMessage(models.Model):
       "created_at": self.created_at.astimezone(TIMEZONE).strftime(luscioustwitch.TWITCH_API_TIME_FORMAT),
       "message": self.message,
     }
+
+def default_json_field():
+  return []
+
+class FragmentGroup(models.Model):
+  name = models.CharField(max_length = 256, blank = False)
+  group_id = models.CharField(max_length = 256, blank = False)
+  unit = models.CharField(max_length = 256, blank = False)
+  
+  count_multiples = models.BooleanField(default = True)
+  use_images = models.BooleanField(default = True)
+  show_in_recap = models.BooleanField(default = True)
+  show_leaderboard = models.BooleanField(default = True)
+  expandable = models.BooleanField(default = True)
+  
+  ordering = models.IntegerField(default = 0)
+  
+  @property
+  def match_list(self):
+    return [frag.match for frag in self.fragment_set]
+  
+  @property
+  def emote_list(self):
+    return [frag.emote for frag in self.fragment_set]
+  
+  @property
+  def match_regex(self):
+    return re.compile(re.compile(fr"(?<![^\s_-]){'|'.join(self.match_list)}(?![^\s_-])", re.IGNORECASE))
+  
+  class Meta:
+    ordering = ( 'ordering', )
+    
+class Fragment(models.Model):
+  group = models.ForeignKey(FragmentGroup, on_delete = models.CASCADE)
+  
+  pretty_name = models.CharField(max_length = 512, blank = False)
+  match = models.CharField(max_length = 512, blank = False)
+  image = models.FileField(upload_to="fragments/", blank = True)
+  
+  case_sensitive = models.BooleanField(default = False)
+  
+  @property
+  def match_regex(self):
+    return re.compile(fr"(?<![^\s_-]){self.match}(?![^\s_-])", re.NOFLAG if self.case_sensitive else re.IGNORECASE)
+  
+  def __str__(self):
+    return f"{self.pretty_name} ({self.match})"
+  
+  class Meta:
+    unique_together = ("group", "pretty_name", )
+  
+class FragmentInline(admin.TabularInline):
+  model = Fragment
+  extra = 1
+  
+class FragmentGroupAdmin(admin.ModelAdmin):
+  list_display = ('name', )
+  search_fields = ['name', 'unit']
+  inlines = ( FragmentInline, )
+  ordering = ( 'ordering', )
+  
+class FragmentMatch(models.Model):
+  fragment = models.ForeignKey(Fragment, on_delete = models.CASCADE)
+  message = models.ForeignKey(ChatMessage, on_delete = models.CASCADE)
+  
+  count = models.IntegerField(default = 1)
+  timestamp = models.DateTimeField(default = timezone.now)
+  commenter_id = models.IntegerField(default = -1)
+  
+  class Meta:
+    unique_together = ('fragment', 'message', )
+    ordering = ( 'timestamp', 'count', )
+    indexes = [
+      models.Index(fields = [ "timestamp", ]),
+      models.Index(fields = [ "commenter_id", ]),
+    ]
   
 class Clip(models.Model):
   clip_id = models.CharField(max_length = 255, primary_key = True, editable = False)
@@ -366,6 +292,91 @@ class Video(models.Model):
       models.Index(fields = [ "created_at", ]),
       models.Index(fields = [ "view_count", ]),
     ]
+
+class RecapDataMixin(models.Model):
+  class Meta:
+    abstract = True
+  
+  count_messages = StatField(short_name = "messages", verbose_name = "Messages sent:", default = 0)
+  count_characters = BigStatField(short_name = "characters", show_recap = False, show_leaderboard = True, verbose_name = "Characters typed:", unit = "chatter", default = 0)
+  count_clips = StatField(short_name = "clips", verbose_name = "Clips created:", unit = "clip", default = 0)
+  count_clip_watch = BigStatField(short_name = "watchtime", show_recap = False, show_leaderboard = False, verbose_name = "Clip watch time:", unit = "second", default = 0)
+  count_clip_views = StatField(short_name = "views", verbose_name = "Clip views:", unit = "clip view", default = 0)
+  count_chatters = StatField(short_name = "chatters", show_leaderboard = False, verbose_name = "Number of chatters:", unit = "chatter", default = 0)
+  count_videos = StatField(short_name = "videos", show_leaderboard = False, verbose_name = "Number of videos:", unit = "video", default = 0)
+  
+  first_message = models.CharField(verbose_name = "First message:", max_length = 1024, default = "")
+  last_message = models.CharField(verbose_name = "Last message:", max_length = 1024, default = "")
+  
+  counters = models.JSONField(default = dict)
+  
+class OverallRecapData(RecapDataMixin):
+  year = models.IntegerField(default = 1971)
+  month = models.IntegerField(default = 1)
+  
+  leaderboards = models.JSONField(default = dict)
+  
+  @property
+  def start_date(self) -> datetime.datetime|None:
+    if self.year == 0:
+      return None
+    
+    return datetime.datetime(self.year, self.month if self.month > 0 else 1, 1, 0, 0, 0, 1, TIMEZONE)
+    
+  @property
+  def end_date(self) -> datetime.datetime|None:
+    if self.year == 0:
+      return None
+    
+    end_month = self.month if self.month > 0 else 12
+    monthrange = calendar.monthrange(self.year, end_month)
+    return datetime.datetime(self.year, end_month, monthrange[1], 23, 59, 59, 999, TIMEZONE)
+  
+  class Meta:
+    unique_together = ('year', 'month')
+    
+class UserRecapData(RecapDataMixin):
+  overall_recap = models.ForeignKey(OverallRecapData, on_delete = models.CASCADE)
+  twitch_user = models.ForeignKey(TwitchUser, on_delete = models.DO_NOTHING)
+  
+  @property
+  def start_date(self):
+    return self.overall_recap.start_date
+  
+  @property
+  def end_date(self):
+    return self.overall_recap.end_date
+  
+  class Meta:
+    unique_together = ('overall_recap', 'twitch_user')
+
+class WrappedDataMixin(models.Model):
+  class Meta:
+    abstract = True
+  
+  typing_time = models.CharField(max_length = 255, default = "0 seconds")
+  clip_watch_time = models.CharField(max_length = 255, default = "0 seconds")
+  
+  jackass_count = models.IntegerField(default = 0)
+  
+  extra_data = models.JSONField(default = dict)
+    
+class OverallWrappedData(WrappedDataMixin):
+  year = models.IntegerField(default = 1971)
+  
+  recap = models.ForeignKey(OverallRecapData, on_delete=models.CASCADE, null = True, blank = True)
+  
+  class Meta:
+    unique_together = ('year', )
+    
+class UserWrappedData(WrappedDataMixin):
+  overall_wrapped = models.ForeignKey(OverallWrappedData, on_delete = models.CASCADE)
+  twitch_user = models.ForeignKey(TwitchUser, on_delete = models.CASCADE)
+  
+  recap = models.ForeignKey(UserRecapData, on_delete=models.CASCADE, null = True, blank = True)
+  
+  class Meta:
+    unique_together = ('overall_wrapped', 'twitch_user')
   
 class Pet(models.Model):
   acquired = models.BooleanField(default = True)

@@ -151,12 +151,38 @@ a, a:visited {
   color: var(--accent-color);
 }
 
+.stat-item-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+}
+
 .stat-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-sizing: border-box;
   padding: 5px 5px 5px 5px;
-  width: 75%;
+  width: 80%;
+}
+
+.stat-breakdown {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  box-sizing: border-box;
+
+  width: 100%;
+  padding-bottom: 1em;
+}
+
+.stat-breakdown .stat-item {
+  padding-left: 2em;
 }
 
 .leaderboard-item {
