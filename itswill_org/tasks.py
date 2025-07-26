@@ -385,41 +385,29 @@ def get_recent_chat_messages(max_days = -1, skip_known_vods = True):
       videoinstance.save()
 
 @shared_task
-def get_all_first_messages():
-  localtz = tz.gettz("America/Los_Angeles")
-  
+def get_all_first_and_last_messages():
   for overallrecap in OverallRecapData.objects.all():
-    firstmsg = None
-    if overallrecap.year == 0:
-      firstmsg = ChatMessage.objects.order_by("created_at").first()
-    else:
-      if overallrecap.month == 0:
-        start_date = datetime.datetime(overallrecap.year, 1, 1, 0, 0, 0, 1, localtz)
-        end_date   = datetime.datetime(overallrecap.year, 12, 31, 23, 59, 59, 999, localtz)
-      else:
-        monthrange = calendar.monthrange(overallrecap.year, overallrecap.month)
-        start_date = datetime.datetime(overallrecap.year, overallrecap.month, 1, 0, 0, 0, 1, localtz)
-        end_date   = datetime.datetime(overallrecap.year, overallrecap.month, monthrange[1], 23, 59, 59, 999, localtz)
-        
-      firstmsg = ChatMessage.objects.filter(created_at__range = (start_date, end_date)).order_by("created_at").first()
+    chat_messages = ChatMessage.objects
+    
+    chat_messages = chat_messages.filter(created_at__range = (overallrecap.start_date, overallrecap.end_date)).order_by("created_at")
+    
+    firstmsg = chat_messages.first()
     overallrecap.first_message = "" if firstmsg is None else firstmsg.message
+    lastmsg = chat_messages.last()
+    overallrecap.last_message = "" if lastmsg is None else lastmsg.message
+    
     overallrecap.save()
     
   for userrecap in UserRecapData.objects.all():
-    firstmsg = None
-    if userrecap.overall_recap.year == 0:
-      firstmsg = ChatMessage.objects.filter(commenter = userrecap.twitch_user).order_by("created_at").first()
-    else:
-      if userrecap.overall_recap.month == 0:
-        start_date = datetime.datetime(userrecap.overall_recap.year, 1, 1, 0, 0, 0, 1, localtz)
-        end_date   = datetime.datetime(userrecap.overall_recap.year, 12, 31, 23, 59, 59, 999, localtz)
-      else:
-        monthrange = calendar.monthrange(userrecap.overall_recap.year, userrecap.overall_recap.month)
-        start_date = datetime.datetime(userrecap.overall_recap.year, userrecap.overall_recap.month, 1, 0, 0, 0, 1, localtz)
-        end_date   = datetime.datetime(userrecap.overall_recap.year, userrecap.overall_recap.month, monthrange[1], 23, 59, 59, 999, localtz)
-        
-      firstmsg = ChatMessage.objects.filter(created_at__range = (start_date, end_date), commenter = userrecap.twitch_user).order_by("created_at").first()
+    chat_messages = ChatMessage.objects
+    
+    chat_messages = chat_messages.filter(created_at__range = (userrecap.start_date, userrecap.end_date), commenter = userrecap.twitch_user).order_by("created_at")
+    
+    firstmsg = chat_messages.first()
     userrecap.first_message = "" if firstmsg is None else firstmsg.message
+    lastmsg = chat_messages.last()
+    userrecap.last_message = "" if lastmsg is None else lastmsg.message
+    
     userrecap.save()
 
 @shared_task
@@ -489,6 +477,8 @@ def calculate_recap_stats(year : int = None, month : int = None, user_id : int =
   
   firstmsg = chat_messages.order_by("created_at").first()
   recap.first_message = "" if firstmsg is None else firstmsg.message
+  lastmsg = chat_messages.order_by("created_at").last()
+  recap.last_message = "" if lastmsg is None else lastmsg.message
   
   if perf: print(f"\tmessages: {time.perf_counter() - start:.3f} seconds")
   
@@ -567,6 +557,8 @@ def sum_recap_stats(year : int = None, user_id : int = None, perf : bool = False
   
   firstmsg = chat_messages.order_by("created_at").first()
   recap.first_message = "" if firstmsg is None else firstmsg.message
+  lastmsg = chat_messages.order_by("created_at").last()
+  recap.last_message = "" if lastmsg is None else lastmsg.message
     
   recap.count_messages = 0
   recap.count_characters = 0
