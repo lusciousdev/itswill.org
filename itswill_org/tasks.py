@@ -625,13 +625,10 @@ def calculate_monthly_stats(year = None, month = None, perf : bool = False):
   if perf: usersstart = time.perf_counter()
   
   user_set = set(ChatMessage.objects.filter(created_at__range = (start_date, end_date)).values_list("commenter", flat = True).distinct().all()) | set(Clip.objects.filter(created_at__range = (start_date, end_date)).values_list("creator", flat = True).distinct().all())
-  updated_recaps = []
-  for user in user_set:
-    recap = calculate_recap_stats(year, month, user_id = user, return_result = True)
-    updated_recaps.append(recap)
-    
-  UserRecapData.objects.bulk_update(updated_recaps, fields = ["count_messages", "count_characters", "count_clips", "count_clip_watch", "count_clip_views", "first_message", "last_message", "counters"])
   
+  for user in user_set:
+    calculate_recap_stats(year, month, user_id = user)
+    
   if perf: print(f"\tusers: {time.perf_counter() - usersstart:.3f}s")
   if perf: print(f"\ttotal: {time.perf_counter() - start:.3f}s")
   
