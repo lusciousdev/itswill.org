@@ -5,7 +5,8 @@ import luscioustwitch
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.db.models import F, Q, Count, Max, Sum, Prefetch, OuterRef, Subquery
-from django.db.models.functions import Coalesce
+from django.db.models.functions import Coalesce, Cast
+from django.db.models.fields.json import KT
 
 import datetime
 from dateutil import tz
@@ -708,7 +709,7 @@ def calculate_all_leaderboards(perf : bool = True):
         leaderboards_dict[field.short_name] = [(userrecap.twitch_user.display_name, getattr(userrecap, field.name), userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.order_by("-" + field.name).all()[:250]]
     
     for fg in FragmentGroup.objects.order_by("ordering").filter(show_leaderboard = True).all():
-      leaderboards_dict[fg.group_id] = [(userrecap.twitch_user.display_name, userrecap.counters[fg.group_id]["total"], userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.order_by(f"-counters__{fg.group_id}__total").all()[:250]]
+      leaderboards_dict[fg.group_id] = [(userrecap.twitch_user.display_name, userrecap.counters[fg.group_id]["total"], userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.annotate(my_count = Cast(KT(f"counters__{fg.group_id}__total"), models.IntegerField())).order_by(f"-my_count").all()[:250]]
         
     overallrecap.leaderboards = leaderboards_dict
     overallrecap.save()
