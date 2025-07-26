@@ -14,18 +14,20 @@
 <div class="content">
   <div class="row-wrap-section-wrap" id="leaderboards-wrap">
     <div class="row-wrap-section" id="leaderboards">
-      {% with value=recap_data.leaderboards|keyvalue:leaderboard_name%}
-      {% with labelobj=labels|keyvalue:leaderboard_name %}
       <div class="row-wrap-section-title" id="leaderboards-title">
-        {% if labelobj.image_list %}
-        {% for name in labelobj.image_list %}
-        {% with imageurl="itswill_org/recap_img/"|add:name|add:'.webp' %}
-        <img class="emote-img" id="{{ name }}-img" src="{% static imageurl %}" title="{{ name }}">
-        {% endwith %}
-        {% endfor %}
+      {% if fragment_group %}
+        {% if fragment_group.use_images %}
+          {% for frag in fragment_group.fragment_set.all %}
+            {% if frag.image %}
+              <img class="emote-img" id="{{ frag.pretty_name }}-img" src="{{ frag.image.url }}" title="{{ frag.match }}">
+            {% endif %}
+          {% endfor %}
         {% else %}
-        <div class="leaderboard-label" id="{{ key }}-label">{{ labelobj.label }}</div>
+          <div class="leaderboard-label" id="{{ leaderboard_name }}-label">{{ fragment_group.unit }}</div>
         {% endif %}
+      {% else %}
+        <div class="leaderboard-label" id="{{ leaderboard_name }}-label">{{ unit }}</div>
+      {% endif %}
       </div>
       {% if recap_data.year == 0 %}
       <div class="row-wrap-section-note" id="recap-link">(<a href="{% url 'itswill_org:leaderboard' %}">Click to go back to all the leaderboards</a>)</div>
@@ -36,27 +38,19 @@
       <div class="row-wrap-section-note" id="recap-link">(<a href="{% url 'itswill_org:leaderboard_month' recap_data.year recap_data.month %}">Click to go back to all the leaderboards</a>)</div>
       {% endif %}
       {% endif %}
-      {% if key == "count_messages" %}
-      <div class="single-line" id="{{ key }}-wrap">
-      {% endif %}
-        <div class="leaderboard-item" id="{{ key }}">
-          <table class="stat-leaderboard" id="{{ key }}-leaderboard">
-            {% for entry in value %}
-            {% if entry.1 > 0 %}
-              <tr class='leaderboard-table'>
-                <td>{{ forloop.counter }}.</td>
-                <td>{{ entry.0 }}</td>
-                <td>{{ entry.1|intcomma }}</td>
-              </tr>
-            {% endif %}
-            {% endfor %}
-          </table>
-        </div>
-      {% if key == "count_messages" %}
+      <div class="leaderboard-item" id="{{ leaderboard_name }}">
+        <table class="stat-leaderboard" id="{{ leaderboard_name }}-leaderboard">
+          {% for entry in leaderboard %}
+          {% if entry.1 > 0 %}
+            <tr class='leaderboard-table'>
+              <td>{{ forloop.counter }}.</td>
+              <td>{{ entry.0 }}</td>
+              <td>{{ entry.1|intcomma }}</td>
+            </tr>
+          {% endif %}
+          {% endfor %}
+        </table>
       </div>
-      {% endif %}
-      {% endwith %}
-      {% endwith %}
     </div>
   </div>
 </div>

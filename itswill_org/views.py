@@ -5,6 +5,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views import generic
 from django.conf import settings
+from django.core.exceptions import FieldDoesNotExist
 
 import typing
 from dateutil import tz
@@ -386,20 +387,20 @@ class SingleLeaderboardView(generic.TemplateView):
     
     data["recap_data"] = overallrecap
     data["leaderboard_name"] = name
-    
-    data["labels"] = {}
-    
-    for field in overallrecap._meta.get_fields():
-      if ((field.get_internal_type() == "IntegerField" or field.get_internal_type() == "BigIntegerField")):
-        labelkey = field.name
-        if type(field) in [StatField, BigStatField, StringCountField]:
-          labelkey = field.short_name
-        data["labels"][labelkey] = {}
-        data["labels"][labelkey]["label"] = field.verbose_name
-        if (type(field) == StringCountField and field.use_images):
-          data["labels"][labelkey]["image_list"] = field.emote_list
-        else:
-          data["labels"][labelkey]["image_list"] = None
+          
+    try:
+      fg = FragmentGroup.objects.prefetch_related("fragment_set").get(group_id = name)
+      
+      data["fragment_group"] = fg
+      data["leaderboard"] = overallrecap.leaderboards[fg.group_id] if fg.group_id in overallrecap.leaderboards else [] 
+    except FragmentGroup.DoesNotExist:
+      try:
+        fields : list = overallrecap._meta.get_fields()
+        field = list(filter(lambda f: hasattr(f, "short_name") and f.short_name == name, fields))[0]
+        data["unit"] = field.verbose_name
+        data["leaderboard"] = overallrecap.leaderboards[name] if name in overallrecap.leaderboards else []
+      except FieldDoesNotExist:
+        raise Http404("That field either does not exist or does not have leaderboard.", 404)
     
     return data
   

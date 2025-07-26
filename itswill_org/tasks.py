@@ -705,10 +705,10 @@ def calculate_all_leaderboards(perf : bool = True):
       if type(field) in [StatField, BigStatField] and field.name not in ["year", "month", "count_chatters", "count_videos"]:
         if not field.show_leaderboard:
           continue
-        leaderboards_dict[field.short_name] = [(userrecap.twitch_user.display_name, getattr(userrecap, field.name), userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.all().order_by("-" + field.name)[:250]]
+        leaderboards_dict[field.short_name] = [(userrecap.twitch_user.display_name, getattr(userrecap, field.name), userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.order_by("-" + field.name).all()[:250]]
     
     for fg in FragmentGroup.objects.order_by("ordering").filter(show_leaderboard = True).all():
-      leaderboards_dict[fg.group_id] = [(userrecap.twitch_user.display_name, userrecap.counters[fg.group_id]["total"], userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.order_by(f"-counters__{fg.group_id}__total")[:250]]
+      leaderboards_dict[fg.group_id] = [(userrecap.twitch_user.display_name, userrecap.counters[fg.group_id]["total"], userrecap.twitch_user.is_bot) for userrecap in overallrecap.userrecapdata_set.order_by(f"-counters__{fg.group_id}__total").all()[:250]]
         
     overallrecap.leaderboards = leaderboards_dict
     overallrecap.save()
