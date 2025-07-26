@@ -222,7 +222,7 @@ def get_recap_data(request):
     month = int(month)
     
   year = 0 if year <= 0 else max(2023, min(2025, year))
-  month = 0 if year == 0 else max(1, min(12, month))
+  month = 0 if year == 0 else max(0, min(12, month))
   
   recap = OverallRecapData.objects.get(year = year, month = month)
   
