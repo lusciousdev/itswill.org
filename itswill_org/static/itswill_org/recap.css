@@ -5,6 +5,10 @@ html {
   font-size: 1em;
 }
 
+table, th, td {
+  border-collapse: collapse;
+}
+
 .content {
   display: flex;
   flex-direction: column;
@@ -151,34 +155,51 @@ a, a:visited {
   color: var(--accent-color);
 }
 
-.stat-item-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-  width: 100%;
+#stat-table, #counter-table {
+  width: 80%;
+}
+
+#stat-table {
+  margin-bottom: 1.25em;
 }
 
 .stat-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   box-sizing: border-box;
   padding: 5px 5px 5px 5px;
   width: 80%;
 }
 
 .stat-breakdown {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  box-sizing: border-box;
+  overflow-y: hidden;
+  max-height: 0px;
 
   width: 100%;
   padding-bottom: 1em;
+
+  transition-property: max-height;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+}
+
+.stat-breakdown td {
+  width: 100%;
+
+  overflow-y: hidden;
+  max-height: inherit;
+}
+
+.stat-breakdown-container {
+  width: 100%;
+  padding-left: 1.25em;
+  box-sizing: border-box;
+
+  overflow-y: hidden;
+  max-height: inherit;
+}
+
+.stat-breakdown-table {
+  box-sizing: border-box;
+  margin-bottom: 18px;
 }
 
 .stat-breakdown .stat-item {
@@ -224,6 +245,15 @@ a, a:visited {
   background: #FFFFFF10;
 }
 
+.expand-stat {
+  font-weight: bold;
+
+  text-decoration: underline;
+  cursor: pointer;
+
+  padding: 0 0.5em;
+}
+
 @media screen and ( min-width: 1200px ) {
   .leaderboard-item { flex-basis: 33%; }                    /* forces three items to a line */
 }
@@ -252,11 +282,17 @@ a, a:visited {
 }
 
 .stat-label {
-  margin-right: 25px;
+  padding-left: 0.5em;
 }
 
 .stat-value {
+  text-align: right;
   color: var(--accent-color);
+}
+
+#first-msg-value, #last-msg-value {
+  text-align: left!important;
+  padding-left: 2em;
 }
 
 .new-line-stat {

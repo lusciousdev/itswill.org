@@ -5,6 +5,7 @@ from asgiref.sync import async_to_sync, sync_to_async
 import logging
 import asyncio
 import typing
+import time
 import luscioustwitch
 
 
@@ -77,21 +78,23 @@ class LoggerBot(twitchio_commands.Bot):
     await self.subscribe_websocket(payload = subscription)
     
   async def event_message(self, payload : twitchio.ChatMessage) -> None:
+    start = time.perf_counter()
     try:
       twitch_user = await TwitchUser.objects.aget(user_id = payload.chatter.id)
       new_chatter = False
     except TwitchUser.DoesNotExist:
       tio_user : twitchio.User = await payload.chatter.user()
       
-      twitch_user, new_chatter = await TwitchUser.objects.create(
+      new_chatter = True
+      twitch_user = await TwitchUser.objects.acreate(
         user_id = payload.chatter.id,
         login = payload.chatter.name,
         display_name = payload.chatter.display_name,
         user_type = tio_user.type,
         broadcaster_type = tio_user.broadcaster_type,
         description = tio_user.description,
-        profile_image_url = tio_user.profile_image,
-        offline_image_url = tio_user.offline_image,
+        profile_image_url = tio_user.profile_image if tio_user.profile_image else "",
+        offline_image_url = tio_user.offline_image if tio_user.offline_image else "",
         created_at = tio_user.created_at
       )
       
@@ -136,6 +139,7 @@ class LoggerBot(twitchio_commands.Bot):
       for r in [alltimerecap, yearrecap, monthrecap, user_alltime, user_year, user_month]:
         r.count_messages += 1
         r.count_characters += len(message.message)
+        r.last_message = message.message
         
       fragments = await sync_to_async(list)(await sync_to_async((await sync_to_async(Fragment.objects.select_related)("group")).all)())
       fragment_regex = { f.pretty_name: f.match_regex for f in fragments }
@@ -153,12 +157,20 @@ class LoggerBot(twitchio_commands.Bot):
           
           r : typing.Union[OverallRecapData,UserRecapData]
           for r in [alltimerecap, yearrecap, monthrecap, user_alltime, user_year, user_month]:
+            if f.group.group_id not in r.counters:
+              r.counters[f.group.group_id] = { "total": 0, "members": { } }
+            
+            if f.pretty_name not in r.counters[f.group.group_id]["members"]:
+              r.counters[f.group.group_id]["members"][f.pretty_name] = 0
+              
             r.counters[f.group.group_id]["total"] += fm.count
             r.counters[f.group.group_id]["members"][f.pretty_name] += fm.count
       
-      FragmentMatch.objects.bulk_create(new_matches, update_conflicts = True, update_fields = [ "count", "timestamp", "commenter_id" ])
-      OverallRecapData.objects.bulk_update([alltimerecap, yearrecap, monthrecap], fields = ["count_messages", "count_characters", "count_chatters", "counters"])
-      UserRecapData.objects.bulk_update([user_alltime, user_year, user_month], fields = ["count_messages", "count_characters", "counters"])
+      await FragmentMatch.objects.abulk_create(new_matches, update_conflicts = True, update_fields = [ "count", "timestamp", "commenter_id" ])
+      await OverallRecapData.objects.abulk_update([alltimerecap, yearrecap, monthrecap], fields = ["count_messages", "count_characters", "count_chatters", "last_message", "counters"])
+      await UserRecapData.objects.abulk_update([user_alltime, user_year, user_month], fields = ["count_messages", "count_characters", "last_message", "counters"])
+      
+    print(f"logged msg: {time.perf_counter() - start:.3f} seconds")
     
 def main() -> None:
   twitchio.utils.setup_logging(level=logging.INFO)

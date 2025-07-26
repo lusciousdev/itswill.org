@@ -8,6 +8,19 @@
 <link rel="stylesheet" type="text/css" href="{% static 'itswill_org/recap.css' %}">
 {% endblock %}
 
+{% block scripts %}
+<script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'itswill_org/recap.js' %}"
+  defer
+  {% if overall_recap %}
+  data-getrecapdataurl="{% url 'itswill_org:api_get_recap_data' %}?year={{ recap_data.year }}&month={{ recap_data.month }}"
+  {% else %}
+  data-getrecapdataurl="{% url 'itswill_org:api_get_recap_data' %}?year={{ recap_data.overall_recap.year }}&month={{ recap_data.overall_recap.month }}&user={{ twitchuser.user_id }}"
+  {% endif %}
+>
+</script>
+{% endblock %}
+
 {% block title %}The itswill Recap{% endblock %}
     
 {% block body %}
@@ -83,94 +96,139 @@
         {% endif %}
         {% endif %}
       </div>
-      <div class="stat-item" id="msg-count">
-        <span class="stat-label" id="msg-count-label">Messages sent:</span>
-        <span class="stat-value" id="msg-count-value">{{ recap_data.count_messages|intcomma }}</span>
-      </div>
-      <div class="stat-item" id="char-count">
-        <span class="stat-label" id="char-count-label">Characters sent:</span>
-        <span class="stat-value" id="char-count-value">{{ recap_data.count_characters|intcomma }}</span>
-      </div>
-      <div class="stat-item" id="char-count">
-        <span class="stat-label" id="char-count-label">Typing time (60 WPM):</span>
-        <span class="stat-value" id="char-count-value">{{ recap_data.count_characters|intdivide:5|time_to_pretty_string:True }}</span>
-      </div>
-      <div class="stat-item" id="clip-count">
-        <span class="stat-label" id="clip-count-label">Clips created:</span>
-        <span class="stat-value" id="clip-count-value">{{ recap_data.count_clips|intcomma }}</span>
-      </div>
-      <div class="stat-item" id="clip-views">
-        <span class="stat-label" id="clip-views-label">Views on those clips:</span>
-        <span class="stat-value" id="clip-views-value">{{ recap_data.count_clip_views|intcomma }}</span>
-      </div>
-      <div class="stat-item" id="clip-watch">
-        <span class="stat-label" id="clip-watch-label">Clip watch time:</span>
-        <span class="stat-value" id="clip-watch-value">{{ recap_data.count_clip_watch|time_to_pretty_string:True }}</span>
-      </div>
-      <div class="stat-item new-line-stat" id="first-msg">
-        <span class="stat-label" id="first-msg-label">First message:</span>
-        <div class="stat-value new-line-stat-value" id="first-msg-value">"{{ recap_data.first_message }}"</div>
-      </div>
-      {% for fg in fragment_groups %}
-      {% if fg.show_in_recap %}
-      <div class="stat-item-container" if="{{fg.group_id}}-container">
-        <div class="stat-item" id="{{ fg.group_id }}">
-          <span class="stat-label" id="{{ fg.group_id }}-label">
-            {% if fg.use_images %}
-            {% for frag in fg.fragment_set.all %}
-              {% if frag.image %}
-                <img class="emote-img" id="{{ frag.pretty_name }}-img" src="{{ frag.image.url }}" title="{{ frag.match }}">
-              {% endif %}
-            {% endfor %}
-            {% else %}
-            <span class="stat-label" id="{{ fg.group_id }}-label">{{ fg.unit }}:</span>
-            {% endif %}
-          </span>
-          
-          {% if fg.group_id in recap_data.counters %}
-            {% with counterobj=recap_data.counters|keyvalue:fg.group_id %}
-            <span class="stat-value" id="{{ fg.group_id }}-value">{{ counterobj.total|intcomma }}</span>
-            {% endwith %}
-          {% else %}
-            <span class="stat-value" id="{{ fg.group_id }}-value">0</span>
-          {% endif %}
-
-          {% if fg.expandable %}
-          {% endif %}
-        </div>
-          
-        {% if fg.expandable and fg.fragment_set.all|length > 1 %}
-        <div class="stat-breakdown" id="{{ fg.group_id}}-breakdown">
-          {% for frag in fg.fragment_set.all %}
-          <div class="stat-item" id="{{ frag.pretty_name }}">
-            <span class="stat-label" id="{{ frag.pretty_name }}-label">
-              {% if fg.use_images and frag.image %}
-                <img class="emote-img" id="{{ frag.pretty_name }}-img" src="{{ frag.image.url }}" title="{{ frag.match }}">
+      <table id="stat-table">
+        <tr class="stat-item" id="msg-count">
+          <td class="stat-label" id="msg-count-label">Messages sent:</td>
+          <td class="stat-value" id="msg-count-value">{{ recap_data.count_messages|intcomma }}</td>
+          <td></td>
+        </tr>
+        <tr class="stat-item" id="char-count">
+          <td class="stat-label" id="char-count-label">Characters sent:</td>
+          <td class="stat-value" id="char-count-value">{{ recap_data.count_characters|intcomma }}</td>
+          <td></td>
+        </tr>
+        <tr class="stat-item" id="char-time">
+          <td class="stat-label" id="char-time-label">Typing time (60 WPM):</td>
+          <td class="stat-value" id="char-time-value">{{ recap_data.count_characters|intdivide:5|time_to_pretty_string:True }}</td>
+          <td></td>
+        </tr>
+        <tr class="stat-item" id="clip-count">
+          <td class="stat-label" id="clip-count-label">Clips created:</td>
+          <td class="stat-value" id="clip-count-value">{{ recap_data.count_clips|intcomma }}</td>
+          <td></td>
+        </tr>
+        <tr class="stat-item" id="clip-views">
+          <td class="stat-label" id="clip-views-label">Views on those clips:</td>
+          <td class="stat-value" id="clip-views-value">{{ recap_data.count_clip_views|intcomma }}</td>
+          <td></td>
+        </tr>
+        <tr class="stat-item" id="clip-watch">
+          <td class="stat-label" id="clip-watch-label">Clip watch time:</td>
+          <td class="stat-value" id="clip-watch-value">{{ recap_data.count_clip_watch|time_to_pretty_string:True }}</td>
+          <td></td>
+        </tr>
+        <tr class="stat-item" id="first-msg-row">
+          <td colspan="3">
+            <div>
+              <table>
+                <tr>
+                  <td class="stat-label" id="first-msg-label">First message:</td>
+                </tr>
+                <tr>
+                  <td colspan="2" class="stat-value" id="first-msg-value">"{{ recap_data.first_message }}"</td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr class="stat-item" id="last-msg-row">
+          <td colspan="3">
+            <div>
+              <table>
+                <tr>
+                  <td class="stat-label" id="last-msg-label">Last message:</td>
+                </tr>
+                <tr>
+                  <td colspan="2" class="stat-value" id="last-msg-value">"{{ recap_data.last_message }}"</td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+      <table id="counter-table">
+        {% for fg in fragment_groups %}
+          {% if fg.show_in_recap %}
+          <tr class="stat-item" id="{{ fg.group_id }}">
+            <td class="stat-label" id="{{ fg.group_id }}-label">
+              {% if fg.use_images %}
+              {% for frag in fg.fragment_set.all %}
+                {% if frag.image %}
+                  <img class="emote-img" id="{{ frag.pretty_name }}-img" src="{{ frag.image.url }}" title="{{ frag.match }}">
+                {% endif %}
+              {% endfor %}
               {% else %}
-                <span class="stat-label" id="{{ frag.pretty_name }}-label">{{ frag.pretty_name }}:</span>
+                {{ fg.unit }}:
               {% endif %}
-            </span>
-
+            </td>
+            
             {% if fg.group_id in recap_data.counters %}
               {% with counterobj=recap_data.counters|keyvalue:fg.group_id %}
-              {% if frag.pretty_name in counterobj.members %}
-                {% with fragval=counterobj.members|keyvalue:frag.pretty_name %}
-                <span class="stat-value" id="{{ frag.pretty_name }}-value">{{ fragval|intcomma }}</span>
-                {% endwith %}
-              {% else %}
-                <span class="stat-value" id="{{ frag.pretty_name }}-value">0</span>
-              {% endif %}
+              <td class="stat-value" id="{{ fg.group_id }}-value">{{ counterobj.total|intcomma }}</td>
               {% endwith %}
             {% else %}
-                <span class="stat-value" id="{{ frag.pretty_name }}-value">0</span>
+              <td class="stat-value" id="{{ fg.group_id }}-value">0</td>
             {% endif %}
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %}        
-      </div>
-      {% endif %}
-      {% endfor %}
+            
+            {% if fg.expandable and fg.fragment_set.all|length > 1 %}
+              <td class="expand-stat" id="expand-{{ fg.group_id }}" group="{{fg.group_id }}">[+]</td>
+            {% else %}
+              <td></td>
+            {% endif %}
+          </tr>
+            
+          {% if fg.expandable and fg.fragment_set.all|length > 1 %}
+          <tr class="stat-breakdown" id="{{fg.group_id}}-breakdown">
+            <td colspan="2">
+              <div class="stat-breakdown-container">
+                <table class="stat-breakdown-table">
+                  {% for frag in fg.fragment_set.all %}
+                  <tr class="stat-item" id="{{ frag.pretty_name }}">
+                    <td class="stat-label" id="{{ frag.pretty_name }}-label">
+                      {% if fg.use_images and frag.image %}
+                        <img class="emote-img" id="{{ frag.pretty_name }}-img" src="{{ frag.image.url }}" title="{{ frag.match }}">
+                      {% else %}
+                        <span class="stat-label" id="{{ frag.pretty_name }}-label">{{ frag.pretty_name }}:</span>
+                      {% endif %}
+                    </td>
+
+                    {% if fg.group_id in recap_data.counters %}
+                      {% with counterobj=recap_data.counters|keyvalue:fg.group_id %}
+                      {% if frag.pretty_name in counterobj.members %}
+                        {% with fragval=counterobj.members|keyvalue:frag.pretty_name %}
+                        <td class="stat-value" id="{{ frag.pretty_name }}-value">{{ fragval|intcomma }}</td>
+                        {% endwith %}
+                      {% else %}
+                        <td class="stat-value" id="{{ frag.pretty_name }}-value">0</td>
+                      {% endif %}
+                      {% endwith %}
+                    {% else %}
+                      <td class="stat-value" id="{{ frag.pretty_name }}-value">0</td>
+                    {% endif %}
+                  </tr>
+                  {% endfor %}
+                </table>
+              </div>
+            </td>
+          </tr>
+          {% endif %}
+          {% endif %}
+        {% endfor %}
+      </table>
     </div>
   </div>
   <div class="section-wrap" id="links-wrap">

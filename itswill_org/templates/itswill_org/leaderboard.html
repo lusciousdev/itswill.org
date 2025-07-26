@@ -24,6 +24,7 @@
     {% endif %}
   </div>
   <table class="stat-leaderboard" id="{{ leaderboard_id }}-leaderboard">
+    {% if leaderboard %}
     {% for entry in leaderboard|filter_on_not_index:2|firstn:limit %}
       <tr class='leaderboard-table'>
         <td>{{ forloop.counter }}.</td>
@@ -31,5 +32,12 @@
         <td>{{ entry.1|intcomma }}</td>
       </tr>
     {% endfor %}
+    {% else %}
+    <tr class="leaderboard-table">
+     <td></td> 
+     <td>No data</td>
+     <td></td>
+    </tr>
+    {% endif %}
   </table>
 </div>

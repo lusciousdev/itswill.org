@@ -207,6 +207,47 @@ def get_random_letterboxd_review(request):
   else:
     return HttpResponse(review_str)
   
+@csrf_exempt
+def get_recap_data(request):
+  if request.method != "GET":
+    return JsonResponse({ "error": "Invalid request type." }, status = 501)
+  
+  year = request.GET.get("year", 0)
+  month = request.GET.get("month", 0)
+  user = request.GET.get("user", None)
+  
+  if type(year) == str:
+    year = int(year)
+  if type(month) == str:
+    month = int(month)
+    
+  year = 0 if year <= 0 else max(2023, min(2025, year))
+  month = 0 if year == 0 else max(1, min(12, month))
+  
+  recap = OverallRecapData.objects.get(year = year, month = month)
+  
+  if user is not None:
+    overallrecap = recap
+    try:
+      recap = UserRecapData.objects.get(overall_recap = overallrecap, twitch_user_id = user)
+    except UserRecapData.DoesNotExist:
+      return JsonResponse({ "error": "User not found." }, status = 404)
+    
+  data = {
+    "count_messages": recap.count_messages,
+    "count_characters": recap.count_characters,
+    "count_clips": recap.count_clips,
+    "count_clip_watch": recap.count_clip_watch,
+    "count_clip_views": recap.count_clip_views,
+    "count_chatters": recap.count_chatters,
+    "count_video": recap.count_videos,
+    "first_message": recap.first_message,
+    "last_message": recap.last_message,
+    "counters": recap.counters,
+  }
+  
+  return JsonResponse(data, status = 200)
+  
 
 @csrf_exempt
 def test_endpoint(request):

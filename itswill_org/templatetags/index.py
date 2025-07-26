@@ -62,9 +62,10 @@ def time_to_pretty_string(input : int, abbr : bool = False):
     msd_hit = True
   if msd_hit or minutes > 0:
     output += f"{minutes}m {seconds}s" if abbr else f"{minutes} minutes and {seconds} seconds"
+    msd_hit = True
    
   if not msd_hit:
-    output += f"{seconds} seconds"
+    output += f"{seconds}s" if abbr else f"{seconds} seconds"
   
   return output
 

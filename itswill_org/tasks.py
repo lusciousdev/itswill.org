@@ -4,8 +4,8 @@ from celery.schedules import crontab
 import luscioustwitch
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
-from django.db.models import F
-from django.db.models.aggregates import Count, Max
+from django.db.models import F, Q, Count, Max, Sum, Prefetch, OuterRef, Subquery
+from django.db.models.functions import Coalesce
 
 import datetime
 from dateutil import tz
@@ -458,8 +458,10 @@ def find_fragment_matches(perf : bool = True):
   
   if perf: print(f"fragments took {time.perf_counter() - start:.3f} seconds")
 
-def calculate_recap_stats(year : int = None, month : int = None, user_id : int = None, perf : bool = False):
-  if perf: start = time.perf_counter()
+def calculate_recap_stats(year : int = None, month : int = None, user_id : int = None, return_result : bool = False, perf : bool = False):
+  if perf: 
+    print(f"Calculating: {year}-{month} ({user_id if user_id else 'overall'})")
+    start = time.perf_counter()
   
   if year is None:
     year = datetime.datetime.now(TIMEZONE).year
@@ -487,6 +489,12 @@ def calculate_recap_stats(year : int = None, month : int = None, user_id : int =
   
   recap.count_messages = chat_messages.count()
   recap.count_characters = sum([len(m) for m in chat_messages.values_list("message", flat = True).all()])
+  
+  firstmsg = chat_messages.order_by("created_at").first()
+  recap.first_message = "" if firstmsg is None else firstmsg.message
+  
+  if perf: print(f"\tmessages: {time.perf_counter() - start:.3f} seconds")
+  
   recap.count_clips = clips.count()
   
   cv = 0
@@ -502,8 +510,7 @@ def calculate_recap_stats(year : int = None, month : int = None, user_id : int =
     recap.count_videos = videos.count()
     recap.count_chatters = chat_messages.values("commenter").distinct().count()
   
-  firstmsg = chat_messages.order_by("created_at").first()
-  recap.first_message = "" if firstmsg is None else firstmsg.message
+  if perf: print(f"\tclips: {time.perf_counter() - start:.3f} seconds")
   
   for fg in FragmentGroup.objects.order_by("ordering").all():
     recap.counters[fg.group_id] = { 
@@ -514,17 +521,22 @@ def calculate_recap_stats(year : int = None, month : int = None, user_id : int =
     f : Fragment
     for f in fg.fragment_set.all():
       if user_id is None:
-        fms = FragmentMatch.objects.filter(fragment = f, timestamp__range = (recap.start_date, recap.end_date)).all()
+        fms = FragmentMatch.objects.filter(fragment = f).all()
         f_count = sum([fm.count for fm in fms])
       else:
         fms = FragmentMatch.objects.filter(fragment = f, timestamp__range = (recap.start_date, recap.end_date), commenter_id = user_id).all()
         f_count = sum([fm.count for fm in fms])
       recap.counters[fg.group_id]["members"][f.pretty_name] = f_count
       total += f_count
+  
+      if perf: print(f"\t{f.pretty_name}: {time.perf_counter() - start:.3f} seconds")
     recap.counters[fg.group_id]["total"] = total
-    
-  recap.save()
-  if perf: print(f"calc took {time.perf_counter() - start:.3f} seconds")
+  
+  if return_result:
+    return recap
+  else:
+    recap.save()
+  if perf: print(f"\ttotal: {time.perf_counter() - start:.3f} seconds")
   
 def sum_recap_stats(year : int|None = None, user_id : int = None, perf : bool = False):
   if perf: start = time.perf_counter()
@@ -616,8 +628,12 @@ def calculate_monthly_stats(year = None, month = None, perf : bool = False):
   if perf: usersstart = time.perf_counter()
   
   user_set = set(ChatMessage.objects.filter(created_at__range = (start_date, end_date)).values_list("commenter", flat = True).distinct().all()) | set(Clip.objects.filter(created_at__range = (start_date, end_date)).values_list("creator", flat = True).distinct().all())
+  updated_recaps = []
   for user in user_set:
-    calculate_recap_stats(year, month, user_id = user)
+    recap = calculate_recap_stats(year, month, user_id = user, return_result = True)
+    updated_recaps.append(recap)
+    
+  UserRecapData.objects.bulk_update(updated_recaps, fields = ["count_messages", "count_characters", "count_clips", "count_clip_watch", "count_clip_views", "first_message", "last_message", "counters"])
   
   if perf: print(f"\tusers: {time.perf_counter() - usersstart:.3f}s")
   if perf: print(f"\ttotal: {time.perf_counter() - start:.3f}s")
@@ -708,12 +724,14 @@ def calculate_all_leaderboards(perf : bool = True):
 @shared_task
 def calculate_everything(find_fragments : bool = False):
   year = datetime.datetime.now(TIMEZONE).year
+  month = datetime.datetime.now(TIMEZONE).month
   
   if find_fragments:
     find_fragment_matches(perf = True)
   
   for y in range(2023, year+1):
-    for m in range(1, 13):
+    month_range = range(1, 13) if y < year else range(1, month + 1)
+    for m in month_range:
       calculate_monthly_stats(y, m, perf = True)
     calculate_yearly_stats(y, perf = True)
     
@@ -1120,3 +1138,61 @@ def create_wrapped_data(year = None, skip_users = False, perf : bool = True):
     user_wrapped.save()
     
   if perf: print(f"wrapped took {time.perf_counter() - start:.3f} seconds")
+  
+def update_pretty_names():
+  recaps = []
+  for r in OverallRecapData.objects.all():
+    if "plus1" in r.counters:
+      r.counters["plus1"]["members"].pop("+1", None)
+      r.counters["plus1"]["members"].pop("@itswillChat", None)
+      r.counters["plus1"]["members"].pop("at_bot", None)
+      if "+1" in r.counters["plus1"]["members"]:
+        r.counters["plus1"]["members"]["plus1"] = r.counters["plus1"]["members"]["+1"]
+        r.counters["plus1"]["members"].pop("+1", None)
+    if "at_bot" in r.counters:
+      r.counters["at_bot"]["members"].pop("+1", None)
+      r.counters["at_bot"]["members"].pop("@itswillChat", None)
+      r.counters["at_bot"]["members"].pop("plus1", None)
+      if "@itswillChat" in r.counters["at_bot"]["members"]:
+        r.counters["at_bot"]["members"]["at_bot"] = r.counters["at_bot"]["members"]["@itswillChat"]
+        r.counters["at_bot"]["members"].pop("@itswillChat", None)
+    if "q" in r.counters:
+      if "???" in r.counters["q"]["members"]:
+        r.counters["q"]["members"]["question_marks"] = r.counters["q"]["members"]["???"]
+        r.counters["q"]["members"].pop("???", None)
+    if "ascii" in r.counters:
+      if "ASCII" in r.counters["ascii"]["members"]:
+        r.counters["ascii"]["members"]["ascii"] = r.counters["ascii"]["members"]["ASCII"]
+        r.counters["ascii"]["members"].pop("ASCII", None)
+        
+    recaps.append(r)
+  OverallRecapData.objects.bulk_update(recaps, fields = [ "counters", ])
+  recaps = []
+  for r in UserRecapData.objects.all():
+    if "plus1" in r.counters:
+      r.counters["plus1"]["members"].pop("@itswillChat", None)
+      r.counters["plus1"]["members"].pop("at_bot", None)
+      if "+1" in r.counters["plus1"]["members"]:
+        r.counters["plus1"]["members"]["plus1"] = r.counters["plus1"]["members"]["+1"]
+        r.counters["plus1"]["members"].pop("+1", None)
+    if "at_bot" in r.counters:
+      r.counters["at_bot"]["members"].pop("+1", None)
+      r.counters["at_bot"]["members"].pop("plus1", None)
+      if "@itswillChat" in r.counters["at_bot"]["members"]:
+        r.counters["at_bot"]["members"]["at_bot"] = r.counters["at_bot"]["members"]["@itswillChat"]
+        r.counters["at_bot"]["members"].pop("@itswillChat", None)
+    if "q" in r.counters:
+      if "???" in r.counters["q"]["members"]:
+        r.counters["q"]["members"]["question_marks"] = r.counters["q"]["members"]["???"]
+        r.counters["q"]["members"].pop("???", None)
+    if "ascii" in r.counters:
+      if "ASCII" in r.counters["ascii"]["members"]:
+        r.counters["ascii"]["members"]["ascii"] = r.counters["ascii"]["members"]["ASCII"]
+        r.counters["ascii"]["members"].pop("ASCII", None)
+    
+        
+    recaps.append(r)
+    if len(recaps) > 1000:
+      UserRecapData.objects.bulk_update(recaps, fields = ["counters", ])
+      recaps = []
+  UserRecapData.objects.bulk_update(recaps, fields = [ "counters", ])
