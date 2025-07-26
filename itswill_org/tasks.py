@@ -389,7 +389,10 @@ def get_all_first_and_last_messages():
   for overallrecap in OverallRecapData.objects.all():
     chat_messages = ChatMessage.objects
     
-    chat_messages = chat_messages.filter(created_at__range = (overallrecap.start_date, overallrecap.end_date)).order_by("created_at")
+    if overallrecap.year > 0:
+      chat_messages = chat_messages.filter(created_at__range = (overallrecap.start_date, overallrecap.end_date)).order_by("created_at")
+    else:
+      chat_messages = chat_messages.order_by("created_at")
     
     firstmsg = chat_messages.first()
     overallrecap.first_message = "" if firstmsg is None else firstmsg.message
@@ -401,8 +404,11 @@ def get_all_first_and_last_messages():
   for userrecap in UserRecapData.objects.all():
     chat_messages = ChatMessage.objects
     
-    chat_messages = chat_messages.filter(created_at__range = (userrecap.start_date, userrecap.end_date), commenter = userrecap.twitch_user).order_by("created_at")
-    
+    if userrecap.overall_recap.year > 0:
+      chat_messages = chat_messages.filter(created_at__range = (userrecap.start_date, userrecap.end_date), commenter = userrecap.twitch_user).order_by("created_at")
+    else:
+      chat_messages = chat_messages.filter(commenter = userrecap.twitch_user).order_by("created_at")
+        
     firstmsg = chat_messages.first()
     userrecap.first_message = "" if firstmsg is None else firstmsg.message
     lastmsg = chat_messages.last()
