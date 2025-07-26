@@ -693,10 +693,10 @@ def calculate_alltime_stats(recalculate : bool = False, perf : bool = False):
   user_set = TwitchUser.objects.all()
   if recalculate:
     for user in user_set:
-      calculate_recap_stats(0, 0, user_id = user)
+      calculate_recap_stats(0, 0, user_id = user.user_id)
   else:
     for user in user_set:
-      sum_recap_stats(0, user_id = user)
+      sum_recap_stats(0, user_id = user.user_id)
       
   if perf: print(f"\tusers: {time.perf_counter() - usersstart:.3f}s")
   if perf: print(f"\ttotal: {time.perf_counter() - start:.3f}s")
