@@ -521,7 +521,7 @@ def calculate_recap_stats(year : int = None, month : int = None, user_id : int =
     f : Fragment
     for f in fg.fragment_set.all():
       if user_id is None:
-        fms = FragmentMatch.objects.filter(fragment = f).all()
+        fms = FragmentMatch.objects.filter(fragment = f, timestamp__range = (recap.start_date, recap.end_date)).all()
         f_count = sum([fm.count for fm in fms])
       else:
         fms = FragmentMatch.objects.filter(fragment = f, timestamp__range = (recap.start_date, recap.end_date), commenter_id = user_id).all()
