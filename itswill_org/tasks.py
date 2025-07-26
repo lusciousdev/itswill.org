@@ -584,7 +584,7 @@ def sum_recap_stats(year : int = None, user_id : int = None, perf : bool = False
     
   for mr in monthrecaps:
     recap.count_messages += mr.count_messages
-    recap.count_characters += mr.count_messages
+    recap.count_characters += mr.count_characters
     recap.count_clips += mr.count_clips
     recap.count_clip_watch += mr.count_clip_watch
     recap.count_clip_views += mr.count_clip_views
