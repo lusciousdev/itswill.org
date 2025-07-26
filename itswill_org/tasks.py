@@ -130,11 +130,6 @@ def get_letterboxd_reviews():
         "creator": creator
       }
     )
-    
-    if created:
-      print(f"New review: { film_title } - { member_rating } stars: { description }")
-    else:
-      print(f"Old review: { film_title } - { member_rating } stars: { description }")
   
 def add_clip_to_db(twitch_api : luscioustwitch.TwitchAPI, clip : luscioustwitch.TwitchClip):
   clip_id = clip.clip_id
