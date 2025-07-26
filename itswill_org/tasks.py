@@ -458,6 +458,7 @@ def find_fragment_matches(perf : bool = True):
   
   if perf: print(f"fragments took {time.perf_counter() - start:.3f} seconds")
 
+@shared_task
 def calculate_recap_stats(year : int = None, month : int = None, user_id : int = None, return_result : bool = False, perf : bool = False):
   if perf: 
     print(f"Calculating: {year}-{month} ({user_id if user_id else 'overall'})")
@@ -538,6 +539,7 @@ def calculate_recap_stats(year : int = None, month : int = None, user_id : int =
     recap.save()
   if perf: print(f"\ttotal: {time.perf_counter() - start:.3f} seconds")
   
+@shared_task
 def sum_recap_stats(year : int = None, user_id : int = None, perf : bool = False):
   if perf: start = time.perf_counter()
   
