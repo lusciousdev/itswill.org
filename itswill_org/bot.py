@@ -78,7 +78,6 @@ class LoggerBot(twitchio_commands.Bot):
     await self.subscribe_websocket(payload = subscription)
     
   async def event_message(self, payload : twitchio.ChatMessage) -> None:
-    start = time.perf_counter()
     try:
       twitch_user = await TwitchUser.objects.aget(user_id = payload.chatter.id)
       new_chatter = False
@@ -169,8 +168,6 @@ class LoggerBot(twitchio_commands.Bot):
       await FragmentMatch.objects.abulk_create(new_matches, update_conflicts = True, update_fields = [ "count", "timestamp", "commenter_id" ])
       await OverallRecapData.objects.abulk_update([alltimerecap, yearrecap, monthrecap], fields = ["count_messages", "count_characters", "count_chatters", "last_message", "counters"])
       await UserRecapData.objects.abulk_update([user_alltime, user_year, user_month], fields = ["count_messages", "count_characters", "last_message", "counters"])
-      
-    print(f"logged msg: {time.perf_counter() - start:.3f} seconds")
     
 def main() -> None:
   twitchio.utils.setup_logging(level=logging.INFO)
