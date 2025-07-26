@@ -107,6 +107,11 @@
           <td class="stat-value" id="char-count-value">{{ recap_data.count_characters|intcomma }}</td>
           <td></td>
         </tr>
+        <tr class="stat-item" id="char-count">
+          <td class="stat-label" id="char-count-label">Avg. characters/message:</td>
+          <td class="stat-value" id="char-count-value">{{ recap_data.count_characters|intdivide:recap_data.count_messages|intcomma }}</td>
+          <td></td>
+        </tr>
         <tr class="stat-item" id="char-time">
           <td class="stat-label" id="char-time-label">Typing time (60 WPM):</td>
           <td class="stat-value" id="char-time-value">{{ recap_data.count_characters|intdivide:5|time_to_pretty_string:True }}</td>
