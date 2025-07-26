@@ -538,7 +538,7 @@ def calculate_recap_stats(year : int = None, month : int = None, user_id : int =
     recap.save()
   if perf: print(f"\ttotal: {time.perf_counter() - start:.3f} seconds")
   
-def sum_recap_stats(year : int|None = None, user_id : int = None, perf : bool = False):
+def sum_recap_stats(year : int = None, user_id : int = None, perf : bool = False):
   if perf: start = time.perf_counter()
   
   if year is None:

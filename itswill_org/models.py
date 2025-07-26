@@ -317,14 +317,14 @@ class OverallRecapData(RecapDataMixin):
   leaderboards = models.JSONField(default = dict)
   
   @property
-  def start_date(self) -> datetime.datetime|None:
+  def start_date(self) -> datetime.datetime:
     if self.year == 0:
       return None
     
     return datetime.datetime(self.year, self.month if self.month > 0 else 1, 1, 0, 0, 0, 1, TIMEZONE)
     
   @property
-  def end_date(self) -> datetime.datetime|None:
+  def end_date(self) -> datetime.datetime:
     if self.year == 0:
       return None
     
