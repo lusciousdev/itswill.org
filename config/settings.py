@@ -278,6 +278,10 @@ CELERY_BEAT_SCHEDULE = {
     "schedule": crontab(minute = 0, hour = 8),
     "args": (21,),
   },
+  "find_fragment_matches": {
+    "task": "itswill_org.tasks.find_fragment_matches",
+    "schedule": crontab(minute = 0, hour = 8),
+  },
   "recalculate_previous_month": {
     "task": "itswill_org.tasks.calculate_monthly_stats",
     "schedule": crontab(minute = 0, hour = 9),

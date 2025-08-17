@@ -417,12 +417,19 @@ def get_all_first_and_last_messages():
     userrecap.save()
 
 @shared_task
-def find_fragment_matches(perf : bool = True):
+def find_fragment_matches(period = 30, perf : bool = True):
   if perf: start = time.perf_counter()
   
   print("Calculating: fragments")
+
+  today = datetime.datetime.now(TIMEZONE)
+
+  chat_messages = ChatMessage.objects
+  if period > 0:
+    start_dt = today - datetime.timedelta(days = period)
+    chat_messages = chat_messages.filter(created_at__gte = start_dt)
   
-  queryset = ChatMessage.objects.values_list("id", "message", "commenter_id", "created_at").all()
+  queryset = chat_messages.values_list("id", "message", "commenter_id", "created_at").all()
   paginator = Paginator(queryset, 500_000)
   
   fragments = Fragment.objects.all()
