@@ -33,7 +33,8 @@ BOT_ID = "1062442212"
 OWNER_ID = "82920215"
 BROADCASTER_ID = "43246220"
 
-class LoggerBot(twitchio_commands.AutoBot):
+
+class LoggerBot(twitchio_commands.Bot):
     fragments: list[Fragment] = []
 
     def __init__(self):
@@ -43,11 +44,6 @@ class LoggerBot(twitchio_commands.AutoBot):
             bot_id=BOT_ID,
             owner_id=OWNER_ID,
             prefix="?",
-            subscriptions=[
-                twitchio.eventsub.ChatMessageSubscription(
-                    broadcaster_user_id=BROADCASTER_ID, user_id=BOT_ID
-                )
-            ],
         )
 
     async def add_token(
@@ -85,10 +81,22 @@ class LoggerBot(twitchio_commands.AutoBot):
         )
         bot_token = await SocialToken.objects.aget(account=bot_account)
 
-        await self.add_token(bot_token.token, bot_token.token_secret)
+        _ = await self.add_token(bot_token.token, bot_token.token_secret)
 
     async def event_ready(self) -> None:
         LOGGER.debug(f"Successfully logged in as: {self.bot_id}")
+
+        subscriptions = [
+            twitchio.eventsub.ChatMessageSubscription(
+                broadcaster_user_id=BROADCASTER_ID, user_id=self.bot_id
+            ),
+        ]
+
+        resp: twitchio.eventsub.SubscriptionResponse|None = await self.subscribe_websocket(payload=subscriptions[0])
+
+        if resp is None:
+            LOGGER.error("Failed to subscribe to chat messages.")
+            raise twitchio.TwitchioException("Failed to subscribe")
 
     async def event_message(self, payload: twitchio.ChatMessage) -> None:
         try:

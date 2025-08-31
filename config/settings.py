@@ -10,11 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import datetime
 from pathlib import Path
 from urllib.parse import quote
-from celery.schedules import crontab
+
 import luscioustwitch
-import datetime
+from celery.schedules import crontab
 from django.urls import reverse_lazy
 
 from .secrets import *
@@ -34,60 +35,57 @@ SECRET_KEY = SECRET_SECRET_KEY
 DEBUG = True
 
 ALLOWED_HOSTS = [
-  ".itswill.org",
-  ".itswill.soy",
-  "127.0.0.1",
-  ".localhost",
+    ".itswill.org",
+    ".itswill.soy",
+    "127.0.0.1",
+    ".localhost",
 ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.humanize',
-    'django.contrib.staticfiles',
-    
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.twitch',
-    
-    'itswill_org',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.humanize",
+    "django.contrib.staticfiles",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.twitch",
+    "itswill_org",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
-    'allauth.account.middleware.AccountMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-          BASE_DIR / 'templates',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            BASE_DIR / "templates",
         ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.template.context_processors.media',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.template.context_processors.media",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
@@ -95,10 +93,9 @@ TEMPLATES = [
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
-
+    "django.contrib.auth.backends.ModelBackend",
     # `allauth` specific authentication methods, such as login by email
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -110,7 +107,9 @@ EMAIL_HOST_USER = FASTMAIL_USER
 EMAIL_HOST_PASSWORD = FASTMAIL_PASSWORD
 DEFAULT_FROM_EMAIL = "noreply@luscious.dev"
 SERVER_EMAIL = "django@luscious.dev"
-ADMINS = [ ("luscious", "admin@luscious.dev"), ]
+ADMINS = [
+    ("luscious", "admin@luscious.dev"),
+]
 
 SITE_ID = 1
 
@@ -121,30 +120,30 @@ LOGIN_URL = reverse_lazy("account_login")
 SIGNUP_URL = reverse_lazy("account_signup")
 LOGOUT_URL = reverse_lazy("account_logout")
 LOGIN_REDIRECT_URL = "/"
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
 
 SOCIALACCOUNT_PROVIDERS = {
-  "twitch": {
-    "SCOPE": [
-      "user:bot",
-      "user:read:chat",
-      "user:write:chat",
-      "channel:bot",
-      "channel:read:polls",
-      "channel:manage:polls",
-      "channel:read:redemptions",
-      "channel:manage:redemptions",
-      "channel:read:predictions",
-      "channel:manage:predictions",
-    ],
-    "APP": {
-      "client_id": TWITCH_API_CLIENT_ID,
-      "secret": TWITCH_API_CLIENT_SECRET,
-    },
-    "AUTH_PARAMS": {
-      "access_type": "offline",
+    "twitch": {
+        "SCOPE": [
+            "user:bot",
+            "user:read:chat",
+            "user:write:chat",
+            "channel:bot",
+            "channel:read:polls",
+            "channel:manage:polls",
+            "channel:read:redemptions",
+            "channel:manage:redemptions",
+            "channel:read:predictions",
+            "channel:manage:predictions",
+        ],
+        "APP": {
+            "client_id": TWITCH_API_CLIENT_ID,
+            "secret": TWITCH_API_CLIENT_SECRET,
+        },
+        "AUTH_PARAMS": {
+            "access_type": "offline",
+        },
     }
-  }
 }
 
 SOCIALACCOUNT_STORE_TOKENS = True
@@ -153,33 +152,30 @@ SOCIALACCOUNT_STORE_TOKENS = True
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': MARIADB_DATABASE,
-        'USER': MARIADB_USER,
-        'PASSWORD': MARIADB_PASSWORD,
-        'HOST': MARIADB_HOST,
-        'PORT': MARIADB_PORT,
-        'OPTIONS': {
-          'charset': 'utf8mb4',
-          'use_unicode': True
-        },
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": MARIADB_DATABASE,
+        "USER": MARIADB_USER,
+        "PASSWORD": MARIADB_PASSWORD,
+        "HOST": MARIADB_HOST,
+        "PORT": MARIADB_PORT,
+        "OPTIONS": {"charset": "utf8mb4", "use_unicode": True},
     }
 }
 
 if not DEBUG:
-  CACHES = {
-    "default": {
-      "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-      "LOCATION": "itswill_org_cache_table",
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+            "LOCATION": "itswill_org_cache_table",
+        }
     }
-  }
 else:
-  CACHES = {
-    'default': {
-      'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        }
     }
-  }
 
 
 # Password validation
@@ -187,16 +183,16 @@ else:
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -204,9 +200,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -215,17 +211,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]  #new 
-STATIC_ROOT = BASE_DIR / "staticfiles"  #new
+STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]  # new
+STATIC_ROOT = BASE_DIR / "staticfiles"  # new
 
-MEDIA_URL = 'media/'
+MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "mediafiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Logging
 LOGGING = {
@@ -238,6 +234,12 @@ LOGGING = {
             "filename": "./logs/debug.log",
             "encoding": "utf-8",
         },
+        "bot_file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "./logs/bot.log",
+            "encoding": "utf-8",
+        },
     },
     "loggers": {
         "django": {
@@ -245,57 +247,69 @@ LOGGING = {
             "level": "WARNING",
             "propagate": True,
         },
+        "bot": {
+            "handlers": ["bot_file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
     },
 }
 
-CSRF_TRUSTED_ORIGINS = [ 
-  "http://itswill.org",
-  "https://itswill.org",
-  "http://www.itswill.org",
-  "https://www.itswill.org",
-  "http://itswill.soy",
-  "https://itswill.soy",
-  "http://www.itswill.soy",
-  "https://www.itswill.soy",
+CSRF_TRUSTED_ORIGINS = [
+    "http://itswill.org",
+    "https://itswill.org",
+    "http://www.itswill.org",
+    "https://www.itswill.org",
+    "http://itswill.soy",
+    "https://itswill.soy",
+    "http://www.itswill.soy",
+    "https://www.itswill.soy",
 ]
 
 # Celery
-CELERY_BROKER_URL     = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/{CELERY_DATABASE}"
-CELERY_RESULT_BACKEND = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/{CELERY_DATABASE}"
+CELERY_BROKER_URL = (
+    f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/{CELERY_DATABASE}"
+)
+CELERY_RESULT_BACKEND = (
+    f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/{CELERY_DATABASE}"
+)
 
 CELERY_BEAT_SCHEDULE = {
-  "get_recent_chat_messages": {
-    "task": "itswill_org.tasks.get_recent_chat_messages",
-    "schedule": crontab(minute = 0, hour = 7),
-    "args": (5, False,),
-  },
-  "get_recent_letterboxd_reviews": {
-    "task": "itswill_org.tasks.get_letterboxd_reviews",
-    "schedule": crontab(minute = "*/15"),
-  },
-  "get_recent_clips": {
-    "task": "itswill_org.tasks.get_recent_clips",
-    "schedule": crontab(minute = 0, hour = 8),
-    "args": (21,),
-  },
-  "find_fragment_matches": {
-    "task": "itswill_org.tasks.find_fragment_matches",
-    "schedule": crontab(minute = 0, hour = 8),
-  },
-  "recalculate_previous_month": {
-    "task": "itswill_org.tasks.calculate_monthly_stats",
-    "schedule": crontab(minute = 0, hour = 9),
-  },
-  "recalculate_year": {
-    "task": "itswill_org.tasks.calculate_yearly_stats",
-    "schedule": crontab(minute = 0, hour = 10),
-  },
-  "recalculate_all_time": {
-    "task": "itswill_org.tasks.calculate_alltime_stats",
-    "schedule": crontab(minute = 30, hour = 11),
-  },
-  "recalculate_leaderboards": {
-    "task": "itswill_org.tasks.calculate_all_leaderboards",
-    "schedule": crontab(minute = 0, hour = 13),
-  },
+    "get_recent_chat_messages": {
+        "task": "itswill_org.tasks.get_recent_chat_messages",
+        "schedule": crontab(minute=0, hour=7),
+        "args": (
+            5,
+            False,
+        ),
+    },
+    "get_recent_letterboxd_reviews": {
+        "task": "itswill_org.tasks.get_letterboxd_reviews",
+        "schedule": crontab(minute="*/15"),
+    },
+    "get_recent_clips": {
+        "task": "itswill_org.tasks.get_recent_clips",
+        "schedule": crontab(minute=0, hour=8),
+        "args": (21,),
+    },
+    "find_fragment_matches": {
+        "task": "itswill_org.tasks.find_fragment_matches",
+        "schedule": crontab(minute=0, hour=8),
+    },
+    "recalculate_previous_month": {
+        "task": "itswill_org.tasks.calculate_monthly_stats",
+        "schedule": crontab(minute=0, hour=9),
+    },
+    "recalculate_year": {
+        "task": "itswill_org.tasks.calculate_yearly_stats",
+        "schedule": crontab(minute=0, hour=10),
+    },
+    "recalculate_all_time": {
+        "task": "itswill_org.tasks.calculate_alltime_stats",
+        "schedule": crontab(minute=30, hour=11),
+    },
+    "recalculate_leaderboards": {
+        "task": "itswill_org.tasks.calculate_all_leaderboards",
+        "schedule": crontab(minute=0, hour=13),
+    },
 }
