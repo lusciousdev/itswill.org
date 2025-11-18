@@ -1015,7 +1015,7 @@ def calculate_monthly_stats(year=None, month=None, perf: bool = False):
 
 
 @shared_task
-def calculate_yearly_stats(year=None, recalculate=False, perf: bool = False):
+def calculate_yearly_stats(year=None, recalculate=True, perf: bool = False):
     if perf:
         start = time.perf_counter()
 
@@ -1031,42 +1031,92 @@ def calculate_yearly_stats(year=None, recalculate=False, perf: bool = False):
     if perf:
         overallstart = time.perf_counter()
 
-    if recalculate:
-        calculate_recap_stats(year, 0)
-    else:
-        sum_recap_stats(year)
+    calculate_recap_stats(year, 0)
 
     if perf:
         print(f"\toverall: {time.perf_counter() - overallstart:.3f}s")
-    if perf:
-        usersstart = time.perf_counter()
+        overallend = time.perf_counter()
 
-    user_set = set(
-        ChatMessage.objects.filter(created_at__range=(start_date, end_date))
-        .values_list("commenter", flat=True)
-        .distinct()
-        .all()
-    ) | set(
-        Clip.objects.filter(created_at__range=(start_date, end_date))
-        .values_list("creator", flat=True)
-        .distinct()
-        .all()
+    user_set = list(
+        set(
+            ChatMessage.objects.filter(created_at__range=(start_date, end_date))
+            .values_list("commenter", flat=True)
+            .distinct()
+            .all()
+        )
+        | set(
+            Clip.objects.filter(created_at__range=(start_date, end_date))
+            .values_list("creator", flat=True)
+            .distinct()
+            .all()
+        )
     )
-    if recalculate:
-        for user in user_set:
-            calculate_recap_stats(year, 0, user_id=user)
-    else:
-        for user in user_set:
-            sum_recap_stats(year, user_id=user)
 
+    if perf:
+        print(f"\ttotal users: {len(user_set)}")
+
+    batch_size = 2500
+    for i in range(0, len(user_set), batch_size):
+        if perf:
+            batch_start = time.perf_counter()
+
+        recap_list: list[RecapData] = []
+        fgc_list: list[FragmentGroupCounter] = []
+        fc_list: list[FragmentCounter] = []
+
+        for user in user_set[i : i + batch_size]:
+            recap, fgcs, fcs = create_recaps(year, 0, user_id=user)
+
+            recap_list.append(recap)
+            fgc_list.extend(fgcs)
+            fc_list.extend(fcs)
+
+        RecapData.objects.bulk_create(
+            recap_list,
+            update_conflicts=True,
+            update_fields=[
+                "count_messages",
+                "count_characters",
+                "count_clips",
+                "count_clip_watch",
+                "count_clip_views",
+                "count_chatters",
+                "count_videos",
+                "first_message",
+                "last_message",
+            ],
+            batch_size=5_000,
+        )
+
+        FragmentGroupCounter.objects.bulk_create(
+            fgc_list,
+            update_conflicts=True,
+            update_fields=[
+                "count",
+            ],
+            batch_size=5_000,
+        )
+
+        FragmentCounter.objects.bulk_create(
+            fc_list,
+            update_conflicts=True,
+            update_fields=[
+                "count",
+            ],
+            batch_size=5_000,
+        )
+
+        if perf:
+            print(
+                f"\t\tuser batch {i}-{i+batch_size}: {time.perf_counter()-batch_start:.3f}s"
+            )
     if perf:
         print(f"\tusers: {time.perf_counter() - usersstart:.3f}s")
-    if perf:
         print(f"\ttotal: {time.perf_counter() - start:.3f}s")
 
 
 @shared_task
-def calculate_alltime_stats(recalculate: bool = False, perf: bool = False):
+def calculate_alltime_stats(recalculate: bool = True, perf: bool = False):
     if perf:
         start = time.perf_counter()
 
@@ -1075,23 +1125,70 @@ def calculate_alltime_stats(recalculate: bool = False, perf: bool = False):
     if perf:
         overallstart = time.perf_counter()
 
-    if recalculate:
-        calculate_recap_stats(0, 0)
-    else:
-        sum_recap_stats(0)
+    calculate_recap_stats(0, 0)
 
     if perf:
         print(f"\toverall: {time.perf_counter() - overallstart:.3f}s")
     if perf:
         usersstart = time.perf_counter()
 
-    user_set = TwitchUser.objects.all()
-    if recalculate:
-        for user in user_set:
-            calculate_recap_stats(0, 0, user_id=user.user_id)
-    else:
-        for user in user_set:
-            sum_recap_stats(0, user_id=user.user_id)
+    user_set = list(TwitchUser.objects.all())
+
+    batch_size = 2500
+    for i in range(0, len(user_set), batch_size):
+        if perf:
+            batch_start = time.perf_counter()
+
+        recap_list: list[RecapData] = []
+        fgc_list: list[FragmentGroupCounter] = []
+        fc_list: list[FragmentCounter] = []
+
+        for user in user_set[i : i + batch_size]:
+            recap, fgcs, fcs = create_recaps(0, 0, user_id=user)
+
+            recap_list.append(recap)
+            fgc_list.extend(fgcs)
+            fc_list.extend(fcs)
+
+        RecapData.objects.bulk_create(
+            recap_list,
+            update_conflicts=True,
+            update_fields=[
+                "count_messages",
+                "count_characters",
+                "count_clips",
+                "count_clip_watch",
+                "count_clip_views",
+                "count_chatters",
+                "count_videos",
+                "first_message",
+                "last_message",
+            ],
+            batch_size=5_000,
+        )
+
+        FragmentGroupCounter.objects.bulk_create(
+            fgc_list,
+            update_conflicts=True,
+            update_fields=[
+                "count",
+            ],
+            batch_size=5_000,
+        )
+
+        FragmentCounter.objects.bulk_create(
+            fc_list,
+            update_conflicts=True,
+            update_fields=[
+                "count",
+            ],
+            batch_size=5_000,
+        )
+
+        if perf:
+            print(
+                f"\t\tuser batch {i}-{i+batch_size}: {time.perf_counter()-batch_start:.3f}s"
+            )
 
     if perf:
         print(f"\tusers: {time.perf_counter() - usersstart:.3f}s")
