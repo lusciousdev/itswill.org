@@ -1226,12 +1226,12 @@ def calculate_everything(find_fragments: bool = False):
     for y in range(2023, year + 1):
         month_range = range(1, 13) if y < year else range(1, month + 1)
         for m in month_range:
-            calculate_monthly_stats(y, m, perf=True)
-        calculate_yearly_stats(y, perf=True)
+            calculate_monthly_stats.delay(y, m, perf=True)
+        calculate_yearly_stats.delay(y, perf=True)
 
-    calculate_alltime_stats(perf=True)
-    calculate_all_leaderboards(perf=True)
-    create_wrapped_data(perf=True)
+    calculate_alltime_stats.delay(perf=True)
+    calculate_all_leaderboards.delay(perf=True)
+    create_wrapped_data.delay(perf=True)
 
 
 def seconds_to_duration(input: int, abbr: bool = False):
