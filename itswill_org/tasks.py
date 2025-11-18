@@ -1144,7 +1144,7 @@ def calculate_alltime_stats(recalculate: bool = True, perf: bool = False):
         fc_list: list[FragmentCounter] = []
 
         for user in user_set[i : i + batch_size]:
-            recap, fgcs, fcs = create_recaps(0, 0, user_id=user)
+            recap, fgcs, fcs = create_recaps(0, 0, user_id=user.user_id)
 
             recap_list.append(recap)
             fgc_list.extend(fgcs)
