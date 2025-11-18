@@ -25,6 +25,7 @@ from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 from django.conf import settings
 
 from itswill_org.models import *
+from itswill_org.tasks import *
 
 LOGGER: logging.Logger = logging.getLogger("bot")
 
@@ -92,7 +93,9 @@ class LoggerBot(twitchio_commands.Bot):
             ),
         ]
 
-        resp: twitchio.eventsub.SubscriptionResponse|None = await self.subscribe_websocket(payload=subscriptions[0])
+        resp: twitchio.eventsub.SubscriptionResponse | None = (
+            await self.subscribe_websocket(payload=subscriptions[0])
+        )
 
         if resp is None:
             LOGGER.error("Failed to subscribe to chat messages.")
@@ -148,42 +151,17 @@ class LoggerBot(twitchio_commands.Bot):
             year = datetime.datetime.now(TIMEZONE).year
             month = datetime.datetime.now(TIMEZONE).month
 
-            alltimerecap, _ = await OverallRecapData.objects.aget_or_create(
-                year=0, month=0
-            )
-            yearrecap, _ = await OverallRecapData.objects.aget_or_create(
-                year=year, month=0
-            )
-            monthrecap, _ = await OverallRecapData.objects.aget_or_create(
-                year=year, month=month
+            recaps = await sync_to_async(get_message_recaps)(
+                datetime.datetime.now(TIMEZONE), twitch_user.user_id
             )
 
-            user_alltime, _ = await UserRecapData.objects.aget_or_create(
-                overall_recap=alltimerecap, twitch_user=twitch_user
-            )
-            user_year, _ = await UserRecapData.objects.aget_or_create(
-                overall_recap=yearrecap, twitch_user=twitch_user
-            )
-            user_month, _ = await UserRecapData.objects.aget_or_create(
-                overall_recap=monthrecap, twitch_user=twitch_user
-            )
-
-            if new_chatter:
-                for r in [alltimerecap, yearrecap, monthrecap]:
-                    r.count_chatters += 1
-
-            r: typing.Union[OverallRecapData, UserRecapData]
-            for r in [
-                alltimerecap,
-                yearrecap,
-                monthrecap,
-                user_alltime,
-                user_year,
-                user_month,
-            ]:
-                r.count_messages += 1
-                r.count_characters += len(message.message)
-                r.last_message = message.message
+            recap: RecapData
+            for recap in recaps:
+                recap.count_messages += 1
+                recap.count_characters += len(message.message)
+                recap.last_message = message.message
+                if new_chatter:
+                    recap.count_chatters += 1
 
             fragments = await sync_to_async(list)(
                 await sync_to_async(
@@ -192,6 +170,7 @@ class LoggerBot(twitchio_commands.Bot):
             )
             fragment_regex = {f.pretty_name: f.match_regex for f in fragments}
             new_matches: list[FragmentMatch] = []
+
             for f in fragments:
                 frag_count = len(fragment_regex[f.pretty_name].findall(message.message))
                 if frag_count > 0:
@@ -205,48 +184,59 @@ class LoggerBot(twitchio_commands.Bot):
 
                     new_matches.append(fm)
 
-                    r: typing.Union[OverallRecapData, UserRecapData]
-                    for r in [
-                        alltimerecap,
-                        yearrecap,
-                        monthrecap,
-                        user_alltime,
-                        user_year,
-                        user_month,
-                    ]:
-                        if f.group.group_id not in r.counters:
-                            r.counters[f.group.group_id] = {"total": 0, "members": {}}
+                    recap: RecapData
+                    for recap in recaps:
+                        fgc_count = await recap.fragmentgroupcounter_set.filter(
+                            fragment_group=f.group
+                        ).aupdate(count=F("count") + fm.count)
+                        if fgc_count == 0:
+                            await FragmentGroupCounter.objects.acreate(
+                                recap=recap,
+                                fragment_group=f.group,
+                                year=recap.year,
+                                month=recap.month,
+                                twitch_user=twitch_user,
+                                count=fm.count,
+                            )
 
-                        if f.pretty_name not in r.counters[f.group.group_id]["members"]:
-                            r.counters[f.group.group_id]["members"][f.pretty_name] = 0
-
-                        r.counters[f.group.group_id]["total"] += fm.count
-                        r.counters[f.group.group_id]["members"][
-                            f.pretty_name
-                        ] += fm.count
+                        fc_count = await recap.fragmentcounter_set.filter(fragment=f).aupdate(
+                            count=F("count") + fm.count
+                        )
+                        if fc_count == 0:
+                            await FragmentCounter.objects.acreate(
+                                recap=recap,
+                                fragment=f,
+                                year=recap.year,
+                                month=recap.month,
+                                twitch_user=twitch_user,
+                                count=fm.count,
+                            )
 
             await FragmentMatch.objects.abulk_create(
                 new_matches,
                 update_conflicts=True,
                 update_fields=["count", "timestamp", "commenter_id"],
             )
-            await OverallRecapData.objects.abulk_update(
-                [alltimerecap, yearrecap, monthrecap],
+
+            fragment_recaps: list = []
+            for fm in new_matches:
+                rs = await sync_to_async(get_message_recaps)(fm.timestamp, fm.commenter_id)
+                for recap in rs:
+                    fr = FragmentMatch.recaps.through(
+                        fragmentmatch_id=fm.id, recapdata_id=recap.id
+                    )
+
+            await FragmentMatch.recaps.through.objects.abulk_create(
+                fragment_recaps, batch_size=5_000
+            )
+
+            await RecapData.objects.abulk_update(
+                recaps,
                 fields=[
                     "count_messages",
                     "count_characters",
                     "count_chatters",
                     "last_message",
-                    "counters",
-                ],
-            )
-            await UserRecapData.objects.abulk_update(
-                [user_alltime, user_year, user_month],
-                fields=[
-                    "count_messages",
-                    "count_characters",
-                    "last_message",
-                    "counters",
                 ],
             )
 

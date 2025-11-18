@@ -13,9 +13,9 @@
 <script src="{% static 'itswill_org/recap.js' %}"
   defer
   {% if overall_recap %}
-  data-getrecapdataurl="{% url 'itswill_org:api_get_recap_data' %}?year={{ recap_data.year }}&month={{ recap_data.month }}"
+  data-getrecapdataurl="{% url 'itswill_org:api_get_recap_data' %}?year={{ recap.year }}&month={{ recap.month }}"
   {% else %}
-  data-getrecapdataurl="{% url 'itswill_org:api_get_recap_data' %}?year={{ recap_data.overall_recap.year }}&month={{ recap_data.overall_recap.month }}&user={{ twitchuser.user_id }}"
+  data-getrecapdataurl="{% url 'itswill_org:api_get_recap_data' %}?year={{ recap.year }}&month={{ recap.month }}&user={{ recap.twitch_user.user_id }}"
   {% endif %}
 >
 </script>
@@ -28,13 +28,8 @@
   <div class="section-wrap" id="lookup-form-wrap">
     <div class="section" id="lookup-form">
       <form class="recap-form" action="{% url 'itswill_org:recap_redirect' %}" method="post">
-        {% if overall_recap %}
-        <input type="hidden" name="year" value="{{ recap_data.year }}">
-        <input type="hidden" name="month" value="{{ recap_data.month }}">
-        {% else %}
-        <input type="hidden" name="year" value="{{ recap_data.overall_recap.year }}">
-        <input type="hidden" name="month" value="{{ recap_data.overall_recap.month }}">
-        {% endif %}
+        <input type="hidden" name="year" value="{{ recap.year }}">
+        <input type="hidden" name="month" value="{{ recap.month }}">
         <label class="entry-label" id="username-entry-label" for="id_username">Username:</label>
         <input type="text" id="id_username" name="username">
         <input type="submit" class="form-button" id="lookup-submit" value="Find user">
@@ -48,88 +43,64 @@
           {% if overall_recap %}
             Overall statistics
           {% else %}
-            {{ twitchuser.display_name }}'s statistics
+            {{ recap.twitch_user.display_name }}'s statistics
           {% endif %}
         </div>
         <div class="section-subtitle" id="range-subtitle">
-          {% if overall_recap %}
-            {% if recap_data.year == 0%}
-            All time
-            {% else %}
-            {% if recap_data.month == 0 %}
-            All of {{ recap_data.year }}
-            {% else %}
-            {{ month_abbr|index:recap_data.month }} {{ recap_data.year }}
-            {% endif %}
-            {% endif %}
+          {% if recap.year == 0%}
+          All time
           {% else %}
-            {% if recap_data.overall_recap.year == 0 %}
-            All time
-            {% else %}
-            {% if recap_data.overall_recap.month == 0 %}
-            All of {{ recap_data.overall_recap.year }}
-            {% else %}
-            {{ month_abbr|index:recap_data.overall_recap.month }} {{ recap_data.overall_recap.year }}
-            {% endif %}
-            {% endif %}
+          {% if recap.month == 0 %}
+          All of {{ recap.year }}
+          {% else %}
+          {{ month_abbr|index:recap.month }} {{ recap.year }}
+          {% endif %}
           {% endif %}
         </div>
-        {% if overall_recap %}
-        {% if recap_data.year == 0 %}
+        {% if recap.year == 0 %}
         <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard' %}">Click to see the leaderboards</a>)</div>
         {% else %}
-        {% if recap_data.month == 0 %}
-        <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_year' recap_data.year %}">Click to see the leaderboards</a>)</div>
+        {% if recap.month == 0 %}
+        <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_year' recap.year %}">Click to see the leaderboards</a>)</div>
         {% else %}
-        <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_month' recap_data.year recap_data.month %}">Click to see the leaderboards</a>)</div>
-        {% endif %}
-        {% endif %}
-        {% else %}
-        {% if recap_data.overall_recap.year == 0%}
-        <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard' %}">Click to see the leaderboards</a>)</div>
-        {% else %}
-        {% if recap_data.overall_recap.month == 0 %}
-        <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_year' recap_data.overall_recap.year %}">Click to see the leaderboards</a>)</div>
-        {% else %}
-        <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_month' recap_data.overall_recap.year recap_data.overall_recap.month %}">Click to see the leaderboards</a>)</div>
-        {% endif %}
+        <div class="section-note" id="leaderboard-link">(<a href="{% url 'itswill_org:leaderboard_month' recap.year recap.month %}">Click to see the leaderboards</a>)</div>
         {% endif %}
         {% endif %}
       </div>
       <table id="stat-table">
         <tr class="stat-item" id="msg-count">
           <td class="stat-label" id="msg-count-label">Messages sent:</td>
-          <td class="stat-value" id="msg-count-value">{{ recap_data.count_messages|intcomma }}</td>
+          <td class="stat-value" id="msg-count-value">{{ recap.count_messages|intcomma }}</td>
           <td></td>
         </tr>
         <tr class="stat-item" id="char-count">
           <td class="stat-label" id="char-count-label">Characters sent:</td>
-          <td class="stat-value" id="char-count-value">{{ recap_data.count_characters|intcomma }}</td>
+          <td class="stat-value" id="char-count-value">{{ recap.count_characters|intcomma }}</td>
           <td></td>
         </tr>
         <tr class="stat-item" id="char-count">
           <td class="stat-label" id="char-count-label">Avg. characters/message:</td>
-          <td class="stat-value" id="char-count-value">{{ recap_data.count_characters|intdivide:recap_data.count_messages|intcomma }}</td>
+          <td class="stat-value" id="char-count-value">{% if recap.count_messages > 0 %}{{ recap.count_characters|intdivide:recap.count_messages|intcomma }}{% else %}0{% endif %}</td>
           <td></td>
         </tr>
         <tr class="stat-item" id="char-time">
           <td class="stat-label" id="char-time-label">Typing time (60 WPM):</td>
-          <td class="stat-value" id="char-time-value">{{ recap_data.count_characters|intdivide:5|time_to_pretty_string:True }}</td>
+          <td class="stat-value" id="char-time-value">{{ recap.count_characters|intdivide:5|time_to_pretty_string:True }}</td>
           <td></td>
         </tr>
         <tr class="stat-item" id="clip-count">
           <td class="stat-label" id="clip-count-label">Clips created:</td>
-          <td class="stat-value" id="clip-count-value">{{ recap_data.count_clips|intcomma }}</td>
+          <td class="stat-value" id="clip-count-value">{{ recap.count_clips|intcomma }}</td>
           <td></td>
         </tr>
         <tr class="stat-item" id="clip-views">
           <td class="stat-label" id="clip-views-label">Views on those clips:</td>
-          <td class="stat-value" id="clip-views-value">{{ recap_data.count_clip_views|intcomma }}</td>
+          <td class="stat-value" id="clip-views-value">{{ recap.count_clip_views|intcomma }}</td>
           <td></td>
         </tr>
         <tr class="stat-item" id="clip-watch">
           <td class="stat-label" id="clip-watch-label">Clip watch time:</td>
-          <td class="stat-value" id="clip-watch-value">{{ recap_data.count_clip_watch|time_to_pretty_string:True }}</td>
+          <td class="stat-value" id="clip-watch-value">{{ recap.count_clip_watch|time_to_pretty_string:True }}</td>
           <td></td>
         </tr>
         <tr class="stat-item" id="first-msg-row">
@@ -140,7 +111,7 @@
                   <td class="stat-label" id="first-msg-label">First message:</td>
                 </tr>
                 <tr>
-                  <td colspan="2" class="stat-value" id="first-msg-value">"{{ recap_data.first_message }}"</td>
+                  <td colspan="2" class="stat-value" id="first-msg-value">"{{ recap.first_message }}"</td>
                 </tr>
               </table>
             </div>
@@ -156,7 +127,7 @@
                   <td class="stat-label" id="last-msg-label">Last message:</td>
                 </tr>
                 <tr>
-                  <td colspan="2" class="stat-value" id="last-msg-value">"{{ recap_data.last_message }}"</td>
+                  <td colspan="2" class="stat-value" id="last-msg-value">"{{ recap.last_message }}"</td>
                 </tr>
               </table>
             </div>
@@ -181,8 +152,8 @@
               {% endif %}
             </td>
             
-            {% if fg.group_id in recap_data.counters %}
-              {% with counterobj=recap_data.counters|keyvalue:fg.group_id %}
+            {% if fg.group_id in fragment_data %}
+              {% with counterobj=fragment_data|keyvalue:fg.group_id %}
               <td class="stat-value" id="{{ fg.group_id }}-value">{{ counterobj.total|intcomma }}</td>
               {% endwith %}
             {% else %}
@@ -211,8 +182,8 @@
                       {% endif %}
                     </td>
 
-                    {% if fg.group_id in recap_data.counters %}
-                      {% with counterobj=recap_data.counters|keyvalue:fg.group_id %}
+                    {% if fg.group_id in fragment_data %}
+                      {% with counterobj=fragment_data|keyvalue:fg.group_id %}
                       {% if frag.pretty_name in counterobj.members %}
                         {% with fragval=counterobj.members|keyvalue:frag.pretty_name %}
                         <td class="stat-value" id="{{ frag.pretty_name }}-value">{{ fragval|intcomma }}</td>
@@ -268,20 +239,20 @@
       {% if not overall_recap %}
       <div class="link-section">
         <div class="link-section-title">
-          {{ twitchuser.display_name}}'s Recaps
+          {{ recap.twitch_user.display_name}}'s Recaps
         </div>
         {% for year, year_recap in all_recaps.items %}
         <div class="main-link">
           {% if year_recap.recap.year == 0 %}
-          <a href="{% url 'itswill_org:recap_user' twitchuser.login %}">All time</a>
+          <a href="{% url 'itswill_org:recap_user' recap.twitch_user.login %}">All time</a>
           {% else %}
-          <a href="{% url 'itswill_org:recap_year_user' year_recap.recap.year twitchuser.login %}">{{ year_recap.recap.year }}</a>
+          <a href="{% url 'itswill_org:recap_year_user' year_recap.recap.year recap.twitch_user.login %}">{{ year_recap.recap.year }}</a>
           {% endif %}
         </div>
         <div class="sublinks-section">
           {% for month, month_recap in year_recap.month_recaps.items %}
           <span class="sublink">
-            <a href="{% url 'itswill_org:recap_month_user' month_recap.recap.year month_recap.recap.month twitchuser.login %}">{{ month_recap.month_name }}</a>
+            <a href="{% url 'itswill_org:recap_month_user' month_recap.recap.year month_recap.recap.month recap.twitch_user.login %}">{{ month_recap.month_name }}</a>
           </span>
           {% endfor %}
         </div>

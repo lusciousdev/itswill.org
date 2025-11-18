@@ -26,10 +26,10 @@
       {% endif %}
       {% for key, value in non_fragment_leaderboards.items %}
         {% if key == "messages" %}
-          <div class="single-line" id="{{ fg.group_id }}-wrap">
+        <div class="single-line" id="{{ key }}-wrap">
         {% endif %}
-        {% if key in recap_data.leaderboards %}
-        {% with leaderboard=recap_data.leaderboards|keyvalue:key %}
+        {% if key in leaderboards %}
+        {% with leaderboard=leaderboards|keyvalue:key %}
           {% include "itswill_org/leaderboard.html" with leaderboard_id=key unit=value leaderboard=leaderboard %}
         {% endwith %}
         {% else %}
@@ -40,8 +40,8 @@
         {% endif %}
       {% endfor %}
       {% for fg in fragment_groups %}
-        {% if fg.group_id in recap_data.leaderboards %}
-        {% with leaderboard=recap_data.leaderboards|keyvalue:fg.group_id %}
+        {% if fg.group_id in leaderboards %}
+        {% with leaderboard=leaderboards|keyvalue:fg.group_id %}
           {% include "itswill_org/leaderboard.html" with leaderboard_id=fg.group_id fg=fg unit=fg.unit leaderboard=leaderboard %}
         {% endwith %}
         {% else %}
