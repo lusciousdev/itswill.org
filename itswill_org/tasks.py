@@ -579,7 +579,7 @@ def find_fragment_matches(period=30, perf: bool = True):
         print(f"fragments took {time.perf_counter() - start:.3f} seconds")
 
 
-def create_recaps(
+def create_recap(
     year: int = 0, month: int = 0, user_id: int = None, perf: bool = False
 ):
     if perf:
@@ -687,11 +687,10 @@ def create_recaps(
 
 
 @shared_task
-def calculate_recap_stats(
+def calculate_recap(
     year: int = 0,
     month: int = 0,
     user_id: int = None,
-    return_result: bool = False,
     perf: bool = False,
 ):
     if perf:
@@ -722,6 +721,10 @@ def calculate_recap_stats(
         videos = videos.filter(created_at__range=(recap.start_date, recap.end_date))
         clips = clips.filter(created_at__range=(recap.start_date, recap.end_date))
 
+    if perf:
+        print(f"\tfetching data: {time.perf_counter() - start:.3f} seconds")
+        start = time.perf_counter()
+
     recap.count_messages = chat_messages.count()
     recap.count_characters = sum(
         [len(m) for m in chat_messages.values_list("message", flat=True).all()]
@@ -733,7 +736,8 @@ def calculate_recap_stats(
     recap.last_message = "" if lastmsg is None else lastmsg.message
 
     if perf:
-        print(f"\tmessages: {time.perf_counter() - start:.3f} seconds")
+        print(f"\tmsgs, chars, first & last: {time.perf_counter() - start:.3f} seconds")
+        start = time.perf_counter()
 
     recap.count_clips = clips.count()
 
@@ -746,12 +750,13 @@ def calculate_recap_stats(
     recap.count_clip_views = cv
     recap.count_clip_watch = int(cw)
 
+    if perf:
+        print(f"\tclips: {time.perf_counter() - start:.3f} seconds")
+        start = time.perf_counter()
+
     if user_id is None:
         recap.count_videos = videos.count()
         recap.count_chatters = chat_messages.values("commenter").distinct().count()
-
-    if perf:
-        print(f"\tclips: {time.perf_counter() - start:.3f} seconds")
 
     for fg in FragmentGroup.objects.order_by("ordering").all():
         total = 0
@@ -779,9 +784,6 @@ def calculate_recap_stats(
 
             total += f_count
 
-            if perf:
-                print(f"\t{f.pretty_name}: {time.perf_counter() - start:.3f} seconds")
-
         fg_counter, fgc_created = FragmentGroupCounter.objects.update_or_create(
             recap=recap,
             fragment_group=fg,
@@ -793,37 +795,53 @@ def calculate_recap_stats(
             },
         )
 
-    if return_result:
-        return recap
-    else:
-        recap.save()
     if perf:
-        print(f"\ttotal: {time.perf_counter() - start:.3f} seconds")
+        print(f"\tfrag counts: {time.perf_counter() - start:.3f} seconds")
+        start = time.perf_counter()
+
+    recap.save()
+
+    if perf:
+        print(f"\tsave: {time.perf_counter() - start:.3f} seconds")
 
 
-@shared_task
-def sum_recap_stats(year: int = None, user_id: int = None, perf: bool = False):
+def create_sum(
+    year: int = None, month: int = None, user_id: int = None, perf: bool = False
+):
     if perf:
         start = time.perf_counter()
+        print(f"summing recap stats for {user_id} in {year}")
 
     if year is None:
         year = datetime.datetime.now(TIMEZONE).year
 
     if year == 0:
-        monthrecaps = RecapData.objects.filter(
-            year__gte=1, month__gte=1, twitch_user=user_id
-        ).all()
+        monthrecaps = (
+            RecapData.objects.prefetch_related(
+                "fragmentgroupcounter_set", "fragmentcounter_set"
+            )
+            .filter(year__gte=1, month__gte=1, twitch_user_id=user_id)
+            .all()
+        )
     else:
-        monthrecaps = RecapData.objects.filter(
-            year=year, month__gte=1, twitch_user=user_id
-        ).all()
+        monthrecaps = (
+            RecapData.objects.prefetch_related(
+                "fragmentgroupcounter_set", "fragmentcounter_set"
+            )
+            .filter(year=year, month__gte=1, twitch_user_id=user_id)
+            .all()
+        )
 
     chat_messages = ChatMessage.objects
 
-    recap, _ = RecapData.objects.get_or_create(year=year, month=0, twitch_user=user_id)
+    recap = RecapData(year=year, month=0, twitch_user_id=user_id)
 
     if user_id is not None:
         chat_messages = chat_messages.filter(commenter_id=user_id)
+
+    if perf:
+        print(f"\tfetching data: {time.perf_counter() - start:.3f} seconds")
+        start = time.perf_counter()
 
     if year > 0:
         chat_messages = chat_messages.filter(
@@ -837,6 +855,10 @@ def sum_recap_stats(year: int = None, user_id: int = None, perf: bool = False):
     recap.first_message = "" if firstmsg is None else firstmsg.message
     lastmsg = chat_messages.order_by("created_at").last()
     recap.last_message = "" if lastmsg is None else lastmsg.message
+
+    if perf:
+        print(f"\tfirst & last messages: {time.perf_counter() - start:.3f} seconds")
+        start = time.perf_counter()
 
     recap.count_messages = 0
     recap.count_characters = 0
@@ -853,6 +875,144 @@ def sum_recap_stats(year: int = None, user_id: int = None, perf: bool = False):
         recap.count_clip_views += mr.count_clip_views
         recap.count_videos += mr.count_videos
 
+    if perf:
+        print(f"\tnon-frag counts: {time.perf_counter() - start:.3f} seconds")
+        start = time.perf_counter()
+
+    fgs = (
+        FragmentGroup.objects.order_by("ordering")
+        .prefetch_related("fragment_set")
+        .all()
+    )
+
+    new_fgcs: list[FragmentGroupCounter] = []
+    new_fcs: list[FragmentCounter] = []
+    fg: FragmentGroup
+    for fg in fgs:
+        fgc = FragmentGroupCounter(
+            recap=recap,
+            fragment_group=fg,
+            year=recap.year,
+            month=recap.month,
+            twitch_user=recap.twitch_user,
+            count=0,
+        )
+
+        for mr in monthrecaps:
+            try:
+                month_fgc = mr.fragmentgroupcounter_set.get(fragment_group=fg)
+            except FragmentGroupCounter.DoesNotExist:
+                continue
+
+            fgc.count += month_fgc.count
+
+        new_fgcs.append(fgc)
+
+        f: Fragment
+        for f in fg.fragment_set.all():
+            fc = FragmentCounter(
+                recap=recap,
+                fragment=f,
+                year=recap.year,
+                month=recap.month,
+                twitch_user=recap.twitch_user,
+                count=0,
+            )
+
+            for mr in monthrecaps:
+                try:
+                    month_fc = mr.fragmentcounter_set.get(fragment=f)
+                except FragmentCounter.DoesNotExist:
+                    continue
+
+                fc.count += month_fc.count
+
+            new_fcs.append(fc)
+
+    if perf:
+        print(f"\tfragment counts: {time.perf_counter() - start:.3f} seconds")
+        start = time.perf_counter()
+
+    return recap, new_fgcs, new_fcs
+
+
+@shared_task
+def sum_recap(
+    year: int = None, month: int = None, user_id: int = None, perf: bool = False
+):
+    if perf:
+        start = time.perf_counter()
+        print(f"summing recap stats for {user_id} in {year}")
+
+    if year is None:
+        year = datetime.datetime.now(TIMEZONE).year
+
+    if year == 0:
+        monthrecaps = (
+            RecapData.objects.prefetch_related(
+                "fragmentgroupcounter_set", "fragmentcounter_set"
+            )
+            .filter(year__gte=1, month__gte=1, twitch_user_id=user_id)
+            .all()
+        )
+    else:
+        monthrecaps = (
+            RecapData.objects.prefetch_related(
+                "fragmentgroupcounter_set", "fragmentcounter_set"
+            )
+            .filter(year=year, month__gte=1, twitch_user_id=user_id)
+            .all()
+        )
+
+    chat_messages = ChatMessage.objects
+
+    recap, _ = RecapData.objects.prefetch_related(
+        "fragmentgroupcounter_set", "fragmentcounter_set"
+    ).get_or_create(year=year, month=0, twitch_user_id=user_id)
+
+    if user_id is not None:
+        chat_messages = chat_messages.filter(commenter_id=user_id)
+
+    if perf:
+        print(f"\tfetching data: {time.perf_counter() - start:.3f} seconds")
+        start = time.perf_counter()
+
+    if year > 0:
+        chat_messages = chat_messages.filter(
+            created_at__range=(recap.start_date, recap.end_date)
+        )
+
+    if user_id is None:
+        recap.count_chatters = chat_messages.values("commenter").distinct().count()
+
+    firstmsg = chat_messages.order_by("created_at").first()
+    recap.first_message = "" if firstmsg is None else firstmsg.message
+    lastmsg = chat_messages.order_by("created_at").last()
+    recap.last_message = "" if lastmsg is None else lastmsg.message
+
+    if perf:
+        print(f"\tfirst & last messages: {time.perf_counter() - start:.3f} seconds")
+        start = time.perf_counter()
+
+    recap.count_messages = 0
+    recap.count_characters = 0
+    recap.count_clips = 0
+    recap.count_clip_watch = 0
+    recap.count_clip_views = 0
+    recap.count_videos = 0
+
+    for mr in monthrecaps:
+        recap.count_messages += mr.count_messages
+        recap.count_characters += mr.count_characters
+        recap.count_clips += mr.count_clips
+        recap.count_clip_watch += mr.count_clip_watch
+        recap.count_clip_views += mr.count_clip_views
+        recap.count_videos += mr.count_videos
+
+    if perf:
+        print(f"\tnon-frag counts: {time.perf_counter() - start:.3f} seconds")
+        start = time.perf_counter()
+
     fgs = (
         FragmentGroup.objects.order_by("ordering")
         .prefetch_related("fragment_set")
@@ -861,9 +1021,10 @@ def sum_recap_stats(year: int = None, user_id: int = None, perf: bool = False):
 
     fg: FragmentGroup
     for fg in fgs:
-        fgc, fgc_created = FragmentGroupCounter.objects.get_or_create(
-            recap=recap, fragment_group=fg
-        )
+        if recap.fragmentgroupcounter_set.filter(fragment_group=fg).exists():
+            fgc = recap.fragmentgroupcounter_set.get(fragment_group=fg)
+        else:
+            fgc = FragmentGroupCounter.objects.create(recap=recap, fragment_group=fg)
 
         fgc.year = recap.year
         fgc.month = recap.month
@@ -872,9 +1033,7 @@ def sum_recap_stats(year: int = None, user_id: int = None, perf: bool = False):
 
         for mr in monthrecaps:
             try:
-                month_fgc = FragmentGroupCounter.objects.get(
-                    recap=mr, fragment_group=fg
-                )
+                month_fgc = mr.fragmentgroupcounter_set.get(fragment_group=fg)
             except FragmentGroupCounter.DoesNotExist:
                 continue
 
@@ -884,9 +1043,10 @@ def sum_recap_stats(year: int = None, user_id: int = None, perf: bool = False):
 
         f: Fragment
         for f in fg.fragment_set.all():
-            fc, fc_created = FragmentCounter.objects.get_or_create(
-                recap=recap, fragment=f
-            )
+            if recap.fragmentcounter_set.filter(fragment=f).exists():
+                fc = recap.fragmentcounter_set.get(fragment=f)
+            else:
+                fc = FragmentCounter.objects.create(recap=recap, fragment=f)
 
             fc.year = recap.year
             fc.month = recap.month
@@ -895,7 +1055,7 @@ def sum_recap_stats(year: int = None, user_id: int = None, perf: bool = False):
 
             for mr in monthrecaps:
                 try:
-                    month_fc = FragmentCounter.objects.get(recap=mr, fragment=f)
+                    month_fc = mr.fragmentcounter_set.get(fragment=f)
                 except FragmentCounter.DoesNotExist:
                     continue
 
@@ -903,13 +1063,23 @@ def sum_recap_stats(year: int = None, user_id: int = None, perf: bool = False):
 
             fc.save()
 
+    if perf:
+        print(f"\tfragment counts: {time.perf_counter() - start:.3f} seconds")
+        start = time.perf_counter()
+
     recap.save()
     if perf:
-        print(f"sum took {time.perf_counter() - start:.3f} seconds")
+        print(f"save: {time.perf_counter() - start:.3f} seconds")
 
 
-@shared_task
-def calculate_monthly_stats(year=None, month=None, perf: bool = False):
+def process_recap_period(
+    year=None,
+    month=None,
+    overall_func=calculate_recap,
+    user_func=create_recap,
+    user_func_returns=True,
+    perf: bool = False,
+):
     if perf:
         start = time.perf_counter()
 
@@ -918,37 +1088,46 @@ def calculate_monthly_stats(year=None, month=None, perf: bool = False):
     if month is None:
         month = datetime.datetime.now(TIMEZONE).month
 
-    print(f"Calculating: {year}-{month}")
-
-    localtz = tz.gettz("America/Los_Angeles")
-    monthrange = calendar.monthrange(year, month)
-
-    start_date = datetime.datetime(year, month, 1, 0, 0, 0, 1, localtz)
-    end_date = datetime.datetime(year, month, monthrange[1], 23, 59, 59, 999, localtz)
+    print(f"Processing: {year}-{month}")
 
     if perf:
         overallstart = time.perf_counter()
 
-    calculate_recap_stats(year, month)
+    overall_func(year=year, month=month)
 
     if perf:
         print(f"\toverall: {time.perf_counter() - overallstart:.3f}s")
         overallend = time.perf_counter()
 
-    user_set = list(
-        set(
-            ChatMessage.objects.filter(created_at__range=(start_date, end_date))
-            .values_list("commenter", flat=True)
-            .distinct()
-            .all()
+    localtz = tz.gettz("America/Los_Angeles")
+
+    if year > 0:
+        if month > 0:
+            monthrange = calendar.monthrange(year, month)
+            start_date = datetime.datetime(year, month, 1, 0, 0, 0, 1, localtz)
+            end_date = datetime.datetime(
+                year, month, monthrange[1], 23, 59, 59, 999, localtz
+            )
+        else:
+            start_date = datetime.datetime(year, 1, 1, 0, 0, 0, 1, localtz)
+            end_date = datetime.datetime(year, 12, 31, 23, 59, 59, 999, localtz)
+
+        user_set = list(
+            set(
+                ChatMessage.objects.filter(created_at__range=(start_date, end_date))
+                .values_list("commenter", flat=True)
+                .distinct()
+                .all()
+            )
+            | set(
+                Clip.objects.filter(created_at__range=(start_date, end_date))
+                .values_list("creator", flat=True)
+                .distinct()
+                .all()
+            )
         )
-        | set(
-            Clip.objects.filter(created_at__range=(start_date, end_date))
-            .values_list("creator", flat=True)
-            .distinct()
-            .all()
-        )
-    )
+    else:
+        user_set = list(TwitchUser.objects.values_list("user_id", flat=True).all())
 
     if perf:
         print(f"\ttotal users: {len(user_set)}")
@@ -963,46 +1142,53 @@ def calculate_monthly_stats(year=None, month=None, perf: bool = False):
         fc_list: list[FragmentCounter] = []
 
         for user in user_set[i : i + batch_size]:
-            recap, fgcs, fcs = create_recaps(year, month, user_id=user)
+            if user_func_returns:
+                recap, fgcs, fcs = user_func(year=year, month=month, user_id=user)
 
-            recap_list.append(recap)
-            fgc_list.extend(fgcs)
-            fc_list.extend(fcs)
+                recap_list.append(recap)
+                fgc_list.extend(fgcs)
+                fc_list.extend(fcs)
 
-        RecapData.objects.bulk_create(
-            recap_list,
-            update_conflicts=True,
-            update_fields=[
-                "count_messages",
-                "count_characters",
-                "count_clips",
-                "count_clip_watch",
-                "count_clip_views",
-                "count_chatters",
-                "count_videos",
-                "first_message",
-                "last_message",
-            ],
-            batch_size=5_000,
-        )
+            else:
+                user_func(year, month, user_id=user)
 
-        FragmentGroupCounter.objects.bulk_create(
-            fgc_list,
-            update_conflicts=True,
-            update_fields=[
-                "count",
-            ],
-            batch_size=5_000,
-        )
+        if len(recap_list) > 0:
+            RecapData.objects.bulk_create(
+                recap_list,
+                update_conflicts=True,
+                update_fields=[
+                    "count_messages",
+                    "count_characters",
+                    "count_clips",
+                    "count_clip_watch",
+                    "count_clip_views",
+                    "count_chatters",
+                    "count_videos",
+                    "first_message",
+                    "last_message",
+                ],
+                batch_size=5_000,
+            )
 
-        FragmentCounter.objects.bulk_create(
-            fc_list,
-            update_conflicts=True,
-            update_fields=[
-                "count",
-            ],
-            batch_size=5_000,
-        )
+        if len(fgc_list) > 0:
+            FragmentGroupCounter.objects.bulk_create(
+                fgc_list,
+                update_conflicts=True,
+                update_fields=[
+                    "count",
+                ],
+                batch_size=5_000,
+            )
+
+        if len(fc_list) > 0:
+            FragmentCounter.objects.bulk_create(
+                fc_list,
+                update_conflicts=True,
+                update_fields=[
+                    "count",
+                ],
+                batch_size=5_000,
+            )
 
         if perf:
             print(
@@ -1015,185 +1201,25 @@ def calculate_monthly_stats(year=None, month=None, perf: bool = False):
 
 
 @shared_task
+def calculate_stats(year, month, perf=False):
+    process_recap_period(year, month, perf=perf)
+
+
+@shared_task
+def sum_stats(year, perf=False):
+    process_recap_period(year, 0, sum_recap, create_sum, perf=perf)
+
+
+@shared_task
 def calculate_yearly_stats(year=None, recalculate=True, perf: bool = False):
-    if perf:
-        start = time.perf_counter()
-
-    if year is None:
-        year = datetime.datetime.now(TIMEZONE).year
-
-    print(f"Calculating: {year}")
-
-    localtz = tz.gettz("America/Los_Angeles")
-    start_date = datetime.datetime(year, 1, 1, 0, 0, 0, 1, localtz)
-    end_date = datetime.datetime(year, 12, 31, 23, 59, 59, 999, localtz)
-
-    if perf:
-        overallstart = time.perf_counter()
-
-    calculate_recap_stats(year, 0)
-
-    if perf:
-        print(f"\toverall: {time.perf_counter() - overallstart:.3f}s")
-        overallend = time.perf_counter()
-
-    user_set = list(
-        set(
-            ChatMessage.objects.filter(created_at__range=(start_date, end_date))
-            .values_list("commenter", flat=True)
-            .distinct()
-            .all()
-        )
-        | set(
-            Clip.objects.filter(created_at__range=(start_date, end_date))
-            .values_list("creator", flat=True)
-            .distinct()
-            .all()
-        )
-    )
-
-    if perf:
-        print(f"\ttotal users: {len(user_set)}")
-
-    batch_size = 2500
-    for i in range(0, len(user_set), batch_size):
-        if perf:
-            batch_start = time.perf_counter()
-
-        recap_list: list[RecapData] = []
-        fgc_list: list[FragmentGroupCounter] = []
-        fc_list: list[FragmentCounter] = []
-
-        for user in user_set[i : i + batch_size]:
-            recap, fgcs, fcs = create_recaps(year, 0, user_id=user)
-
-            recap_list.append(recap)
-            fgc_list.extend(fgcs)
-            fc_list.extend(fcs)
-
-        RecapData.objects.bulk_create(
-            recap_list,
-            update_conflicts=True,
-            update_fields=[
-                "count_messages",
-                "count_characters",
-                "count_clips",
-                "count_clip_watch",
-                "count_clip_views",
-                "count_chatters",
-                "count_videos",
-                "first_message",
-                "last_message",
-            ],
-            batch_size=5_000,
-        )
-
-        FragmentGroupCounter.objects.bulk_create(
-            fgc_list,
-            update_conflicts=True,
-            update_fields=[
-                "count",
-            ],
-            batch_size=5_000,
-        )
-
-        FragmentCounter.objects.bulk_create(
-            fc_list,
-            update_conflicts=True,
-            update_fields=[
-                "count",
-            ],
-            batch_size=5_000,
-        )
-
-        if perf:
-            print(
-                f"\t\tuser batch {i}-{i+batch_size}: {time.perf_counter()-batch_start:.3f}s"
-            )
-    if perf:
-        print(f"\tusers: {time.perf_counter() - usersstart:.3f}s")
-        print(f"\ttotal: {time.perf_counter() - start:.3f}s")
+    if recalculate:
+        calculate_stats(year, 0, perf)
 
 
 @shared_task
 def calculate_alltime_stats(recalculate: bool = True, perf: bool = False):
-    if perf:
-        start = time.perf_counter()
-
-    print(f"Calculating: all time")
-
-    if perf:
-        overallstart = time.perf_counter()
-
-    calculate_recap_stats(0, 0)
-
-    if perf:
-        print(f"\toverall: {time.perf_counter() - overallstart:.3f}s")
-    if perf:
-        usersstart = time.perf_counter()
-
-    user_set = list(TwitchUser.objects.all())
-
-    batch_size = 2500
-    for i in range(0, len(user_set), batch_size):
-        if perf:
-            batch_start = time.perf_counter()
-
-        recap_list: list[RecapData] = []
-        fgc_list: list[FragmentGroupCounter] = []
-        fc_list: list[FragmentCounter] = []
-
-        for user in user_set[i : i + batch_size]:
-            recap, fgcs, fcs = create_recaps(0, 0, user_id=user.user_id)
-
-            recap_list.append(recap)
-            fgc_list.extend(fgcs)
-            fc_list.extend(fcs)
-
-        RecapData.objects.bulk_create(
-            recap_list,
-            update_conflicts=True,
-            update_fields=[
-                "count_messages",
-                "count_characters",
-                "count_clips",
-                "count_clip_watch",
-                "count_clip_views",
-                "count_chatters",
-                "count_videos",
-                "first_message",
-                "last_message",
-            ],
-            batch_size=5_000,
-        )
-
-        FragmentGroupCounter.objects.bulk_create(
-            fgc_list,
-            update_conflicts=True,
-            update_fields=[
-                "count",
-            ],
-            batch_size=5_000,
-        )
-
-        FragmentCounter.objects.bulk_create(
-            fc_list,
-            update_conflicts=True,
-            update_fields=[
-                "count",
-            ],
-            batch_size=5_000,
-        )
-
-        if perf:
-            print(
-                f"\t\tuser batch {i}-{i+batch_size}: {time.perf_counter()-batch_start:.3f}s"
-            )
-
-    if perf:
-        print(f"\tusers: {time.perf_counter() - usersstart:.3f}s")
-    if perf:
-        print(f"\ttotal: {time.perf_counter() - start:.3f}s")
+    if recalculate:
+        calculate_stats(0, 0, perf)
 
 
 @shared_task

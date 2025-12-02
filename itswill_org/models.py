@@ -478,6 +478,7 @@ class FragmentMatch(models.Model):
     commenter = models.ForeignKey(
         TwitchUser, on_delete=models.SET_NULL, blank=True, null=True
     )
+
     message = models.ForeignKey(ChatMessage, on_delete=models.CASCADE)
     recaps = models.ManyToManyField(RecapData)
 
