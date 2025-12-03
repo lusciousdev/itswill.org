@@ -1232,6 +1232,18 @@ def calculate_alltime_stats(recalculate: bool = False, perf: bool = False):
 
 
 @shared_task
+def daily_task():
+    get_recent_chat_messages(5, False)
+    get_recent_clips()
+
+    find_fragment_matches(period=30, perf=True)
+    calculate_monthly_stats(perf=True)
+    calculate_yearly_stats(perf=True)
+    calculate_alltime_stats(perf=True)
+    calculate_all_leaderboards(perf=True)
+
+
+@shared_task
 def calculate_leaderboard(year: int, month: int):
     oldest = datetime.datetime.now(TIMEZONE) - datetime.timedelta(minutes=1)
 
@@ -1346,6 +1358,32 @@ def calculate_all_leaderboards(perf: bool = True):
     if perf:
         print(f"leaderboards took {time.perf_counter() - start:.3f} seconds")
 
+@shared_task
+def calculate_all_months(find_fragments: bool = False):
+    year = datetime.datetime.now(TIMEZONE).year
+    month = datetime.datetime.now(TIMEZONE).month
+
+    if find_fragments:
+        find_fragment_matches(perf=True)
+
+    for y in range(2023, year + 1):
+        month_range = range(1, 13) if y < year else range(1, month + 1)
+        for m in month_range:
+            calculate_monthly_stats.delay(y, m, perf=True)
+
+@shared_task
+def sum_all_years():
+    year = datetime.datetime.now(TIMEZONE).year
+    month = datetime.datetime.now(TIMEZONE).month
+
+    if find_fragments:
+        find_fragment_matches(perf=True)
+
+    for y in range(2023, year + 1):
+        calculate_yearly_stats.delay(y, recalculate=False, perf=True)
+    
+    calculate_alltime_stats.delay(recalculate=False, perf=True)
+    calculate_all_leaderboards.delay(perf=True)
 
 @shared_task
 def calculate_everything(find_fragments: bool = False):
@@ -1359,9 +1397,10 @@ def calculate_everything(find_fragments: bool = False):
         month_range = range(1, 13) if y < year else range(1, month + 1)
         for m in month_range:
             calculate_monthly_stats.delay(y, m, perf=True)
-        calculate_yearly_stats.delay(y, perf=True)
 
-    calculate_alltime_stats.delay(perf=True)
+        calculate_yearly_stats.delay(y, recalculate=True, perf=True)
+
+    calculate_alltime_stats.delay(recalculate=True, perf=True)
     calculate_all_leaderboards.delay(perf=True)
     create_wrapped_data.delay(perf=True)
 
