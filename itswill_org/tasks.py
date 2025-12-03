@@ -1216,7 +1216,7 @@ def calculate_monthly_stats(year=None, month=None, perf: bool = False):
 
 
 @shared_task
-def calculate_yearly_stats(year=None, recalculate=True, perf: bool = False):
+def calculate_yearly_stats(year=None, recalculate: bool = False, perf: bool = False):
     if recalculate:
         calculate_stats(year, 0, perf)
     else:
@@ -1224,7 +1224,7 @@ def calculate_yearly_stats(year=None, recalculate=True, perf: bool = False):
 
 
 @shared_task
-def calculate_alltime_stats(recalculate: bool = True, perf: bool = False):
+def calculate_alltime_stats(recalculate: bool = False, perf: bool = False):
     if recalculate:
         calculate_stats(0, 0, perf)
     else:
