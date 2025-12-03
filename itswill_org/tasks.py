@@ -1376,9 +1376,6 @@ def sum_all_years():
     year = datetime.datetime.now(TIMEZONE).year
     month = datetime.datetime.now(TIMEZONE).month
 
-    if find_fragments:
-        find_fragment_matches(perf=True)
-
     for y in range(2023, year + 1):
         calculate_yearly_stats.delay(y, recalculate=False, perf=True)
     
