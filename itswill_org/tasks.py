@@ -1211,15 +1211,24 @@ def sum_stats(year, perf=False):
 
 
 @shared_task
+def calculate_monthly_stats(year=None, month=None, perf: bool = False):
+    calculate_stats(year, month, perf)
+
+
+@shared_task
 def calculate_yearly_stats(year=None, recalculate=True, perf: bool = False):
     if recalculate:
         calculate_stats(year, 0, perf)
+    else:
+        sum_stats(year, perf)
 
 
 @shared_task
 def calculate_alltime_stats(recalculate: bool = True, perf: bool = False):
     if recalculate:
         calculate_stats(0, 0, perf)
+    else:
+        sum_stats(0, perf)
 
 
 @shared_task
