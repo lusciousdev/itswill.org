@@ -159,6 +159,7 @@ DATABASES = {
         "PASSWORD": MARIADB_PASSWORD,
         "HOST": MARIADB_HOST,
         "PORT": MARIADB_PORT,
+        "CONN_MAX_AGE": 120,
         "OPTIONS": {"charset": "utf8mb4", "use_unicode": True},
     }
 }

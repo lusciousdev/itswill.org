@@ -540,6 +540,7 @@ class FragmentGroupCounter(models.Model):
     class Meta:
         unique_together = ("recap", "fragment_group")
         indexes = [
+            models.Index(fields=["year", "month"]),
             models.Index(fields=["year", "month", "fragment_group"]),
             models.Index(fields=["-count"]),
             models.Index(

@@ -151,17 +151,34 @@ class LoggerBot(twitchio_commands.Bot):
             year = datetime.datetime.now(TIMEZONE).year
             month = datetime.datetime.now(TIMEZONE).month
 
-            recaps = await sync_to_async(get_message_recaps)(
-                datetime.datetime.now(TIMEZONE), twitch_user.user_id
+            recaps = await sync_to_async(message_recap_queryset)(
+                year, month, twitch_user.user_id
             )
 
-            recap: RecapData
-            for recap in recaps:
-                recap.count_messages += 1
-                recap.count_characters += len(message.message)
-                recap.last_message = message.message
-                if new_chatter:
-                    recap.count_chatters += 1
+            recaps_exist = await recaps.aexists()
+
+            if recaps_exist:
+                await recaps.aupdate(
+                    count_messages=F("count_messages") + 1,
+                    count_characters=F("count_characters") + len(message.message),
+                    last_message=message.message,
+                    count_chatters=(
+                        F("count_chatters") + 1 if new_chatter else F("count_chatters")
+                    ),
+                )
+                recaps = await sync_to_async(list)(recaps)
+            else:
+                recaps = await sync_to_async(get_message_recaps)(
+                    year, month, twitch_user.user_id
+                )
+
+                recap: RecapData
+                for recap in recaps:
+                    recap.count_messages += 1
+                    recap.count_characters += len(message.message)
+                    recap.last_message = message.message
+                    if new_chatter:
+                        recap.count_chatters += 1
 
             fragments = await sync_to_async(list)(
                 await sync_to_async(
@@ -199,9 +216,9 @@ class LoggerBot(twitchio_commands.Bot):
                                 count=fm.count,
                             )
 
-                        fc_count = await recap.fragmentcounter_set.filter(fragment=f).aupdate(
-                            count=F("count") + fm.count
-                        )
+                        fc_count = await recap.fragmentcounter_set.filter(
+                            fragment=f
+                        ).aupdate(count=F("count") + fm.count)
                         if fc_count == 0:
                             await FragmentCounter.objects.acreate(
                                 recap=recap,
@@ -220,7 +237,9 @@ class LoggerBot(twitchio_commands.Bot):
 
             fragment_recaps: list = []
             for fm in new_matches:
-                rs = await sync_to_async(get_message_recaps)(fm.timestamp, fm.commenter_id)
+                rs = await sync_to_async(get_message_recaps)(
+                    fm.timestamp, fm.commenter_id
+                )
                 for recap in rs:
                     fr = FragmentMatch.recaps.through(
                         fragmentmatch_id=fm.id, recapdata_id=recap.id

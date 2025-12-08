@@ -451,11 +451,13 @@ class LeaderboardView(generic.TemplateView):
         except RecapData.DoesNotExist:
             raise Http404("That recap does not exist (yet?).")
 
-        calculate_leaderboard(overallrecap.year, overallrecap.month)
-        try:
-            leaderboards = LeaderboardCache.objects.get(recap=overallrecap)
-        except LeaderboardCache.DoesNotExist:
-            raise Http404("This recap does not have leaderboards for some reason.")
+        leaderboards = LeaderboardCache.objects.filter(recap=overallrecap).order_by("-created_at").first()
+        
+        if leaderboards is None:
+            calculate_leaderboard(overallrecap.year, overallrecap.month, True)
+            leaderboards = LeaderboardCache.objects.filter(recap=overallrecap).order_by("-created_at").first()
+            if leaderboards is None:
+                raise Http404("Failed to create leaderboard.")
 
         data["recap_data"] = overallrecap
         data["leaderboards"] = leaderboards.leaderboard_data
@@ -476,6 +478,7 @@ class LeaderboardView(generic.TemplateView):
                         field.short_name
                     ] = field.verbose_name
 
+        calculate_leaderboard.delay(overallrecap.year, overallrecap.month)
         return data
 
 
