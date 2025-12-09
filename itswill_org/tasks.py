@@ -683,7 +683,7 @@ def create_recap(
         recap.save()
         if perf:
             print(f"\tsave: {time.perf_counter() - start:.3f} seconds")
-        return
+        return recap, [], []
 
     fgcs: list[FragmentGroupCounter] = []
     fcs: list[FragmentCounter] = []
@@ -1532,8 +1532,7 @@ def seconds_to_duration(input: int, abbr: bool = False):
     return output
 
 
-@shared_task
-def create_wrapped_data(year=None, skip_users=False, perf: bool = True):
+def create_general_wrapped_data(year: int = None, perf: bool = True):
     if perf:
         start = time.perf_counter()
 
@@ -1545,32 +1544,28 @@ def create_wrapped_data(year=None, skip_users=False, perf: bool = True):
     localtz = tz.gettz("America/Los_Angeles")
 
     try:
-        overallrecap = RecapData.objects.get(year=year, month=0, twitch_user=None)
+        overall_recap = RecapData.objects.get(year=year, month=0, twitch_user=None)
     except RecapData.DoesNotExist:
         print("No recap for that year.")
         return
 
-    start_year = overallrecap.start_date
-    end_year = overallrecap.end_date
+    start_year = overall_recap.start_date
+    end_year = overall_recap.end_date
 
-    overall_wrapped, _ = WrappedData.objects.get_or_create(recap=overallrecap)
+    overall_wrapped, _ = WrappedData.objects.get_or_create(recap=overall_recap)
 
     overall_dict = {}
 
     overall_wrapped.typing_time = seconds_to_duration(
-        overallrecap.count_characters // 5
+        overall_recap.count_characters // 5
     )
-    overall_wrapped.clip_watch_time = seconds_to_duration(overallrecap.count_clip_watch)
+    overall_wrapped.clip_watch_time = seconds_to_duration(
+        overall_recap.count_clip_watch
+    )
 
     msgs = ChatMessage.objects.filter(
         created_at__range=(start_year, end_year)
     ).order_by("created_at")
-
-    firstmsg = msgs.first()
-    lastmsg = msgs.last()
-
-    overall_dict["first_message"] = firstmsg.to_json()
-    overall_dict["last_message"] = lastmsg.to_json()
 
     jackass_messages = msgs.filter(message="+1")
 
@@ -1597,9 +1592,6 @@ def create_wrapped_data(year=None, skip_users=False, perf: bool = True):
             last_jackass_timestamp = message.created_at
 
     overall_wrapped.jackass_count = jackass_count
-
-    ijbol_messages = msgs.filter(message__iregex=".*IJBOL.*")
-    overall_dict["first_ijbol"] = ijbol_messages.first().to_json()
 
     all_combo_regex_str = r".*combo.*"
     reg_combo_regex_str = r"((.+) ruined the )?([0-9]+)x ([A-Za-z0-9:\)\(</]+) combo.*"
@@ -1655,6 +1647,30 @@ def create_wrapped_data(year=None, skip_users=False, perf: bool = True):
     overall_dict["longest_combos"] = longest_combos[:10]
     overall_dict["most_common_combos"] = most_common_combos[:10]
 
+    all_vip_regex_str = r"@([A-Za-z0-9_]+) Picked ([1-5]|12429) and rolled a ([1-5])\.\.\.\. (Luck|You).*"
+
+    vip_messages = msgs.filter(
+        commenter_id=920105724, message__iregex=all_vip_regex_str
+    )
+
+    vip_roll_count = 0
+    vip_roll_win = 0
+    vip_roll_cheats = 0
+    for message in vip_messages:
+        msg_match = all_vip_regex_str.match(message.message)
+
+        vip_roll_count += 1
+        if msg_match.group(4) == "Luck":
+            vip_roll_win += 1
+
+            if msg_match.group(2) == "12429":
+                vip_roll_cheats += 1
+
+    overall_wrapped.vip_gambles = vip_roll_count
+    overall_wrapped.vip_wins = vip_roll_win
+
+    overall_dict["vip_cheats"] = vip_roll_cheats
+
     clips = Clip.objects.filter(created_at__range=(start_year, end_year)).order_by(
         "-view_count"
     )
@@ -1681,70 +1697,73 @@ def create_wrapped_data(year=None, skip_users=False, perf: bool = True):
         overall_dict["top_clips"][month] = [clip.to_json() for clip in clips[:5]]
 
     overall_wrapped.extra_data = overall_dict
-    overall_wrapped.save()
 
+@shared_task
+def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
+    create_general_wrapped_data(2025, perf)
+    
     if skip_users:
         return
 
     print("Overall wrapped data created. Moving on to user data.")
 
-    userrecap_set = (
+    user_recap_set = (
         RecapData.objects.filter(year=year, month=0).exclude(twitch_user=None).all()
     )
 
     leaderboards = {}
 
     invalid_fields = ["year", "month", "count_chatters", "count_videos"]
-    exclude_leaderboards = [
-        "year",
-        "month",
-        "count_chatters",
-        "count_videos",
-        "count_clip_watch",
-        "count_400",
-        "count_plus1",
-        "count_caw",
-        "count_yt",
-        "count_q",
-    ]
 
-    for field in overallrecap._meta.get_fields():
-        if (
-            field.get_internal_type() == "IntegerField"
-            or field.get_internal_type() == "BigIntegerField"
-        ) and field.name not in invalid_fields:
-            leaderboards[field.name] = {
-                userrecap.twitch_user.user_id: getattr(userrecap, field.name)
-                for userrecap in overallrecap.userrecapdata_set.filter(
-                    twitch_user__is_bot=False
-                )
-                .all()
-                .order_by("-" + field.name)
-            }
+    leaderboard_cache = (
+        LeaderboardCache.objects.filter(recap=overall_recap)
+        .order_by("-created_at")
+        .first()
+    )
 
-    userrecap: RecapData
-    for userrecap in userrecap_set:
-        user = userrecap.twitch_user
+    leaderboard = leaderboard_cache.leaderboard_data
+    
+    user_recap: RecapData
+    for user_recap in user_recap_set:
+        user = user_recap.twitch_user
         user_dict = {}
 
-        user_wrapped, _ = WrappedData.objects.get_or_create(recap=userrecap)
+        user_wrapped, _ = WrappedData.objects.get_or_create(recap=user_recap)
 
         userclips = Clip.objects.filter(
             creator=user, created_at__range=(start_year, end_year)
         ).order_by("-view_count")
 
-        user_wrapped.typing_time = seconds_to_duration(userrecap.count_characters // 5)
-        user_wrapped.clip_watch_time = seconds_to_duration(userrecap.count_clip_watch)
+        user_wrapped.typing_time = seconds_to_duration(user_recap.count_characters // 5)
+        user_wrapped.clip_watch_time = seconds_to_duration(user_recap.count_clip_watch)
 
         msgs = ChatMessage.objects.filter(
             commenter=user, created_at__range=(start_year, end_year)
         ).order_by("created_at")
 
-        firstmsg = msgs.first()
-        lastmsg = msgs.last()
+        all_vip_regex_str = r"@([A-Za-z0-9_]+) Picked ([1-5]|12429) and rolled a ([1-5])\.\.\.\. (Luck|You).*"
 
-        user_dict["first_message"] = "" if not firstmsg else firstmsg.to_json()
-        user_dict["last_message"] = "" if not lastmsg else lastmsg.to_json()
+        vip_messages = msgs.filter(
+            commenter_id=920105724, message__iregex=all_vip_regex_str
+        )
+
+        vip_roll_count = 0
+        vip_roll_win = 0
+        vip_roll_cheats = 0
+        for message in vip_messages:
+            msg_match = all_vip_regex_str.match(message.message)
+
+            vip_roll_count += 1
+            if msg_match.group(4) == "Luck":
+                vip_roll_win += 1
+
+                if msg_match.group(2) == "12429":
+                    vip_roll_cheats += 1
+
+        user_wrapped.vip_gambles = vip_roll_count
+        user_wrapped.vip_wins = vip_roll_win
+
+        overall_dict["vip_cheats"] = vip_roll_cheats
 
         user_dict["top_clips"] = (
             [clip.to_json() for clip in userclips[:5]] if len(userclips) > 1 else None
@@ -1752,7 +1771,241 @@ def create_wrapped_data(year=None, skip_users=False, perf: bool = True):
 
         leaderboard_positions = {}
         all_leaderboard_positions = {}
-        for field in userrecap._meta.get_fields():
+        for field in user_recap._meta.get_fields():
+            if (
+                field.get_internal_type() == "IntegerField"
+                or field.get_internal_type() == "BigIntegerField"
+            ) and field.name not in invalid_fields:
+                if user.user_id in leaderboards[field.name]:
+                    if leaderboards[field.name][user.user_id] > 0:
+                        pos = (
+                            list(leaderboards[field.name].keys()).index(user.user_id)
+                            + 1,
+                            leaderboards[field.name][user.user_id],
+                        )
+                        if field.name not in exclude_leaderboards:
+                            leaderboard_positions[field.name] = pos
+                        all_leaderboard_positions[field.name] = pos
+
+        sorted_leaderboard_positions = [
+            (k, v)
+            for k, v in sorted(
+                leaderboard_positions.items(), key=lambda item: item[1][0]
+            )
+        ]
+        sorted_all_leaderboard_positions = [
+            (k, v)
+            for k, v in sorted(
+                all_leaderboard_positions.items(), key=lambda item: item[1][0]
+            )
+        ]
+
+        user_dict["top_leaderboard_positions"] = sorted_leaderboard_positions[:5]
+        
+        highlight = {}
+
+        if user.user_id == 444861963:  # ACrowOutside
+            caw_rank = (
+                -1
+                if "count_caw" not in all_leaderboard_positions
+                else all_leaderboard_positions["count_caw"][0]
+            )
+            percent_caws = (3 * user_recap.count_caw) / max(
+                user_recap.count_characters, 1
+            )
+            highlight = {
+                "title": "CAW",
+                "description": [
+                    f"CAW RANK {caw_rank} CAWs CAW",
+                    f"CAW {user_recap.count_caw:,} CAWs CAW",
+                    f"CAW CAW made up {percent_caws:.1%} of your total chat output CAW",
+                ],
+            }
+        else:
+            for category, (rank, count) in sorted_leaderboard_positions:
+                if rank > 250:
+                    highlight = None
+                    break
+                if category == "messages":
+                    highlight = {
+                        "title": "You chatted a whole lot this year.",
+                        "description": [
+                            f"You sent a total of {count:,} messages over the course of this year.",
+                            f"This placed you at rank {rank} among the entire itswill chat.",
+                        ],
+                    }
+                    break
+                elif category == "clips":
+                    highlight = {
+                        "title": "Are you Clipper?",
+                        "description": [
+                            f"Wait, no, you just created {count} clips this year."
+                            f"You managed to reach rank #{rank} on the clipper leaderboards!"
+                        ],
+                    }
+                    break
+                elif category == "clip_views":
+                    highlight = {
+                        "title": ".",
+                        "description": [
+                            f"Your clips got a total of {count:,} views over this past year.",
+                            f"That kind of mass appeal secured you rank {rank:,} on the clip view leaderboards.",
+                        ],
+                    }
+                    break
+                elif category == "ascii":
+                    highlight = {
+                        "title": "All pictures of Garfield I hope",
+                        "description": [
+                            f"You posted {count:,} ASCIIs this year.",
+                            f"All that beautiful art earned you the #{rank} spot on the ASCII leaderboard.",
+                        ],
+                    }
+                    break
+                elif category == "count_seven":
+                    highlight = {
+                        "title": "Salutations o7",
+                        "description": [
+                            f"You sent {count:,} itswill7s in the chat this year.",
+                            f"All those salutes put you at #{rank} on the leaderboard.",
+                        ],
+                    }
+                    break
+                elif category == "count_pound":
+                    highlight = {
+                        "title": "Any pounders in the chat?",
+                        "description": [
+                            f"You pounded your fellow chatters a total of {count:,} times this past year.",
+                            f"That amount of pounding earned you rank {rank} among the itswill chat.",
+                        ],
+                    }
+                    break
+                elif category == "count_love":
+                    highlight = {
+                        "title": "Love is in the air",
+                        "description": [
+                            f"You typed itswilL, itswillLove, etc. {count:,} times this year.",
+                            f"You're lovely chatting got you rank {rank:,} in love emotes for 2024.",
+                        ],
+                    }
+                    break
+                elif category == "count_pog":
+                    highlight = {
+                        "title": "You had an exciting year",
+                        "description": [
+                            f"You typed the various Pog emotes {count:,} times this year",
+                            f"That makes you the #{rank:,} most pogged chatter!",
+                        ],
+                    }
+                    break
+                elif category == "count_shoop":
+                    highlight = {
+                        "title": "ShoopDaWhoop supremacy",
+                        "description": [
+                            f"You typed ShoopDaWhoop {count:,} times this year. Fuck PogChamp am I right?",
+                            f"You were the #{rank:,} ShoopDaWhooper of the year.",
+                        ],
+                    }
+                    break
+                elif category == "count_spin":
+                    highlight = {
+                        "title": "AROUND THE WORLD",
+                        "description": [
+                            f"You posted {count:,} borpaSpin and other spin related emotes this year",
+                            f"That's a lot of piss breaks listening to Daft Punk.",
+                            f"You snagged rank {rank:,} on the leaderboard!",
+                        ],
+                    }
+                    break
+                elif category == "count_chicken":
+                    highlight = {
+                        "title": "We chicken we walk",
+                        "description": [
+                            f"You posted {count:,} chickenWalks this year",
+                            f"NO BORPA YEP COCK am I right?",
+                            f"You earned yourself rank {rank:,} on the chickenWalk leaderboard!",
+                        ],
+                    }
+                    break
+                elif category == "count_glorp":
+                    highlight = {
+                        "title": "Paging all glorps 📡",
+                        "description": [
+                            f"You glorped {count:,} times this year.",
+                            f"That was sufficient glorping to lock in rank {rank:,} overall on the glorp leaderboards.",
+                        ],
+                    }
+                    break
+
+        user_dict["highlight"] = highlight
+
+        user_wrapped.extra_data = user_dict
+        user_wrapped.save()
+
+
+@shared_task
+def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
+    create_general_wrapped_data(2024, perf)
+
+    try:
+        overall_recap = RecapData.objects.get(year=year, month=0, twitch_user=None)
+    except RecapData.DoesNotExist:
+        print("No recap for that year.")
+        return
+
+    msgs = ChatMessage.objects.filter(
+        created_at__range=(overall_recap.start_date, overall_recap.end_date)
+    ).order_by("created_at")
+
+    ijbol_messages = msgs.filter(message__iregex=".*IJBOL.*")
+    overall_dict["first_ijbol"] = ijbol_messages.first().to_json()
+
+    if skip_users:
+        return
+
+    print("Overall wrapped data created. Moving on to user data.")
+
+    user_recap_set = (
+        RecapData.objects.filter(year=year, month=0).exclude(twitch_user=None).all()
+    )
+
+    leaderboards = {}
+
+    invalid_fields = ["year", "month", "count_chatters", "count_videos"]
+
+    leaderboard_cache = (
+        LeaderboardCache.objects.filter(recap=overall_recap)
+        .order_by("-created_at")
+        .first()
+    )
+
+    leaderboard = leaderboard_cache.leaderboard_data
+
+    user_recap: RecapData
+    for user_recap in user_recap_set:
+        user = user_recap.twitch_user
+        user_dict = {}
+
+        user_wrapped, _ = WrappedData.objects.get_or_create(recap=user_recap)
+
+        userclips = Clip.objects.filter(
+            creator=user, created_at__range=(start_year, end_year)
+        ).order_by("-view_count")
+
+        user_wrapped.typing_time = seconds_to_duration(user_recap.count_characters // 5)
+        user_wrapped.clip_watch_time = seconds_to_duration(user_recap.count_clip_watch)
+
+        msgs = ChatMessage.objects.filter(
+            commenter=user, created_at__range=(start_year, end_year)
+        ).order_by("created_at")
+
+        user_dict["top_clips"] = (
+            [clip.to_json() for clip in userclips[:5]] if len(userclips) > 1 else None
+        )
+
+        leaderboard_positions = {}
+        all_leaderboard_positions = {}
+        for field in user_recap._meta.get_fields():
             if (
                 field.get_internal_type() == "IntegerField"
                 or field.get_internal_type() == "BigIntegerField"
@@ -1791,14 +2044,14 @@ def create_wrapped_data(year=None, skip_users=False, perf: bool = True):
                 if "count_caw" not in all_leaderboard_positions
                 else all_leaderboard_positions["count_caw"][0]
             )
-            percent_caws = (3 * userrecap.count_caw) / max(
-                userrecap.count_characters, 1
+            percent_caws = (3 * user_recap.count_caw) / max(
+                user_recap.count_characters, 1
             )
             highlight = {
                 "title": "CAW",
                 "description": [
                     f"CAW RANK {caw_rank} CAWs CAW",
-                    f"CAW {userrecap.count_caw:,} CAWs CAW",
+                    f"CAW {user_recap.count_caw:,} CAWs CAW",
                     f"CAW CAW made up {percent_caws:.1%} of your total chat output CAW",
                 ],
             }
@@ -1817,7 +2070,7 @@ def create_wrapped_data(year=None, skip_users=False, perf: bool = True):
             highlight = {
                 "title": "itswill7 cum",
                 "description": [
-                    f"You said cum {userrecap.count_cum:,} times this year.",
+                    f"You said cum {user_recap.count_cum:,} times this year.",
                     rank_comment,
                     f"Can we count on you getting #1 in 2025?",
                 ],
@@ -1834,8 +2087,8 @@ def create_wrapped_data(year=None, skip_users=False, perf: bool = True):
             highlight = {
                 "title": "hello mr. streamer",
                 "description": [
-                    f"{userrecap.count_yt:,} of your {userrecap.count_messages:,} messages were youtube video links. Shameless self promo PogO.",
-                    f"You typed cum {userrecap.count_cum:,} times. So much for being the cum guy.",
+                    f"{user_recap.count_yt:,} of your {user_recap.count_messages:,} messages were youtube video links. Shameless self promo PogO.",
+                    f"You typed cum {user_recap.count_cum:,} times. So much for being the cum guy.",
                 ],
             }
         elif user.user_id == 82920215:  # lusciousdev
@@ -1851,8 +2104,8 @@ def create_wrapped_data(year=None, skip_users=False, perf: bool = True):
                 "title": "Hate to be the bearer of bad news...",
                 "description": [
                     "but I just found out that not everyone in chat has access to the exclusive level 5 hype train emote GriddyGoose",
-                    f"But you do, and you typed it {userrecap.count_goose:,} times this year.",
-                    f"The whole chat followed your lead and typed it {overallrecap.count_goose:,} times.",
+                    f"But you do, and you typed it {user_recap.count_goose:,} times this year.",
+                    f"The whole chat followed your lead and typed it {overall_recap.count_goose:,} times.",
                     f"Can we get 5 gifted to kick off a hype train so we all have the chance to get the exclusive level 5 hype train emote the GriddyGoose?",
                 ],
             }
@@ -1871,7 +2124,7 @@ def create_wrapped_data(year=None, skip_users=False, perf: bool = True):
             highlight = {
                 "title": "nessiePls nessiePls nessiePls",
                 "description": [
-                    f"You went crazy with the nessiePls this year, you managed to send {userrecap.count_nessie:,}.",
+                    f"You went crazy with the nessiePls this year, you managed to send {user_recap.count_nessie:,}.",
                     rank_comment,
                 ],
             }
@@ -1881,13 +2134,13 @@ def create_wrapped_data(year=None, skip_users=False, perf: bool = True):
                 if "count_chicken" not in all_leaderboard_positions
                 else all_leaderboard_positions["count_chicken"][0]
             )
-            percent_chicken = (len("chickenWalk") * userrecap.count_chicken) / max(
-                userrecap.count_characters, 1
+            percent_chicken = (len("chickenWalk") * user_recap.count_chicken) / max(
+                user_recap.count_characters, 1
             )
             highlight = {
                 "title": "chickenWalk",
                 "description": [
-                    f"{userrecap.count_chicken:,} chickenWalks",
+                    f"{user_recap.count_chicken:,} chickenWalks",
                     f"Rank #{caw_rank} chickenWalker",
                     f"chickenWalk is {percent_chicken:.0%} of your total chat history.",
                 ],

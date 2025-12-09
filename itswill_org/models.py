@@ -555,6 +555,9 @@ class WrappedData(models.Model):
         RecapData, on_delete=models.CASCADE, null=True, blank=True
     )
 
+    vip_gambles = models.IntegerField(default=0)
+    vip_wins = models.IntegerField(default=0)
+
     typing_time = models.CharField(max_length=255, default="0 seconds")
     clip_watch_time = models.CharField(max_length=255, default="0 seconds")
 

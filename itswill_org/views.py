@@ -189,29 +189,22 @@ class RecapView(generic.TemplateView):
         except RecapData.DoesNotExist:
             pass
 
-        for yearrecap in (
-            RecapData.objects.filter(year__gte=1, month=0, twitch_user=None)
-            .order_by("year")
-            .all()
-        ):
+        year_recaps = RecapData.objects.filter(year__gte=1, month=0, twitch_user=None).order_by("year").all()
+        month_recaps = RecapData.objects.filter(year__gte=1, month__gte=1, twitch_user=None).order_by("month").all()
+
+        for yearrecap in year_recaps:
             data["all_recaps"][yearrecap.year] = {
                 "recap": yearrecap,
                 "month_recaps": {},
             }
 
-            for monthrecap in (
-                RecapData.objects.filter(
-                    year=yearrecap.year, month__gte=1, twitch_user=None
-                )
-                .order_by("month")
-                .all()
-            ):
-                data["all_recaps"][monthrecap.year]["month_recaps"][
-                    monthrecap.month
-                ] = {
-                    "month_name": calendar.month_abbr[monthrecap.month],
-                    "recap": monthrecap,
-                }
+        for monthrecap in month_recaps:
+            data["all_recaps"][monthrecap.year]["month_recaps"][
+                monthrecap.month
+            ] = {
+                "month_name": calendar.month_abbr[monthrecap.month],
+                "recap": monthrecap,
+            }
 
         try:
             overallrecap = RecapData.objects.prefetch_related(
@@ -237,7 +230,7 @@ class RecapView(generic.TemplateView):
             try:
                 userrecap = RecapData.objects.select_related("twitch_user").prefetch_related(
                     "fragmentgroupcounter_set", "fragmentcounter_set"
-                ).get(year=year, month=month, twitch_user=twitchuser)
+                ).select_related("twitch_user").get(year=year, month=month, twitch_user=twitchuser)
             except RecapData.DoesNotExist:
                 raise Http404("No data for that user in this period.")
 
