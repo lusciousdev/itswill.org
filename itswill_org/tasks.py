@@ -15,7 +15,8 @@ from dateutil import tz
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
-from django.db.models import Avg, Count, F, Max, OuterRef, Prefetch, Q, Subquery, Sum
+from django.db.models import (Avg, Count, F, Max, OuterRef, Prefetch, Q,
+                              Subquery, Sum)
 from django.db.models.fields.json import KT
 from django.db.models.functions import Cast, Coalesce, Length
 
@@ -81,7 +82,7 @@ def get_last_message(user, range=None, return_json=False):
         return last_message.localtz_str()
 
 
-@shared_task
+@shared_task(name="post_random_message", queue="short_tasks")
 def post_random_message(user_id, response_url):
     if user_id != -1:
         try:
@@ -97,7 +98,7 @@ def post_random_message(user_id, response_url):
     requests.post(response_url, data={"message": rndmsg})
 
 
-@shared_task
+@shared_task(name="get_letterboxd_reviews", queue="short_tasks")
 def get_letterboxd_reviews():
     feed: feedparser.FeedParserDict = feedparser.parse(
         "https://letterboxd.com/itswill/rss"
@@ -256,7 +257,7 @@ def get_all_clips(
         )
 
 
-@shared_task
+@shared_task(name="get_recent_clips", queue="long_tasks")
 def get_recent_clips(max_days=31):
     twitch_api = luscioustwitch.TwitchAPI(
         {
@@ -296,7 +297,7 @@ def get_recent_clips(max_days=31):
             continue_fetching = False
 
 
-@shared_task
+@shared_task(name="get_recent_chat_messages", queue="long_tasks")
 def get_recent_chat_messages(max_days=-1, skip_known_vods=True):
     twitch_api = luscioustwitch.TwitchAPI(
         {
@@ -455,7 +456,7 @@ def get_recent_chat_messages(max_days=-1, skip_known_vods=True):
             videoinstance.save()
 
 
-@shared_task
+@shared_task(name="get_all_first_and_last_messages", queue="long_tasks")
 def get_all_first_and_last_messages():
     recaps = RecapData.objects.all()
     for recap in recaps:
@@ -530,7 +531,7 @@ def get_message_recaps(created_at, commenter_id):
     ]
 
 
-@shared_task
+@shared_task(name="find_fragment_matches", queue="long_tasks")
 def find_fragment_matches(period=30, perf: bool = True):
     if perf:
         start = time.perf_counter()
@@ -730,7 +731,7 @@ def create_recap(
     return recap, fgcs, fcs
 
 
-@shared_task
+@shared_task(name="calculate_recap", queue="long_tasks")
 def calculate_recap(
     year: int = 0,
     month: int = 0,
@@ -1000,7 +1001,7 @@ def create_sum(
     return recap, new_fgcs, new_fcs
 
 
-@shared_task
+@shared_task(name="sum_recap", queue="long_tasks")
 def sum_recap(
     year: int = None, month: int = None, user_id: int = None, perf: bool = False
 ):
@@ -1196,7 +1197,7 @@ def process_recap_period(
     if perf:
         print(f"\ttotal users: {len(user_set)}")
 
-    batch_size = 2500
+    batch_size = 500
     for i in range(0, len(user_set), batch_size):
         if perf:
             batch_start = time.perf_counter()
@@ -1264,22 +1265,22 @@ def process_recap_period(
         print(f"\ttotal: {time.perf_counter() - start:.3f}s")
 
 
-@shared_task
+@shared_task(name="calculate_stats", queue="long_tasks")
 def calculate_stats(year, month, perf=False):
     process_recap_period(year, month, perf=perf)
 
 
-@shared_task
+@shared_task(name="sum_stats", queue="long_tasks")
 def sum_stats(year, perf=False):
     process_recap_period(year, 0, sum_recap, create_sum, perf=perf)
 
 
-@shared_task
+@shared_task(name="calculate_monthly_stats", queue="long_tasks")
 def calculate_monthly_stats(year=None, month=None, perf: bool = False):
     calculate_stats(year, month, perf)
 
 
-@shared_task
+@shared_task(name="calculate_yearly_stats", queue="long_tasks")
 def calculate_yearly_stats(year=None, recalculate: bool = False, perf: bool = False):
     if recalculate:
         calculate_stats(year, 0, perf)
@@ -1287,7 +1288,7 @@ def calculate_yearly_stats(year=None, recalculate: bool = False, perf: bool = Fa
         sum_stats(year, perf)
 
 
-@shared_task
+@shared_task(name="calculate_alltime_stats", queue="long_tasks")
 def calculate_alltime_stats(recalculate: bool = False, perf: bool = False):
     if recalculate:
         calculate_stats(0, 0, perf)
@@ -1295,7 +1296,7 @@ def calculate_alltime_stats(recalculate: bool = False, perf: bool = False):
         sum_stats(0, perf)
 
 
-@shared_task
+@shared_task(name="daily_task", queue="long_tasks")
 def daily_task():
     get_recent_chat_messages(5, False)
     get_recent_clips()
@@ -1307,7 +1308,7 @@ def daily_task():
     calculate_all_leaderboards(perf=True)
 
 
-@shared_task
+@shared_task(name="calculate_leaderboard", queue="short_tasks")
 def calculate_leaderboard(year: int, month: int, perf: bool = False):
     start = time.perf_counter()
     oldest = datetime.datetime.now(TIMEZONE) - datetime.timedelta(minutes=30)
@@ -1390,7 +1391,7 @@ def calculate_leaderboard(year: int, month: int, perf: bool = False):
         recap.leaderboardcache_set.filter(recap=recap, created_at__lt=oldest).delete()
 
 
-@shared_task
+@shared_task(name="calculate_all_leaderboards", queue="long_tasks")
 def calculate_all_leaderboards(perf: bool = True):
     if perf:
         start = time.perf_counter()
@@ -1458,7 +1459,7 @@ def calculate_all_leaderboards(perf: bool = True):
         print(f"leaderboards took {time.perf_counter() - start:.3f} seconds")
 
 
-@shared_task
+@shared_task(name="calculate_all_months", queue="long_tasks")
 def calculate_all_months(find_fragments: bool = False):
     year = datetime.datetime.now(TIMEZONE).year
     month = datetime.datetime.now(TIMEZONE).month
@@ -1472,7 +1473,7 @@ def calculate_all_months(find_fragments: bool = False):
             calculate_monthly_stats.delay(y, m, perf=True)
 
 
-@shared_task
+@shared_task(name="sum_all_years", queue="long_tasks")
 def sum_all_years():
     year = datetime.datetime.now(TIMEZONE).year
     month = datetime.datetime.now(TIMEZONE).month
@@ -1484,7 +1485,7 @@ def sum_all_years():
     calculate_all_leaderboards.delay(perf=True)
 
 
-@shared_task
+@shared_task(name="calculate_everything", queue="long_tasks")
 def calculate_everything(find_fragments: bool = False):
     year = datetime.datetime.now(TIMEZONE).year
     month = datetime.datetime.now(TIMEZONE).month
@@ -1698,7 +1699,7 @@ def create_general_wrapped_data(year: int = None, perf: bool = True):
 
     overall_wrapped.extra_data = overall_dict
 
-@shared_task
+@shared_task(name="create_2025_wrapped_data", queue="long_tasks")
 def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
     create_general_wrapped_data(2025, perf)
     
@@ -1862,7 +1863,7 @@ def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_seven":
+                elif category == "seven":
                     highlight = {
                         "title": "Salutations o7",
                         "description": [
@@ -1871,7 +1872,7 @@ def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_pound":
+                elif category == "pound":
                     highlight = {
                         "title": "Any pounders in the chat?",
                         "description": [
@@ -1880,7 +1881,7 @@ def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_love":
+                elif category == "love":
                     highlight = {
                         "title": "Love is in the air",
                         "description": [
@@ -1889,7 +1890,7 @@ def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_pog":
+                elif category == "pog":
                     highlight = {
                         "title": "You had an exciting year",
                         "description": [
@@ -1898,7 +1899,7 @@ def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_shoop":
+                elif category == "shoop":
                     highlight = {
                         "title": "ShoopDaWhoop supremacy",
                         "description": [
@@ -1907,7 +1908,7 @@ def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_spin":
+                elif category == "spin":
                     highlight = {
                         "title": "AROUND THE WORLD",
                         "description": [
@@ -1917,7 +1918,7 @@ def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_chicken":
+                elif category == "chicken":
                     highlight = {
                         "title": "We chicken we walk",
                         "description": [
@@ -1927,7 +1928,7 @@ def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_glorp":
+                elif category == "glorp":
                     highlight = {
                         "title": "Paging all glorps 📡",
                         "description": [
@@ -1943,7 +1944,7 @@ def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
         user_wrapped.save()
 
 
-@shared_task
+@shared_task(name="create_2024_wrapped_data", queue="long_tasks")
 def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
     create_general_wrapped_data(2024, perf)
 
@@ -2150,7 +2151,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                 if rank > 250:
                     highlight = None
                     break
-                if category == "count_messages":
+                if category == "messages":
                     highlight = {
                         "title": "You chatted a whole lot this year.",
                         "description": [
@@ -2159,7 +2160,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_clips":
+                elif category == "clips":
                     highlight = {
                         "title": "Are you Clipper?",
                         "description": [
@@ -2168,7 +2169,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_clip_views":
+                elif category == "clip_views":
                     highlight = {
                         "title": "All eyes on you.",
                         "description": [
@@ -2177,7 +2178,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_ascii":
+                elif category == "ascii":
                     highlight = {
                         "title": "All pictures of Garfield I hope",
                         "description": [
@@ -2186,7 +2187,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_seven":
+                elif category == "seven":
                     highlight = {
                         "title": "Salutations o7",
                         "description": [
@@ -2195,7 +2196,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_pound":
+                elif category == "pound":
                     highlight = {
                         "title": "Any pounders in the chat?",
                         "description": [
@@ -2204,7 +2205,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_love":
+                elif category == "love":
                     highlight = {
                         "title": "Love is in the air",
                         "description": [
@@ -2213,7 +2214,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_pog":
+                elif category == "pog":
                     highlight = {
                         "title": "You had an exciting year",
                         "description": [
@@ -2222,7 +2223,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_shoop":
+                elif category == "shoop":
                     highlight = {
                         "title": "ShoopDaWhoop supremacy",
                         "description": [
@@ -2231,7 +2232,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_spin":
+                elif category == "spin":
                     highlight = {
                         "title": "AROUND THE WORLD",
                         "description": [
@@ -2241,7 +2242,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_chicken":
+                elif category == "chicken":
                     highlight = {
                         "title": "We chicken we walk",
                         "description": [
@@ -2251,7 +2252,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "count_glorp":
+                elif category == "glorp":
                     highlight = {
                         "title": "Paging all glorps 📡",
                         "description": [
