@@ -632,6 +632,14 @@ def create_recap(
 
     count_messages = chat_messages.count()
     recap.count_messages = count_messages
+    
+    chat_messages = chat_messages.order_by("created_at")
+
+    firstmsg = chat_messages.first()
+    recap.first_message = "" if firstmsg is None else firstmsg.message
+    lastmsg = chat_messages.last()
+    recap.last_message = "" if lastmsg is None else lastmsg.message
+
 
     if count_messages > 10_000:
         recap.count_characters = chat_messages.annotate(
@@ -639,13 +647,8 @@ def create_recap(
         ).aggregate(characters=Sum("message_len", default=0))["characters"]
     else:
         recap.count_characters = sum(
-            len(m) for m in ChatMessage.objects.values_list("message", flat=True).all()
+            len(m) for m in chat_messages.values_list("message", flat=True).all()
         )
-
-    firstmsg = chat_messages.order_by("created_at").first()
-    recap.first_message = "" if firstmsg is None else firstmsg.message
-    lastmsg = chat_messages.order_by("created_at").last()
-    recap.last_message = "" if lastmsg is None else lastmsg.message
 
     if perf:
         print(f"\tmessages: {time.perf_counter() - start:.3f} seconds")
@@ -747,15 +750,15 @@ def calculate_recap(
     if month is None:
         month = datetime.datetime.now(TIMEZONE).month
 
-    chat_messages = ChatMessage.objects
-    videos = Video.objects
-    clips = Clip.objects
-
     recap, _ = (
         RecapData.objects.prefetch_related("fragmentmatch_set")
         .select_related("twitch_user")
         .get_or_create(year=year, month=month, twitch_user_id=user_id)
     )
+    
+    chat_messages = ChatMessage.objects
+    videos = Video.objects
+    clips = Clip.objects
 
     if user_id is not None:
         chat_messages = chat_messages.filter(commenter_id=user_id)
@@ -772,10 +775,16 @@ def calculate_recap(
         print(f"\tfetching data: {time.perf_counter() - start:.3f} seconds")
         start = time.perf_counter()
 
-    chat_messages = chat_messages.order_by("created_at")
 
     count_messages = chat_messages.count()
     recap.count_messages = count_messages
+
+    chat_messages = chat_messages.order_by("created_at")
+    
+    firstmsg = chat_messages.first()
+    recap.first_message = "" if firstmsg is None else firstmsg.message
+    lastmsg = chat_messages.last()
+    recap.last_message = "" if lastmsg is None else lastmsg.message
 
     if count_messages > 10_000:
         recap.count_characters = chat_messages.annotate(
@@ -783,13 +792,8 @@ def calculate_recap(
         ).aggregate(characters=Sum("message_len", default=0))["characters"]
     else:
         recap.count_characters = sum(
-            len(m) for m in ChatMessage.objects.values_list("message", flat=True).all()
+            len(m) for m in chat_messages.values_list("message", flat=True).all()
         )
-
-    firstmsg = chat_messages.first()
-    recap.first_message = "" if firstmsg is None else firstmsg.message
-    lastmsg = chat_messages.last()
-    recap.last_message = "" if lastmsg is None else lastmsg.message
 
     if perf:
         print(f"\tmsgs, chars, first & last: {time.perf_counter() - start:.3f} seconds")
