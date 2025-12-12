@@ -15,6 +15,7 @@ from dateutil import tz
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
+from django.db import transaction, DatabaseError
 from django.db.models import (Avg, Count, F, Max, OuterRef, Prefetch, Q,
                               Subquery, Sum)
 from django.db.models.fields.json import KT
@@ -1142,6 +1143,67 @@ def sum_recap(
     if perf:
         print(f"save: {time.perf_counter() - start:.3f} seconds")
 
+def create_or_update_recaps(recap_list: list):
+    try:
+        with transaction.atomic():
+            RecapData.objects.bulk_create(
+                recap_list,
+                update_conflicts=True,
+                update_fields=[
+                    "count_messages",
+                    "count_characters",
+                    "count_clips",
+                    "count_clip_watch",
+                    "count_clip_views",
+                    "count_chatters",
+                    "count_videos",
+                    "first_message",
+                    "last_message",
+                ],
+                batch_size=5_000,
+            )
+    except DatabaseError as e:
+        if e.args[0] == 1213:
+            print("Deadlock detected. Retrying...")
+            create_or_update_recaps(recap_list)
+        else:
+            raise e
+
+def create_or_update_fragment_group_counters(fgc_list: list):
+    try:
+        with transaction.atomic():
+            FragmentGroupCounter.objects.bulk_create(
+                fgc_list,
+                update_conflicts=True,
+                update_fields=[
+                    "count",
+                ],
+                batch_size=5_000,
+            )
+    except DatabaseError as e:
+        if e.args[0] == 1213:
+            print("Deadlock detected. Retrying...")
+            create_or_update_recaps(recap_list)
+        else:
+            raise e
+
+def create_or_update_fragment_counters(fc_list: list):
+    try:
+        with transaction.atomic():
+            FragmentCounter.objects.bulk_create(
+                fc_list,
+                update_conflicts=True,
+                update_fields=[
+                    "count",
+                ],
+                batch_size=5_000,
+            )
+    except DatabaseError as e:
+        if e.args[0] == 1213:
+            print("Deadlock detected. Retrying...")
+            create_or_update_recaps(recap_list)
+        else:
+            raise e
 
 def process_recap_period(
     year=None,
@@ -1226,42 +1288,11 @@ def process_recap_period(
                 user_func(year, month, user_id=user)
 
         if len(recap_list) > 0:
-            RecapData.objects.bulk_create(
-                recap_list,
-                update_conflicts=True,
-                update_fields=[
-                    "count_messages",
-                    "count_characters",
-                    "count_clips",
-                    "count_clip_watch",
-                    "count_clip_views",
-                    "count_chatters",
-                    "count_videos",
-                    "first_message",
-                    "last_message",
-                ],
-                batch_size=5_000,
-            )
-
+            create_or_update_recaps(recap_list)
         if len(fgc_list) > 0:
-            FragmentGroupCounter.objects.bulk_create(
-                fgc_list,
-                update_conflicts=True,
-                update_fields=[
-                    "count",
-                ],
-                batch_size=5_000,
-            )
-
+            create_or_update_fragment_group_counters(fgc_list)
         if len(fc_list) > 0:
-            FragmentCounter.objects.bulk_create(
-                fc_list,
-                update_conflicts=True,
-                update_fields=[
-                    "count",
-                ],
-                batch_size=5_000,
-            )
+            create_or_update_fragment_counters(fc_list)
 
         if perf:
             print(
