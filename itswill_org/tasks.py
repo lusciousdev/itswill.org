@@ -555,6 +555,8 @@ def find_fragment_matches(period=30, perf: bool = True):
 
     message_count = 0
     for pgnum in paginator.page_range:
+        print(f"Page: {pgnum}/{paginator.num_pages}")
+
         page = paginator.page(pgnum)
         new_fragment_matches: list[FragmentMatch] = []
         for msg_obj_id, message, commenter_id, created_at in page.object_list:
@@ -1195,13 +1197,15 @@ def process_recap_period(
                 .all()
             )
         )
+
+        user_set = sorted(user_list)
     else:
-        user_set = list(TwitchUser.objects.values_list("user_id", flat=True).all())
+        user_set = list(TwitchUser.objects.order_by("user_id").values_list("user_id", flat=True).all())
 
     if perf:
         print(f"\ttotal users: {len(user_set)}")
 
-    batch_size = 5_000
+    batch_size = 1_000
     for i in range(0, len(user_set), batch_size):
         if perf:
             batch_start = time.perf_counter()
