@@ -1521,8 +1521,6 @@ def sum_all_years():
         calculate_yearly_stats.delay(y, recalculate=False, perf=True)
 
     calculate_alltime_stats.delay(recalculate=False, perf=True)
-    calculate_all_leaderboards.delay(perf=True)
-
 
 @shared_task(name="calculate_everything", queue="long_tasks")
 def calculate_everything(find_fragments: bool = False):
@@ -1540,9 +1538,6 @@ def calculate_everything(find_fragments: bool = False):
         calculate_yearly_stats.delay(y, recalculate=True, perf=True)
 
     calculate_alltime_stats.delay(recalculate=True, perf=True)
-    calculate_all_leaderboards.delay(perf=True)
-    create_wrapped_data.delay(perf=True)
-
 
 def seconds_to_duration(input: int, abbr: bool = False):
     days, rem = divmod(input, (3600 * 24))
