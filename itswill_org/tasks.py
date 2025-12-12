@@ -1198,7 +1198,7 @@ def process_recap_period(
             )
         )
 
-        user_set = sorted(user_list)
+        user_set = sorted(user_set)
     else:
         user_set = list(TwitchUser.objects.order_by("user_id").values_list("user_id", flat=True).all())
 
