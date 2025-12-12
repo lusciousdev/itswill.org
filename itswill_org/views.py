@@ -387,6 +387,12 @@ class Wrapped2024UserView(generic.TemplateView):
 
         return data
 
+class Wrapped2025View(generic.TemplateView):
+    template_name = "itswill_org/2025_wrapped.html"
+
+class Wrapped2025UserView(generic.TemplateView):
+    template_name = "itswill_org/2025_wrapped_user.html"
+
 
 @csrf_exempt
 def get_wrapped(request):

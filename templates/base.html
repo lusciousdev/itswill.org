@@ -1,0 +1,55 @@
+{% load static %} {% load tz %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="{% static 'global.css' %}" />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="{% static 'favicon.ico' %}"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      @font-face {
+        font-family: Roobert;
+        font-weight: 400;
+        src: url({% static "Roobert-Regular.woff2"%}) format("woff2");
+      }
+      @font-face {
+        font-family: Roobert;
+        font-weight: 600;
+        src: url({% static "Roobert-SemiBold.woff2"%}) format("woff2");
+      }
+      @font-face {
+        font-family: Roobert;
+        font-weight: 700;
+        src: url({% static "Roobert-Bold.woff2"%}) format("woff2");
+      }
+
+      @font-face {
+        font-family: Provicali;
+        font-weight: 400;
+        src: url({% static "Provicali.otf"%}) format("opentype");
+      }
+    </style>
+
+    {% block stylesheets %}{% endblock %}
+    {% block scripts %}{% endblock %}
+
+    <title>{% block page_title %}{% endblock %}</title>
+  </head>
+  <body>
+    {% block content %}{% endblock %}
+  </body>
+</html>

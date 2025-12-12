@@ -30,8 +30,11 @@ urlpatterns = [
   path("leaderboard/<int:year>/<str:name>/",             cache_page(60)(views.SingleLeaderboardView.as_view()), kwargs = { "month": 0 }, name = "single_leaderboard_year"),
   path("leaderboard/<int:year>/<int:month>/<str:name>/", cache_page(60)(views.SingleLeaderboardView.as_view()), name = "single_leaderboard_month"),
   
-  path("wrapped/", cache_page(60)(views.Wrapped2024View.as_view()), name="wrapped"),
-  path("wrapped/user/<str:username>/", views.Wrapped2024UserView.as_view(), name="wrapped_user"),
+  path("wrapped/", views.Wrapped2025View.as_view(), name="wrapped"),
+  path("wrapped/user/<str:username>/", views.Wrapped2025UserView.as_view(), name="wrapped_user"),
+
+  path("wrapped/2024/", cache_page(60)(views.Wrapped2024View.as_view()), name="wrapped_2024"),
+  path("wrapped/2024/user/<str:username>/", views.Wrapped2024UserView.as_view(), name="wrapped_2024_user"),
   
   path("wrapped/redirect/", views.get_wrapped, name = "wrapped_redirect"),
   

@@ -1,0 +1,25 @@
+html, body {
+  min-height: 100vh !important;
+  font-family: "Work Sans", "Roboto Mono", sans-serif;
+}
+
+.big-title, .subtitle {
+  font-family: Provicali, sans-serif;
+}
+
+.big-title {
+  font-size: 2rem;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}

@@ -15,6 +15,12 @@
   src:url(./Roobert-Bold.woff2) format("woff2");
 }
 
+@font-face {
+  font-family:Provicali;
+  font-weight:400;
+  src:url(./Provicali.otf) format("opentype");
+}
+
 :root {
   --bg: #0e0e10;
   --bg-light: #18181b;

@@ -1201,7 +1201,7 @@ def process_recap_period(
     if perf:
         print(f"\ttotal users: {len(user_set)}")
 
-    batch_size = 500
+    batch_size = 5_000
     for i in range(0, len(user_set), batch_size):
         if perf:
             batch_start = time.perf_counter()

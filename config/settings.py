@@ -277,11 +277,13 @@ CELERY_RESULT_BACKEND = (
 
 CELERY_BEAT_SCHEDULE = {
     "get_recent_letterboxd_reviews": {
-        "task": "itswill_org.tasks.get_letterboxd_reviews",
+        "task": "get_letterboxd_reviews",
         "schedule": crontab(minute="*/15"),
+        "options": {"queue": "short_tasks"},
     },
     "daily_task": {
-        "task": "itswill_org.tasks.daily_task",
+        "task": "daily_task",
         "schedule": crontab(minute=0, hour=4),
+        "options": {"queue": "long_tasks"},
     },
 }
