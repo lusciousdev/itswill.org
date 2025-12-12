@@ -1183,7 +1183,7 @@ def create_or_update_fragment_group_counters(fgc_list: list):
     except DatabaseError as e:
         if e.args[0] == 1213:
             print("Deadlock detected. Retrying...")
-            create_or_update_recaps(recap_list)
+            create_or_update_fragment_group_counters(fgc_list)
         else:
             raise e
 
@@ -1201,7 +1201,7 @@ def create_or_update_fragment_counters(fc_list: list):
     except DatabaseError as e:
         if e.args[0] == 1213:
             print("Deadlock detected. Retrying...")
-            create_or_update_recaps(recap_list)
+            create_or_update_fragment_counters(fc_list)
         else:
             raise e
 
