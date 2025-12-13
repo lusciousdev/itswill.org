@@ -1824,7 +1824,11 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
     print("Overall wrapped data created. Moving on to user data.")
 
     user_recap_set = (
-        RecapData.objects.filter(year=year, month=0).exclude(twitch_user=None).all()
+        RecapData.objects.filter(year=year, month=0)
+        .prefetch_related("fragmentgroupcounter_set", "fragmentcounter_set")
+        .select_related("twitch_user")
+        .exclude(twitch_user=None)
+        .all()
     )
 
     leaderboards = {}
@@ -1883,7 +1887,21 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
         user_wrapped.vip_gambles = vip_roll_count
         user_wrapped.vip_wins = vip_roll_win
 
-        overall_dict["vip_cheats"] = vip_roll_cheats
+        user_dict["vip_cheats"] = vip_roll_cheats
+
+        month_recaps = (
+            RecapData.objects.filter(year=year, twitch_user=user_recap.twitch_user_id)
+            .prefetch_related("fragmentgroupcounter_set", "fragmentcounter_set")
+            .order_by("month")
+            .all()
+        )
+
+        user_dict = user_wrapped.extra_data
+        user_dict["chart_data"] = {}
+
+        user_dict["chart_data"]["messages"] = list(
+            month_recaps.values_list("month", "count_messages").all()
+        )
 
         user_dict["top_clips"] = (
             [clip.to_json() for clip in userclips[:5]] if len(userclips) > 1 else None

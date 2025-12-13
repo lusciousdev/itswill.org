@@ -179,44 +179,20 @@ class RecapView(generic.TemplateView):
         data = super().get_context_data(**kwargs)
 
         data["month_abbr"] = calendar.month_abbr
-        data["all_recaps"] = {}
+        all_recaps = {}
 
-        try:
-            data["all_recaps"]["alltime"] = {
-                "recap": RecapData.objects.get(year=0, month=0, twitch_user=None),
-                "month_recaps": {},
-            }
-        except RecapData.DoesNotExist:
-            pass
+        recap_times = (
+            RecapData.objects.filter(twitch_user=None)
+            .order_by("year", "month")
+            .values_list("year", "month")
+            .all()
+        )
+        for y, m in recap_times:
+            if y not in all_recaps:
+                all_recaps[y] = []
+            all_recaps[y].append(month)
 
-        year_recaps = RecapData.objects.filter(year__gte=1, month=0, twitch_user=None).order_by("year").all()
-        month_recaps = RecapData.objects.filter(year__gte=1, month__gte=1, twitch_user=None).order_by("month").all()
-
-        for yearrecap in year_recaps:
-            data["all_recaps"][yearrecap.year] = {
-                "recap": yearrecap,
-                "month_recaps": {},
-            }
-
-        for monthrecap in month_recaps:
-            data["all_recaps"][monthrecap.year]["month_recaps"][
-                monthrecap.month
-            ] = {
-                "month_name": calendar.month_abbr[monthrecap.month],
-                "recap": monthrecap,
-            }
-
-        try:
-            overallrecap = RecapData.objects.prefetch_related(
-                "fragmentgroupcounter_set", "fragmentcounter_set"
-            ).get(year=year, month=month, twitch_user=None)
-        except RecapData.DoesNotExist:
-            raise Http404("That recap does not exist (yet?).")
-
-        data["overall_recap"] = True
-        data["recap"] = overallrecap
-
-        recap = overallrecap
+        data["all_recaps"] = all_recaps
 
         if username is not None:
             try:
@@ -228,28 +204,41 @@ class RecapView(generic.TemplateView):
                     raise Http404("That user does not exist or has not chatted.")
 
             try:
-                userrecap = RecapData.objects.select_related("twitch_user").prefetch_related(
-                    "fragmentgroupcounter_set", "fragmentcounter_set"
-                ).select_related("twitch_user").get(year=year, month=month, twitch_user=twitchuser)
+                recap = (
+                    RecapData.objects.select_related("twitch_user")
+                    .prefetch_related("fragmentgroupcounter_set", "fragmentcounter_set")
+                    .select_related("twitch_user")
+                    .get(year=year, month=month, twitch_user=twitchuser)
+                )
             except RecapData.DoesNotExist:
                 raise Http404("No data for that user in this period.")
 
             data["overall_recap"] = False
             data["recap"] = userrecap
+        else:
+            try:
+                recap = RecapData.objects.prefetch_related(
+                    "fragmentgroupcounter_set", "fragmentcounter_set"
+                ).get(year=year, month=month, twitch_user=None)
+            except RecapData.DoesNotExist:
+                raise Http404("That recap does not exist (yet?).")
 
-            recap = userrecap
+            data["overall_recap"] = True
+            data["recap"] = recap
 
+        fragment_counters = recap.fragmentcounter_set.all()
+        fragment_group_counters = recap.fragmentgroupcounter_set.all()
         data["fragment_data"] = {
             fgc.fragment_group.group_id: {
                 "total": fgc.count,
                 "members": {
                     fc.fragment.pretty_name: fc.count
-                    for fc in recap.fragmentcounter_set.filter(
+                    for fc in fragment_counters.filter(
                         fragment__group=fgc.fragment_group
-                    ).all()
+                    )
                 },
             }
-            for fgc in recap.fragmentgroupcounter_set.all()
+            for fgc in fragment_group_counters
         }
 
         data["fragment_groups"] = (
@@ -257,6 +246,7 @@ class RecapView(generic.TemplateView):
             .prefetch_related("fragment_set")
             .all()
         )
+
         return data
 
 
@@ -387,8 +377,10 @@ class Wrapped2024UserView(generic.TemplateView):
 
         return data
 
+
 class Wrapped2025View(generic.TemplateView):
     template_name = "itswill_org/2025_wrapped.html"
+
 
 class Wrapped2025UserView(generic.TemplateView):
     template_name = "itswill_org/2025_wrapped_user.html"
@@ -450,11 +442,19 @@ class LeaderboardView(generic.TemplateView):
         except RecapData.DoesNotExist:
             raise Http404("That recap does not exist (yet?).")
 
-        leaderboards = LeaderboardCache.objects.filter(recap=overallrecap).order_by("-created_at").first()
-        
+        leaderboards = (
+            LeaderboardCache.objects.filter(recap=overallrecap)
+            .order_by("-created_at")
+            .first()
+        )
+
         if leaderboards is None:
             calculate_leaderboard(overallrecap.year, overallrecap.month, True)
-            leaderboards = LeaderboardCache.objects.filter(recap=overallrecap).order_by("-created_at").first()
+            leaderboards = (
+                LeaderboardCache.objects.filter(recap=overallrecap)
+                .order_by("-created_at")
+                .first()
+            )
             if leaderboards is None:
                 raise Http404("Failed to create leaderboard.")
 
