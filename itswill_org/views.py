@@ -193,7 +193,7 @@ class RecapView(generic.TemplateView):
         for y, m in recap_times:
             if y not in all_recaps:
                 all_recaps[y] = []
-            all_recaps[y].append(month)
+            all_recaps[y].append(m)
 
         data["all_recaps"] = all_recaps
 
