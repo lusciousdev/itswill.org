@@ -176,6 +176,9 @@ class RecapView(generic.TemplateView):
     template_name = "itswill_org/recap.html"
 
     def get_context_data(self, year: int, month: int, username: str, **kwargs):
+        start = time.perf_counter()
+        print("getting recap view context data")
+
         data = super().get_context_data(**kwargs)
 
         data["month_abbr"] = calendar.month_abbr
@@ -193,6 +196,9 @@ class RecapView(generic.TemplateView):
             all_recaps[y].append(month)
 
         data["all_recaps"] = all_recaps
+
+        print(f"\tFetch overall: {time.perf_counter()-start:.3f}")
+        start = time.perf_counter()
 
         if username is not None:
             try:
@@ -226,6 +232,9 @@ class RecapView(generic.TemplateView):
             data["overall_recap"] = True
             data["recap"] = recap
 
+        print(f"\tFetch recap: {time.perf_counter()-start:.3f}")
+        start = time.perf_counter()
+
         fragment_counters = recap.fragmentcounter_set.all()
         fragment_group_counters = recap.fragmentgroupcounter_set.all()
         data["fragment_data"] = {
@@ -247,6 +256,7 @@ class RecapView(generic.TemplateView):
             .all()
         )
 
+        print(f"\tFetch fragments: {time.perf_counter()-start:.3f}")
         return data
 
 
