@@ -229,10 +229,14 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
-        "file": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+        },
+        "django_file": {
             "level": "WARNING",
             "class": "logging.FileHandler",
-            "filename": "./logs/debug.log",
+            "filename": "./logs/django.log",
             "encoding": "utf-8",
         },
         "bot_file": {
@@ -244,13 +248,13 @@ LOGGING = {
     },
     "loggers": {
         "django": {
-            "handlers": ["file"],
+            "handlers": ["django_file", "console"],
             "level": "WARNING",
             "propagate": True,
         },
         "bot": {
             "handlers": ["bot_file"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": True,
         },
     },

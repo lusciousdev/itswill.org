@@ -225,12 +225,10 @@ class RecapView(generic.TemplateView):
                 raise Http404("No data for that user in this period.")
 
             data["overall_recap"] = False
-            data["recap"] = userrecap
+            data["recap"] = recap
         else:
             try:
-                recap = RecapData.objects.prefetch_related(
-                    "fragmentgroupcounter_set", "fragmentcounter_set"
-                ).get(year=year, month=month, twitch_user=None)
+                recap = RecapData.objects.get(year=year, month=month, twitch_user=None)
             except RecapData.DoesNotExist:
                 raise Http404("That recap does not exist (yet?).")
 
