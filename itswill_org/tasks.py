@@ -15,9 +15,8 @@ from dateutil import tz
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
-from django.db import transaction, DatabaseError
-from django.db.models import (Avg, Count, F, Max, OuterRef, Prefetch, Q,
-                              Subquery, Sum)
+from django.db import DatabaseError, transaction
+from django.db.models import Avg, Count, F, Max, OuterRef, Prefetch, Q, Subquery, Sum
 from django.db.models.fields.json import KT
 from django.db.models.functions import Cast, Coalesce, Length
 
@@ -635,14 +634,13 @@ def create_recap(
 
     count_messages = chat_messages.count()
     recap.count_messages = count_messages
-    
+
     chat_messages = chat_messages.order_by("created_at")
 
     firstmsg = chat_messages.first()
     recap.first_message = "" if firstmsg is None else firstmsg.message
     lastmsg = chat_messages.last()
     recap.last_message = "" if lastmsg is None else lastmsg.message
-
 
     if count_messages > 10_000:
         recap.count_characters = chat_messages.annotate(
@@ -730,6 +728,7 @@ def create_recap(
             twitch_user=recap.twitch_user,
             count=total,
         )
+        fgcs.append(fg_counter)
 
     if perf:
         print(f"\ttotal: {time.perf_counter() - start:.3f} seconds")
@@ -758,7 +757,7 @@ def calculate_recap(
         .select_related("twitch_user")
         .get_or_create(year=year, month=month, twitch_user_id=user_id)
     )
-    
+
     chat_messages = ChatMessage.objects
     videos = Video.objects
     clips = Clip.objects
@@ -778,12 +777,11 @@ def calculate_recap(
         print(f"\tfetching data: {time.perf_counter() - start:.3f} seconds")
         start = time.perf_counter()
 
-
     count_messages = chat_messages.count()
     recap.count_messages = count_messages
 
     chat_messages = chat_messages.order_by("created_at")
-    
+
     firstmsg = chat_messages.first()
     recap.first_message = "" if firstmsg is None else firstmsg.message
     lastmsg = chat_messages.last()
@@ -1143,6 +1141,7 @@ def sum_recap(
     if perf:
         print(f"save: {time.perf_counter() - start:.3f} seconds")
 
+
 def create_or_update_recaps(recap_list: list):
     try:
         with transaction.atomic():
@@ -1169,6 +1168,7 @@ def create_or_update_recaps(recap_list: list):
         else:
             raise e
 
+
 def create_or_update_fragment_group_counters(fgc_list: list):
     try:
         with transaction.atomic():
@@ -1187,6 +1187,7 @@ def create_or_update_fragment_group_counters(fgc_list: list):
         else:
             raise e
 
+
 def create_or_update_fragment_counters(fc_list: list):
     try:
         with transaction.atomic():
@@ -1204,6 +1205,7 @@ def create_or_update_fragment_counters(fc_list: list):
             create_or_update_fragment_counters(fc_list)
         else:
             raise e
+
 
 def process_recap_period(
     year=None,
@@ -1262,7 +1264,11 @@ def process_recap_period(
 
         user_set = sorted(user_set)
     else:
-        user_set = list(TwitchUser.objects.order_by("user_id").values_list("user_id", flat=True).all())
+        user_set = list(
+            TwitchUser.objects.order_by("user_id")
+            .values_list("user_id", flat=True)
+            .all()
+        )
 
     if perf:
         print(f"\ttotal users: {len(user_set)}")
@@ -1522,6 +1528,7 @@ def sum_all_years():
 
     calculate_alltime_stats.delay(recalculate=False, perf=True)
 
+
 @shared_task(name="calculate_everything", queue="long_tasks")
 def calculate_everything(find_fragments: bool = False):
     year = datetime.datetime.now(TIMEZONE).year
@@ -1538,6 +1545,7 @@ def calculate_everything(find_fragments: bool = False):
         calculate_yearly_stats.delay(y, recalculate=True, perf=True)
 
     calculate_alltime_stats.delay(recalculate=True, perf=True)
+
 
 def seconds_to_duration(input: int, abbr: bool = False):
     days, rem = divmod(input, (3600 * 24))
@@ -1683,6 +1691,10 @@ def create_general_wrapped_data(year: int = None, perf: bool = True):
     overall_dict["most_common_combos"] = most_common_combos[:10]
 
     all_vip_regex_str = r"@([A-Za-z0-9_]+) Picked ([1-5]|12429) and rolled a ([1-5])\.\.\.\. (Luck|You).*"
+    all_vip_regex = re.compile(
+        all_vip_regex_str,
+        re.IGNORECASE,
+    )
 
     vip_messages = msgs.filter(
         commenter_id=920105724, message__iregex=all_vip_regex_str
@@ -1692,7 +1704,7 @@ def create_general_wrapped_data(year: int = None, perf: bool = True):
     vip_roll_win = 0
     vip_roll_cheats = 0
     for message in vip_messages:
-        msg_match = all_vip_regex_str.match(message.message)
+        msg_match = all_vip_regex.match(message.message)
 
         vip_roll_count += 1
         if msg_match.group(4) == "Luck":
@@ -1711,7 +1723,7 @@ def create_general_wrapped_data(year: int = None, perf: bool = True):
     )
 
     overall_dict["top_clips"] = [[] for i in range(0, 13)]
-    overall_dict["top_clips"][0] = [clip.to_json() for clip in clips[:5]]
+    overall_dict["top_clips"][0] = [clip.to_basic_json() for clip in clips[:5]]
 
     for month in range(1, 13):
         start_range = datetime.datetime(year, month, 1, 0, 0, 0, 1, localtz)
@@ -1729,14 +1741,83 @@ def create_general_wrapped_data(year: int = None, perf: bool = True):
             created_at__range=(start_range, end_range)
         ).order_by("-view_count")
 
-        overall_dict["top_clips"][month] = [clip.to_json() for clip in clips[:5]]
+        overall_dict["top_clips"][month] = [clip.to_basic_json() for clip in clips[:5]]
 
     overall_wrapped.extra_data = overall_dict
 
+    overall_wrapped.save()
+
+
+def get_fragment_chart_data(
+    year: int, id: str, user_id: int = None, fragment_group: bool = True
+):
+    if fragment_group:
+        return list(
+            FragmentGroupCounter.objects.filter(
+                year=year, fragment_group__group_id=id, twitch_user_id=user_id
+            )
+            .order_by("month")
+            .values_list("month", "count")
+            .all()
+        )
+    else:
+        return list(
+            FragmentCounter.objects.filter(
+                year=year, fragment__pretty_name=id, twitch_user_id=user_id
+            )
+            .order_by("month")
+            .values_list("month", "count")
+            .all()
+        )
+
+
 @shared_task(name="create_2025_wrapped_data", queue="long_tasks")
-def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
+def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
     create_general_wrapped_data(2025, perf)
-    
+
+    year = 2025
+
+    try:
+        overall_recap = RecapData.objects.get(year=year, month=0, twitch_user=None)
+    except RecapData.DoesNotExist:
+        print("No recap for that year.")
+        return
+
+    try:
+        overall_wrapped = WrappedData.objects.get(recap=overall_recap)
+    except WrappedData.DoesNotExist:
+        print("Wrapped data is missing, something's broken")
+        return
+
+    month_recaps = (
+        RecapData.objects.filter(year=year, twitch_user=None)
+        .prefetch_related("fragmentgroupcounter_set", "fragmentcounter_set")
+        .order_by("month")
+        .all()
+    )
+
+    overall_dict = overall_wrapped.extra_data
+    overall_dict["chart_data"] = {}
+
+    overall_dict["chart_data"]["clip_views"] = list(
+        month_recaps.values_list("month", "count_clip_views").all()
+    )
+    overall_dict["chart_data"]["cum"] = get_fragment_chart_data(
+        year, "cum", user_id=None, fragment_group=True
+    )
+    overall_dict["chart_data"]["hummingbird"] = get_fragment_chart_data(
+        year, "hummingbird", user_id=None, fragment_group=False
+    )
+    overall_dict["chart_data"]["+2"] = get_fragment_chart_data(
+        year, "+2", user_id=None, fragment_group=False
+    )
+    overall_dict["chart_data"]["-2"] = get_fragment_chart_data(
+        year, "-2", user_id=None, fragment_group=False
+    )
+
+    overall_wrapped.extra_data = overall_dict
+    overall_wrapped.save()
+
     if skip_users:
         return
 
@@ -1750,14 +1831,18 @@ def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
 
     invalid_fields = ["year", "month", "count_chatters", "count_videos"]
 
-    leaderboard_cache = (
-        LeaderboardCache.objects.filter(recap=overall_recap)
-        .order_by("-created_at")
-        .first()
+    leaderboard_cache = LeaderboardCache.objects.filter(recap=overall_recap).order_by(
+        "-created_at"
     )
 
+    if leaderboard_cache.exists():
+        leaderboard = leaderboard_cache.first()
+    else:
+        calculate_leaderboard(year, 0)
+        leaderboard = LeaderboardCache.objects.filter(recap=overall_recap).first()
+
     leaderboard = leaderboard_cache.leaderboard_data
-    
+
     user_recap: RecapData
     for user_recap in user_recap_set:
         user = user_recap.twitch_user
@@ -1836,7 +1921,7 @@ def create_2025_wrapped_data(skip_user: bool = False, perf: bool = True):
         ]
 
         user_dict["top_leaderboard_positions"] = sorted_leaderboard_positions[:5]
-        
+
         highlight = {}
 
         if user.user_id == 444861963:  # ACrowOutside

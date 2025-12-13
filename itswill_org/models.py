@@ -345,6 +345,18 @@ class Clip(models.Model):
             "vod_offset": self.vod_offset,
         }
 
+    def to_basic_json(self):
+        return {
+            "clip_id": self.clip_id,
+            "creator": self.creator.display_name,
+            "url": self.url,
+            "title": self.title,
+            "view_count": self.view_count,
+            "created_at": self.created_at.astimezone(TIMEZONE).strftime(
+                luscioustwitch.TWITCH_API_TIME_FORMAT
+            ),
+        }
+
 
 class Video(models.Model):
     vod_id = models.CharField(max_length=255, primary_key=True, editable=False)
@@ -546,7 +558,7 @@ class FragmentGroupCounter(models.Model):
             models.Index(
                 fields=["twitch_user", "year", "month", "fragment_group", "count"],
                 name="fragmentgroup_leaderboard_idx",
-            )
+            ),
         ]
 
 
