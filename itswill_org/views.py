@@ -180,7 +180,7 @@ class RecapView(generic.TemplateView):
 
     def get_context_data(self, year: int, month: int, username: str, **kwargs):
         start = time.perf_counter()
-        logger.debug("getting recap view context data")
+        logger.info("getting recap view context data")
 
         data = super().get_context_data(**kwargs)
 
@@ -200,7 +200,7 @@ class RecapView(generic.TemplateView):
 
         data["all_recaps"] = all_recaps
 
-        logger.debug(f"\tFetch overall: {time.perf_counter()-start:.3f}")
+        logger.info(f"\tFetch overall: {time.perf_counter()-start:.3f}")
         start = time.perf_counter()
 
         if username is not None:
@@ -237,28 +237,36 @@ class RecapView(generic.TemplateView):
             data["overall_recap"] = True
             data["recap"] = recap
 
-        logger.debug(f"\tFetch recap: {time.perf_counter()-start:.3f}")
+        logger.info(f"\tFetch recap: {time.perf_counter()-start:.3f}")
         start = time.perf_counter()
 
-        fragment_counters = recap.fragmentcounter_set.select_related("fragment").all()
-        fragment_group_counters = recap.fragmentgroupcounter_set.all()
+        fragment_group_counters = (
+            FragmentGroupCounter.objects.filter(recap=recap)
+            .select_related("fragment_group")
+            .values_list("fragment_group__group_id", "count")
+            .all()
+        )
+        fragment_counters = (
+            FragmentCounter.objects.filter(recap=recap)
+            .select_related("fragment")
+            .values_list("fragment__group__group_id", "fragment__pretty_name", "count")
+            .all()
+        )
 
-        logger.debug(f"\tLoad fragment counters: {time.perf_counter()-start:.3f}")
+        logger.info(f"\tLoad fragment counters: {time.perf_counter()-start:.3f}")
         start = time.perf_counter()
 
         data["fragment_data"] = {
-            fgc.fragment_group.group_id: {
-                "total": fgc.count,
+            group_id: {
+                "total": count,
                 "members": {
-                    fc.fragment.pretty_name: fc.count
-                    for fc in fragment_counters.filter(
-                        fragment__group=fgc.fragment_group
-                    )
+                    pretty_name: count
+                    for _, pretty_name, count in filter(lambda fcd: fcd[0]==group_id, fragment_counters)
                 },
             }
-            for fgc in fragment_group_counters
+            for group_id, count in fragment_group_counters
         }
-        logger.debug(f"\tContextify fragment counters: {time.perf_counter()-start:.3f}")
+        logger.info(f"\tContextify fragment counters: {time.perf_counter()-start:.3f}")
         start = time.perf_counter()
 
         data["fragment_groups"] = (
@@ -267,7 +275,7 @@ class RecapView(generic.TemplateView):
             .all()
         )
 
-        logger.debug(f"\tFetch fragments: {time.perf_counter()-start:.3f}")
+        logger.info(f"\tFetch fragments: {time.perf_counter()-start:.3f}")
         return data
 
 
