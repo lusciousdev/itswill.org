@@ -1,5 +1,6 @@
 import calendar
 import datetime
+import logging
 import typing
 
 from dateutil import tz
@@ -13,6 +14,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import *
 from .tasks import *
+
+logger = logging.getLogger("django")
 
 # Create your views here.
 
@@ -177,7 +180,7 @@ class RecapView(generic.TemplateView):
 
     def get_context_data(self, year: int, month: int, username: str, **kwargs):
         start = time.perf_counter()
-        print("getting recap view context data")
+        logger.debug("getting recap view context data")
 
         data = super().get_context_data(**kwargs)
 
@@ -197,7 +200,7 @@ class RecapView(generic.TemplateView):
 
         data["all_recaps"] = all_recaps
 
-        print(f"\tFetch overall: {time.perf_counter()-start:.3f}")
+        logger.debug(f"\tFetch overall: {time.perf_counter()-start:.3f}")
         start = time.perf_counter()
 
         if username is not None:
@@ -232,7 +235,7 @@ class RecapView(generic.TemplateView):
             data["overall_recap"] = True
             data["recap"] = recap
 
-        print(f"\tFetch recap: {time.perf_counter()-start:.3f}")
+        logger.debug(f"\tFetch recap: {time.perf_counter()-start:.3f}")
         start = time.perf_counter()
 
         fragment_counters = recap.fragmentcounter_set.all()
@@ -256,7 +259,7 @@ class RecapView(generic.TemplateView):
             .all()
         )
 
-        print(f"\tFetch fragments: {time.perf_counter()-start:.3f}")
+        logger.debug(f"\tFetch fragments: {time.perf_counter()-start:.3f}")
         return data
 
 
