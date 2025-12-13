@@ -85,7 +85,7 @@ class MonthView(generic.TemplateView):
                 year=year, month=month, twitch_user=None
             )
         except RecapData.DoesNotExist:
-            print("ERROR: MISSING MONTHLY RECAP, NOT REDIRECTED BY DISPATCH")
+            logger.error("MISSING MONTHLY RECAP, NOT REDIRECTED BY DISPATCH")
             return data
 
         localtz = tz.gettz("America/Los_Angeles")
@@ -204,6 +204,8 @@ class RecapView(generic.TemplateView):
         start = time.perf_counter()
 
         if username is not None:
+            username = username.strip()
+
             try:
                 twitchuser = TwitchUser.objects.get(display_name__iexact=username)
             except TwitchUser.DoesNotExist:
@@ -238,8 +240,12 @@ class RecapView(generic.TemplateView):
         logger.debug(f"\tFetch recap: {time.perf_counter()-start:.3f}")
         start = time.perf_counter()
 
-        fragment_counters = recap.fragmentcounter_set.all()
+        fragment_counters = recap.fragmentcounter_set.select_related("fragment").all()
         fragment_group_counters = recap.fragmentgroupcounter_set.all()
+
+        logger.debug(f"\tLoad fragment counters: {time.perf_counter()-start:.3f}")
+        start = time.perf_counter()
+
         data["fragment_data"] = {
             fgc.fragment_group.group_id: {
                 "total": fgc.count,
@@ -252,6 +258,8 @@ class RecapView(generic.TemplateView):
             }
             for fgc in fragment_group_counters
         }
+        logger.debug(f"\tContextify fragment counters: {time.perf_counter()-start:.3f}")
+        start = time.perf_counter()
 
         data["fragment_groups"] = (
             FragmentGroup.objects.order_by("ordering")
