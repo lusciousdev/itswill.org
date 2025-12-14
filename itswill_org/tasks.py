@@ -1729,6 +1729,20 @@ def get_fragment_chart_data(
         )
 
 
+def get_fragment_group_counts(
+    user_recap: RecapData, overall_recap: RecapData, group_id: str
+):
+    return list(
+        FragmentGroupCounter.objects.filter(
+            Q(fragment_group__group_id=group_id)
+            & (Q(recap=user_recap) | Q(recap=overall_recap))
+        )
+        .order_by("twitch_user_id")
+        .values_list("count", flat=True)
+        .all()
+    )
+
+
 @shared_task(name="create_2025_wrapped_data", queue="long_tasks")
 def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
     create_general_wrapped_data(2025, perf)
@@ -1789,8 +1803,6 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
         .all()
     )
 
-    leaderboards = {}
-
     invalid_fields = ["year", "month", "count_chatters", "count_videos"]
 
     leaderboard_cache = LeaderboardCache.objects.filter(recap=overall_recap).order_by(
@@ -1798,12 +1810,17 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
     )
 
     if leaderboard_cache.exists():
-        leaderboard = leaderboard_cache.first()
+        leaderboards = leaderboard_cache.first().leaderboard_data
     else:
         calculate_leaderboard(year, 0)
-        leaderboard = LeaderboardCache.objects.filter(recap=overall_recap).first()
+        leaderboards = (
+            LeaderboardCache.objects.filter(recap=overall_recap)
+            .first()
+            .leaderboard_data
+        )
 
-    leaderboard = leaderboard_cache.leaderboard_data
+    start_year = overall_recap.start_date
+    end_year = overall_recap.end_date
 
     user_recap: RecapData
     for user_recap in user_recap_set:
@@ -1824,6 +1841,10 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
         ).order_by("created_at")
 
         all_vip_regex_str = r"@([A-Za-z0-9_]+) Picked ([1-5]|12429) and rolled a ([1-5])\.\.\.\. (Luck|You).*"
+        all_vip_regex = re.compile(
+            all_vip_regex_str,
+            re.IGNORECASE,
+        )
 
         vip_messages = msgs.filter(
             commenter_id=920105724, message__iregex=all_vip_regex_str
@@ -1833,7 +1854,12 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
         vip_roll_win = 0
         vip_roll_cheats = 0
         for message in vip_messages:
-            msg_match = all_vip_regex_str.match(message.message)
+            msg_match = all_vip_regex.match(message.message)
+
+            username = msg_match.group(1).lower()
+
+            if username != user.login.lower() and username != user.display_name.lower():
+                continue
 
             vip_roll_count += 1
             if msg_match.group(4) == "Luck":
@@ -1866,21 +1892,16 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
 
         leaderboard_positions = {}
         all_leaderboard_positions = {}
-        for field in user_recap._meta.get_fields():
-            if (
-                field.get_internal_type() == "IntegerField"
-                or field.get_internal_type() == "BigIntegerField"
-            ) and field.name not in invalid_fields:
-                if user.user_id in leaderboards[field.name]:
-                    if leaderboards[field.name][user.user_id] > 0:
-                        pos = (
-                            list(leaderboards[field.name].keys()).index(user.user_id)
-                            + 1,
-                            leaderboards[field.name][user.user_id],
-                        )
-                        if field.name not in exclude_leaderboards:
-                            leaderboard_positions[field.name] = pos
-                        all_leaderboard_positions[field.name] = pos
+        for field in leaderboards.keys():
+            if user.user_id in leaderboards[field]:
+                if leaderboards[field][user.user_id] > 0:
+                    pos = (
+                        list(leaderboard[field].keys()).index(user.user_id) + 1,
+                        leaderboard[field][user.user_id],
+                    )
+                    if field.name not in exclude_leaderboards:
+                        leaderboard_positions[field] = pos
+                    all_leaderboard_positions[field] = pos
 
         sorted_leaderboard_positions = [
             (k, v)
@@ -1899,11 +1920,22 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
 
         user_dict["highlights"] = []
 
-        if user_wrapped.vip_count > 0:
+        if user_wrapped.vip_gambles >= 5:
+            record = user_wrapped.vip_wins / user_wrapped.vip_gambles
+
+            if record > 0.25:
+                record_note = f"You may need to be investigated. You won {record:.1%} of your VIP gambles."
+            elif record < 0.15:
+                record_note = f"I think MrNice scammed you. You only won {record:.1%} of your VIP gambles."
+            else:
+                record_note = f"You won {record:.1%} of your VIP gambles."
+
             vip_highlight = {
-                "title": "",
+                "title": "VIP Gambler",
                 "description": [],
             }
+
+            user_dict["highlights"].append(vip_highlight)
 
         leaderboard_highlight = {}
 
@@ -1913,14 +1945,15 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                 if "caw" not in all_leaderboard_positions
                 else all_leaderboard_positions["caw"][0]
             )
-            percent_caws = (3 * user_recap.count_caw) / max(
-                user_recap.count_characters, 1
+            user_caws, total_caws = get_fragment_group_counts(
+                user_recap, overall_recap, "caw"
             )
+            percent_caws = (3 * user_caws) / max(user_recap.count_characters, 1)
             leaderboard_highlight = {
                 "title": "CAW",
                 "description": [
                     f"CAW RANK {caw_rank} CAWs (it wasn't even close) CAW",
-                    f"CAW {user_recap.count_caw:,} CAWs CAW",
+                    f"CAW {user_caws:,} CAWs CAW",
                     f"CAW CAW made up {percent_caws:.1%} of your total chat output CAW",
                 ],
             }
@@ -1930,9 +1963,28 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                 if "glorp" not in all_leaderboard_positions
                 else all_leaderboard_positions["glorp"][0]
             )
+            user_glorps, total_glorps = get_fragment_group_counts(
+                user_recap, overall_recap, "glorp"
+            )
             leaderboard_highlight = {
-                "title": "",
-                "description": [],
+                "title": "Queen of the glorpers",
+                "description": [
+                    f"You sent a total of {user_glorps:,} glorps in 2025.",
+                    f"This accounts for {user_glorps/total_glorps:.1%} of the total glorps.",
+                ],
+            }
+        elif user.user_id == 855874334: # TimotheeChalameth
+            messages_rank = (
+                -1
+                if "messages" not in all_leaderboard_positions
+                else all_leaderboard_positions["messages"][0]
+            )
+            leaderboard_highlight = {
+                "title": "#1 (human) chatter",
+                "description": [
+                    f"You sent {user_recap.count_messages:,} messages in 2025.",
+                    f"You chatted more than itswillChat, but didn't quite out-yap Nightbot.",
+                ],
             }
         else:
             for category, (rank, count) in sorted_leaderboard_positions:
@@ -2049,8 +2101,8 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
-
-        user_dict["highlight"] = highlight
+        if leaderboard_highlight is not None:
+            user_dict["highlights"].append(leaderboard_highlight)
 
         user_wrapped.extra_data = user_dict
         user_wrapped.save()
