@@ -1353,84 +1353,85 @@ def daily_task():
     calculate_all_leaderboards(perf=True)
 
 
-@shared_task(name="calculate_leaderboard", queue="short_tasks")
-def calculate_leaderboard(year: int, month: int, perf: bool = False):
-    start = time.perf_counter()
-    oldest = datetime.datetime.now(TIMEZONE) - datetime.timedelta(minutes=30)
+def generate_leaderboard(recap: RecapData, perf: bool = False):
+    if perf:
+        print(f"Generating leaderboards for {recap.year}-{recap.month}")
+        start = time.perf_counter()
+
+    leaderboards_dict = {}
 
     recaps = (
-        RecapData.objects.filter(year=year, month=month, twitch_user=None)
-        .prefetch_related("leaderboardcache_set")
+        RecapData.objects.filter(year=recap.year, month=recap.month)
+        .exclude(twitch_user=None)
+        .select_related("twitch_user")
         .all()
     )
-    for recap in recaps:
-        if recap.leaderboardcache_set.filter(created_at__gte=oldest).exists():
-            print(f"Leaderboard ({year}-{month}) already in cache")
-            continue
-        else:
-            print(f"Calculating leaderboard ({year}-{month})")
+    for field in recap._meta.get_fields():
+        if type(field) in [StatField, BigStatField] and field.name not in [
+            "year",
+            "month",
+            "count_chatters",
+            "count_videos",
+        ]:
+            if not field.show_leaderboard:
+                continue
 
-        leaderboards_dict = {}
-
-        if perf:
-            print(f"\tsetup: {time.perf_counter()-start:.3f}s")
-            start = time.perf_counter()
-
-        recaps = (
-            RecapData.objects.filter(year=recap.year, month=recap.month)
-            .exclude(twitch_user=None)
-            .select_related("twitch_user")
-            .all()
-        )
-        for field in recap._meta.get_fields():
-            if type(field) in [StatField, BigStatField] and field.name not in [
-                "year",
-                "month",
-                "count_chatters",
-                "count_videos",
-            ]:
-                if not field.show_leaderboard:
-                    continue
-
-                leaderboards_dict[field.short_name] = list(
-                    recaps.order_by("-" + field.name)
-                    .values_list(
-                        "twitch_user__display_name", field.name, "twitch_user__is_bot"
-                    )
-                    .all()
-                )[:250]
-
-        if perf:
-            print(f"\trecap fields: {time.perf_counter()-start:.3f}s")
-            start = time.perf_counter()
-
-        fragment_groups = (
-            FragmentGroup.objects.filter(show_leaderboard=True)
-            .order_by("ordering")
-            .all()
-        )
-        fragment_group_counters = (
-            FragmentGroupCounter.objects.filter(
-                year=recap.year, month=recap.month, count__gt=0
-            )
-            .exclude(twitch_user=None)
-            .select_related("twitch_user")
-            .order_by("-count")
-            .all()
-        )
-        for fg in fragment_groups:
-            leaderboards_dict[fg.group_id] = list(
-                fragment_group_counters.filter(fragment_group=fg)
+            leaderboards_dict[field.short_name] = list(
+                recaps.order_by("-" + field.name)
                 .values_list(
-                    "twitch_user__display_name", "count", "twitch_user__is_bot"
+                    "twitch_user__display_name", field.name, "twitch_user__is_bot"
                 )
                 .all()
             )[:250]
 
-        if perf:
-            print(f"\tfrags: {time.perf_counter()-start:.3f}s")
-            start = time.perf_counter()
+    if perf:
+        print(f"\trecap fields: {time.perf_counter()-start:.3f}s")
+        start = time.perf_counter()
 
+    fragment_groups = (
+        FragmentGroup.objects.filter(show_leaderboard=True).order_by("ordering").all()
+    )
+    fragment_group_counters = (
+        FragmentGroupCounter.objects.filter(
+            year=recap.year, month=recap.month, count__gt=0
+        )
+        .exclude(twitch_user=None)
+        .select_related("twitch_user")
+        .order_by("-count")
+        .all()
+    )
+    for fg in fragment_groups:
+        leaderboards_dict[fg.group_id] = list(
+            fragment_group_counters.filter(fragment_group=fg)
+            .values_list("twitch_user__display_name", "count", "twitch_user__is_bot")
+            .all()
+        )[:250]
+
+    if perf:
+        print(f"\tfrags: {time.perf_counter()-start:.3f}s")
+        start = time.perf_counter()
+
+    return leaderboards_dict
+
+
+@shared_task(name="calculate_leaderboard", queue="short_tasks")
+def calculate_leaderboard(year: int, month: int, max_age: int = 30, perf: bool = False):
+    start = time.perf_counter()
+    oldest = datetime.datetime.now(TIMEZONE) - datetime.timedelta(minutes=max_age)
+
+    recap = (
+        RecapData.objects.filter(year=year, month=month, twitch_user=None)
+        .prefetch_related("leaderboardcache_set")
+        .first()
+    )
+    if recap is not None:
+        if recap.leaderboardcache_set.filter(created_at__gte=oldest).exists():
+            print(f"Leaderboard ({year}-{month}) already in cache")
+            return
+        else:
+            print(f"Calculating leaderboard ({year}-{month})")
+
+        leaderboards_dict = generate_leaderboard(recap, perf)
         LeaderboardCache.objects.create(recap=recap, leaderboard_data=leaderboards_dict)
 
         recap.leaderboardcache_set.filter(recap=recap, created_at__lt=oldest).delete()
@@ -1443,62 +1444,16 @@ def calculate_all_leaderboards(perf: bool = True):
 
     print("Calculating: leaderboards")
 
-    oldest = datetime.datetime.now(TIMEZONE) - datetime.timedelta(minutes=5)
-
     recaps = (
         RecapData.objects.filter(twitch_user=None)
         .prefetch_related("leaderboardcache_set")
         .all()
     )
     for recap in recaps:
+        recap.leaderboardcache_set.all().delete()
 
-        if recap.leaderboardcache_set.filter(created_at__gte=oldest).exists():
-            print("leaderboards already in cache")
-            continue
-
-        leaderboards_dict = {}
-
-        for field in recap._meta.get_fields():
-            if type(field) in [StatField, BigStatField] and field.name not in [
-                "year",
-                "month",
-                "count_chatters",
-                "count_videos",
-            ]:
-                if not field.show_leaderboard:
-                    continue
-
-                leaderboards_dict[field.short_name] = list(
-                    RecapData.objects.filter(year=recap.year, month=recap.month)
-                    .exclude(twitch_user=None)
-                    .order_by("-" + field.name)
-                    .values_list(
-                        "twitch_user__display_name", field.name, "twitch_user__is_bot"
-                    )
-                    .all()
-                )[:250]
-
-        fragment_groups = (
-            FragmentGroup.objects.filter(show_leaderboard=True)
-            .order_by("ordering")
-            .all()
-        )
-        for fg in fragment_groups:
-            leaderboards_dict[fg.group_id] = list(
-                FragmentGroupCounter.objects.filter(
-                    year=recap.year, month=recap.month, fragment_group=fg
-                )
-                .exclude(twitch_user=None)
-                .order_by("-count")
-                .values_list(
-                    "twitch_user__display_name", "count", "twitch_user__is_bot"
-                )
-                .all()
-            )[:250]
-
+        leaderboards_dict = generate_leaderboard(recap, perf)
         LeaderboardCache.objects.create(recap=recap, leaderboard_data=leaderboards_dict)
-
-        recap.leaderboardcache_set.filter(created_at__lt=oldest).delete()
 
     if perf:
         print(f"leaderboards took {time.perf_counter() - start:.3f} seconds")
@@ -1947,8 +1902,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
         if user_wrapped.vip_count > 0:
             vip_highlight = {
                 "title": "",
-                "description": [
-                ],
+                "description": [],
             }
 
         leaderboard_highlight = {}
