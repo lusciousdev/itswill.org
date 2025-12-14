@@ -1821,6 +1821,35 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
 
     start_year = overall_recap.start_date
     end_year = overall_recap.end_date
+        
+    all_vip_regex_str = r"@([A-Za-z0-9_]+) Picked ([1-5]|12429) and rolled a ([1-5])\.\.\.\. (Luck|You).*"
+    all_vip_regex = re.compile(
+        all_vip_regex_str,
+        re.IGNORECASE,
+    )
+
+    vip_messages = ChatMessage.objects.filter(
+        created_at__range=(start_year, end_year),
+        commenter_id=920105724,
+        message__iregex=all_vip_regex_str,
+    ).order_by("created_at").all()
+
+    vip_stats = {}
+    for message in vip_messages:
+        msg_match = all_vip_regex.match(message.message)
+
+        username = msg_match.group(1).lower()
+
+        if username not in vip_stats:
+            vip_stats[username] = { "count": 0, "wins": 0, "cheats": 0 }
+
+        vip_stats[username]["count"] += 1
+        if msg_match.group(4) == "Luck":
+            vip_stats[username]["wins"] += 1
+
+            if msg_match.group(2) == "12429":
+                vip_stats[username]["cheats"] += 1
+
 
     user_recap: RecapData
     for user_recap in user_recap_set:
@@ -1840,38 +1869,10 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
             commenter=user, created_at__range=(start_year, end_year)
         ).order_by("created_at")
 
-        all_vip_regex_str = r"@([A-Za-z0-9_]+) Picked ([1-5]|12429) and rolled a ([1-5])\.\.\.\. (Luck|You).*"
-        all_vip_regex = re.compile(
-            all_vip_regex_str,
-            re.IGNORECASE,
-        )
+        user_wrapped.vip_gambles = vip_stats.get(user.login.lower(), {}).get("count", 0)
+        user_wrapped.vip_wins = vip_stats.get(user.login.lower(), {}).get("wins", 0)
 
-        vip_messages = msgs.filter(
-            commenter_id=920105724, message__iregex=all_vip_regex_str
-        )
-
-        vip_roll_count = 0
-        vip_roll_win = 0
-        vip_roll_cheats = 0
-        for message in vip_messages:
-            msg_match = all_vip_regex.match(message.message)
-
-            username = msg_match.group(1).lower()
-
-            if username != user.login.lower() and username != user.display_name.lower():
-                continue
-
-            vip_roll_count += 1
-            if msg_match.group(4) == "Luck":
-                vip_roll_win += 1
-
-                if msg_match.group(2) == "12429":
-                    vip_roll_cheats += 1
-
-        user_wrapped.vip_gambles = vip_roll_count
-        user_wrapped.vip_wins = vip_roll_win
-
-        user_dict["vip_cheats"] = vip_roll_cheats
+        user_dict["vip_cheats"] = vip_stats.get(user.login.lower(), {}).get("cheats", 0)
 
         month_recaps = (
             RecapData.objects.filter(year=year, twitch_user=user_recap.twitch_user_id)
@@ -1973,7 +1974,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     f"This accounts for {user_glorps/total_glorps:.1%} of the total glorps.",
                 ],
             }
-        elif user.user_id == 855874334: # TimotheeChalameth
+        elif user.user_id == 855874334:  # TimotheeChalameth
             messages_rank = (
                 -1
                 if "messages" not in all_leaderboard_positions
