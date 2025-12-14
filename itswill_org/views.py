@@ -438,29 +438,20 @@ class LeaderboardView(generic.TemplateView):
         data = super().get_context_data(**kwargs)
 
         data["month_abbr"] = calendar.month_abbr
-        data["all_recaps"] = {}
 
-        for yearrecap in (
-            RecapData.objects.filter(month=0, twitch_user=None).order_by("year").all()
-        ):
-            data["all_recaps"][yearrecap.year] = {
-                "recap": yearrecap,
-                "month_recaps": {},
-            }
+        all_recaps = {}
+        recap_times = (
+            RecapData.objects.filter(twitch_user=None)
+            .order_by("year", "month")
+            .values_list("year", "month")
+            .all()
+        )
+        for y, m in recap_times:
+            if y not in all_recaps:
+                all_recaps[y] = []
+            all_recaps[y].append(m)
 
-            for monthrecap in (
-                RecapData.objects.filter(
-                    year=yearrecap.year, month__gte=1, twitch_user=None
-                )
-                .order_by("month")
-                .all()
-            ):
-                data["all_recaps"][monthrecap.year]["month_recaps"][
-                    monthrecap.month
-                ] = {
-                    "month_name": calendar.month_abbr[monthrecap.month],
-                    "recap": monthrecap,
-                }
+        data["all_recaps"] = all_recaps
 
         try:
             overallrecap = RecapData.objects.get(
@@ -515,29 +506,6 @@ class SingleLeaderboardView(generic.TemplateView):
         data = super().get_context_data(**kwargs)
 
         data["month_abbr"] = calendar.month_abbr
-        data["all_recaps"] = {}
-
-        for yearrecap in (
-            RecapData.objects.filter(month=0, twitch_user=None).order_by("year").all()
-        ):
-            data["all_recaps"][yearrecap.year] = {
-                "recap": yearrecap,
-                "month_recaps": {},
-            }
-
-            for monthrecap in (
-                RecapData.objects.filter(
-                    year=yearrecap.year, month__gte=1, twitch_user=None
-                )
-                .order_by("month")
-                .all()
-            ):
-                data["all_recaps"][monthrecap.year]["month_recaps"][
-                    monthrecap.month
-                ] = {
-                    "month_name": calendar.month_abbr[monthrecap.month],
-                    "recap": monthrecap,
-                }
 
         try:
             overallrecap = RecapData.objects.get(
@@ -546,11 +514,21 @@ class SingleLeaderboardView(generic.TemplateView):
         except RecapData.DoesNotExist:
             raise Http404("That recap does not exist (yet?).")
 
-        calculate_leaderboard(overallrecap.year, overallrecap.month)
-        try:
-            leaderboards = LeaderboardCache.objects.get(recap=overallrecap)
-        except LeaderboardCache.DoesNotExist:
-            raise Http404("This recap does not have leaderboards for some reason.")
+        leaderboards = (
+            LeaderboardCache.objects.filter(recap=overallrecap)
+            .order_by("-created_at")
+            .first()
+        )
+
+        if leaderboards is None:
+            calculate_leaderboard(overallrecap.year, overallrecap.month, True)
+            leaderboards = (
+                LeaderboardCache.objects.filter(recap=overallrecap)
+                .order_by("-created_at")
+                .first()
+            )
+            if leaderboards is None:
+                raise Http404("Failed to create leaderboard.")
 
         data["recap_data"] = overallrecap
         data["leaderboard_name"] = name
@@ -587,6 +565,7 @@ class SingleLeaderboardView(generic.TemplateView):
                     404,
                 )
 
+        calculate_leaderboard.delay(overallrecap.year, overallrecap.month)
         return data
 
 

@@ -61,19 +61,19 @@
         <div class="link-section-title">
           All Leaderboards
         </div>
-      {% for year, year_recap in all_recaps.items %}
+      {% for year, months in all_recaps.items %}
         <div class="main-link">
-          {% if year_recap.recap.year == 0 %}
+          {% if year == 0 %}
           <a href="{% url 'itswill_org:leaderboard' %}">All time</a>
           {% else %}
-          <a href="{% url 'itswill_org:leaderboard_year' year_recap.recap.year %}">{{ year_recap.recap.year }}</a>
+          <a href="{% url 'itswill_org:leaderboard_year' year %}">{{ year }}</a>
           {% endif %}
         </div>
 
         <div class="sublinks-section">
-        {% for month, month_recap in year_recap.month_recaps.items %}
+        {% for month in months %}
           <span class="sublink">
-            <a href="{% url 'itswill_org:leaderboard_month' month_recap.recap.year month_recap.recap.month %}">{{ month_recap.month_name }}</a>
+            <a href="{% url 'itswill_org:leaderboard_month' year month %}">{{ month_abbr|index:month }}</a>
           </span>
         {% endfor %}
         </div>
