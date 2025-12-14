@@ -1452,7 +1452,7 @@ def calculate_all_leaderboards(perf: bool = True):
     )
     for recap in recaps:
 
-        if recap.leaderboardcache_set.filter(created_at_gte=oldest).exists():
+        if recap.leaderboardcache_set.filter(created_at__gte=oldest).exists():
             print("leaderboards already in cache")
             continue
 
@@ -1754,7 +1754,10 @@ def get_fragment_chart_data(
     if fragment_group:
         return list(
             FragmentGroupCounter.objects.filter(
-                year=year, fragment_group__group_id=id, twitch_user_id=user_id
+                year=year,
+                month__gt=0,
+                fragment_group__group_id=id,
+                twitch_user_id=user_id,
             )
             .order_by("month")
             .values_list("month", "count")
@@ -1763,7 +1766,7 @@ def get_fragment_chart_data(
     else:
         return list(
             FragmentCounter.objects.filter(
-                year=year, fragment__pretty_name=id, twitch_user_id=user_id
+                year=year, month__gt=0, fragment__pretty_name=id, twitch_user_id=user_id
             )
             .order_by("month")
             .values_list("month", "count")
@@ -1790,7 +1793,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
         return
 
     month_recaps = (
-        RecapData.objects.filter(year=year, twitch_user=None)
+        RecapData.objects.filter(year=year, month__gt=0, twitch_user=None)
         .prefetch_related("fragmentgroupcounter_set", "fragmentcounter_set")
         .order_by("month")
         .all()
@@ -1896,7 +1899,6 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
             .all()
         )
 
-        user_dict = user_wrapped.extra_data
         user_dict["chart_data"] = {}
 
         user_dict["chart_data"]["messages"] = list(
@@ -1940,32 +1942,51 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
 
         user_dict["top_leaderboard_positions"] = sorted_leaderboard_positions[:5]
 
-        highlight = {}
+        user_dict["highlights"] = []
+
+        if user_wrapped.vip_count > 0:
+            vip_highlight = {
+                "title": "",
+                "description": [
+                ],
+            }
+
+        leaderboard_highlight = {}
 
         if user.user_id == 444861963:  # ACrowOutside
             caw_rank = (
                 -1
-                if "count_caw" not in all_leaderboard_positions
-                else all_leaderboard_positions["count_caw"][0]
+                if "caw" not in all_leaderboard_positions
+                else all_leaderboard_positions["caw"][0]
             )
             percent_caws = (3 * user_recap.count_caw) / max(
                 user_recap.count_characters, 1
             )
-            highlight = {
+            leaderboard_highlight = {
                 "title": "CAW",
                 "description": [
-                    f"CAW RANK {caw_rank} CAWs CAW",
+                    f"CAW RANK {caw_rank} CAWs (it wasn't even close) CAW",
                     f"CAW {user_recap.count_caw:,} CAWs CAW",
                     f"CAW CAW made up {percent_caws:.1%} of your total chat output CAW",
                 ],
             }
+        elif user.user_id == 28385144:  # wendyes
+            glorp_rank = (
+                -1
+                if "glorp" not in all_leaderboard_positions
+                else all_leaderboard_positions["glorp"][0]
+            )
+            leaderboard_highlight = {
+                "title": "",
+                "description": [],
+            }
         else:
             for category, (rank, count) in sorted_leaderboard_positions:
                 if rank > 250:
-                    highlight = None
+                    leaderboard_highlight = None
                     break
                 if category == "messages":
-                    highlight = {
+                    leaderboard_highlight = {
                         "title": "You chatted a whole lot this year.",
                         "description": [
                             f"You sent a total of {count:,} messages over the course of this year.",
@@ -1974,7 +1995,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     }
                     break
                 elif category == "clips":
-                    highlight = {
+                    leaderboard_highlight = {
                         "title": "Are you Clipper?",
                         "description": [
                             f"Wait, no, you just created {count} clips this year."
@@ -1983,7 +2004,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     }
                     break
                 elif category == "clip_views":
-                    highlight = {
+                    leaderboard_highlight = {
                         "title": ".",
                         "description": [
                             f"Your clips got a total of {count:,} views over this past year.",
@@ -1992,7 +2013,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     }
                     break
                 elif category == "ascii":
-                    highlight = {
+                    leaderboard_highlight = {
                         "title": "All pictures of Garfield I hope",
                         "description": [
                             f"You posted {count:,} ASCIIs this year.",
@@ -2001,7 +2022,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     }
                     break
                 elif category == "seven":
-                    highlight = {
+                    leaderboard_highlight = {
                         "title": "Salutations o7",
                         "description": [
                             f"You sent {count:,} itswill7s in the chat this year.",
@@ -2010,7 +2031,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     }
                     break
                 elif category == "pound":
-                    highlight = {
+                    leaderboard_highlight = {
                         "title": "Any pounders in the chat?",
                         "description": [
                             f"You pounded your fellow chatters a total of {count:,} times this past year.",
@@ -2019,7 +2040,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     }
                     break
                 elif category == "love":
-                    highlight = {
+                    leaderboard_highlight = {
                         "title": "Love is in the air",
                         "description": [
                             f"You typed itswilL, itswillLove, etc. {count:,} times this year.",
@@ -2028,7 +2049,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     }
                     break
                 elif category == "pog":
-                    highlight = {
+                    leaderboard_highlight = {
                         "title": "You had an exciting year",
                         "description": [
                             f"You typed the various Pog emotes {count:,} times this year",
@@ -2037,7 +2058,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     }
                     break
                 elif category == "shoop":
-                    highlight = {
+                    leaderboard_highlight = {
                         "title": "ShoopDaWhoop supremacy",
                         "description": [
                             f"You typed ShoopDaWhoop {count:,} times this year. Fuck PogChamp am I right?",
@@ -2046,7 +2067,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     }
                     break
                 elif category == "spin":
-                    highlight = {
+                    leaderboard_highlight = {
                         "title": "AROUND THE WORLD",
                         "description": [
                             f"You posted {count:,} borpaSpin and other spin related emotes this year",
@@ -2056,7 +2077,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     }
                     break
                 elif category == "chicken":
-                    highlight = {
+                    leaderboard_highlight = {
                         "title": "We chicken we walk",
                         "description": [
                             f"You posted {count:,} chickenWalks this year",
@@ -2066,7 +2087,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     }
                     break
                 elif category == "glorp":
-                    highlight = {
+                    leaderboard_highlight = {
                         "title": "Paging all glorps 📡",
                         "description": [
                             f"You glorped {count:,} times this year.",
