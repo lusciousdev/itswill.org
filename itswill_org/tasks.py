@@ -1429,7 +1429,7 @@ def calculate_all_months(find_fragments: bool = False):
     month = datetime.datetime.now(TIMEZONE).month
 
     if find_fragments:
-        find_fragment_matches(perf=True)
+        find_fragment_matches(-1, perf=True)
 
     for y in range(2023, year + 1):
         month_range = range(1, 13) if y < year else range(1, month + 1)
@@ -1454,7 +1454,7 @@ def calculate_everything(find_fragments: bool = False):
     month = datetime.datetime.now(TIMEZONE).month
 
     if find_fragments:
-        find_fragment_matches(perf=True)
+        find_fragment_matches(-1, perf=True)
 
     for y in range(2023, year + 1):
         month_range = range(1, 13) if y < year else range(1, month + 1)
@@ -2005,29 +2005,29 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     f"You chatted more than itswillChat, but didn't quite out-yap Nightbot.",
                 ],
             }
-        elif user.user_id == 131113324: # BigRobbiesBBQ
+        elif user.user_id == 131113324:  # BigRobbiesBBQ
             leaderboard_highlight = {
                 "title": "So many clips, edited for time only",
                 "description": [
                     f"You clipped {stat_span('clips', user_recap.count_clips)} moments in 2025.",
                     f"Even though Will insists he doesn't qualify for BaldStreamerClips",
-                ]
+                ],
             }
-        elif user.user_id == 763657466: # asparagusnightmare
-            top_clip = Clip.objects.get(clip_id="AgreeableAverageHorseDAESuppy-NQ6DJmSrmBfLXfPI")
+        elif user.user_id == 763657466:  # asparagusnightmare
+            top_clip = Clip.objects.get(
+                clip_id="AgreeableAverageHorseDAESuppy-NQ6DJmSrmBfLXfPI"
+            )
             leaderboard_highlight = {
                 "title": "New most viewed clip of all time",
                 "description": [
                     f"You clipped the infamous hummingbird nectar moment this year.",
-                    f"That clip earned {top_clip.view_count:,} views, {top_clip.view_count/user_recap.count_clip_views:.1%} of your views this year."
-                ]
+                    f"That clip earned {top_clip.view_count:,} views, {top_clip.view_count/user_recap.count_clip_views:.1%} of your views this year.",
+                ],
             }
         elif user.user_id == 82920215:  # lusciousdev
             leaderboard_highlight = {
                 "title": "nerd",
-                "description": [
-                    "you made this website you already have all the info."
-                ],
+                "description": ["you made this website you already have all the info."],
             }
         else:
             for category, (rank, count) in sorted_leaderboard_positions:

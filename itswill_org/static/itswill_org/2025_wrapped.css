@@ -3,7 +3,7 @@ html, body {
   font-family: "Work Sans", "Roboto Mono", sans-serif;
 }
 
-.big-title, .subtitle {
+.big-title, .subtitle, .section-title {
   font-family: Provicali, sans-serif;
 }
 
@@ -15,6 +15,10 @@ html, body {
   font-size: 1.5rem;
 }
 
+.section-title {
+  font-size: 1.5rem;
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -22,4 +26,33 @@ body {
   align-items: center;
   margin: 0;
   padding: 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  box-sizing: border-box;
+}
+
+.full-page-section-container {
+  height: 100vh !important;
+  width: 100vw !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }

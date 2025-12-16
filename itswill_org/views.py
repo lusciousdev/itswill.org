@@ -259,7 +259,9 @@ class RecapView(generic.TemplateView):
                 "total": count,
                 "members": {
                     pretty_name: count
-                    for _, pretty_name, count in filter(lambda fcd: fcd[0]==group_id, fragment_counters)
+                    for _, pretty_name, count in filter(
+                        lambda fcd: fcd[0] == group_id, fragment_counters
+                    )
                 },
             }
             for group_id, count in fragment_group_counters
@@ -407,6 +409,24 @@ class Wrapped2024UserView(generic.TemplateView):
 
 class Wrapped2025View(generic.TemplateView):
     template_name = "itswill_org/2025_wrapped.html"
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+
+        try:
+            overall_recap = RecapData.objects.select_related("first_message", "last_message", "twitch_user").get(year=2025, month=0, twitch_user=None)
+        except RecapData.DoesNotExist:
+            raise Http404("That recap does not exist (yet?).")
+
+        try:
+            overall_wrapped = WrappedData.objects.get(recap=overall_recap)
+        except WrappedData.DoesNotExist:
+            raise Http404("That recap does not exist (yet?).")
+
+        data["wrapped"] = overall_wrapped
+        data["recap"] = overall_recap
+
+        return data
 
 
 class Wrapped2025UserView(generic.TemplateView):

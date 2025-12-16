@@ -2,6 +2,8 @@
 
 {% load static %}
 {% load tz %}
+{% load humanize %}
+{% load index %}
 
 {% block page_title %}itswill Community Wrapped - 2025{% endblock %}
 
@@ -9,9 +11,23 @@
 <div class="background">
 </div>
 <div class="container">
-  <div class="section" id="intro">
-    <div class="big-title" id="page-title">itswill Community Wrapped</div>
-    <div class="subtitle" id="page-subtitle">2025</div>
+  <div class="full-page-section-container">
+    <div class="section" id="intro">
+      <div class="big-title" id="page-title">itswill Community Wrapped</div>
+      <div class="subtitle" id="page-subtitle">2025</div>
+    </div>
+  </div>
+  <div class="section" id="section-1">
+    <div class="section-title">Chat statistics</div>
+    <div class="section-list">
+      <li><b><span class="recap-stat messages">{{ recap.count_messages|intcomma }}</span></b> messages were sent by <span class="recap-stat chatters">{{ recap.count_chatters|intcomma }}</span> chatters in 2025.</li>
+      <li>The total length of the 2025 chat logs is <b><span class="recap-stat characters">{{ recap.count_characters|intcomma }}</span></b> characters.</li>
+      <ul>
+        <li>At 60 WPM, the itswill community spent approximately <b><span class="recap-stat typing-time">{{ recap.count_characters|typing_time }}</span></b> typing in chat.</li>
+      </ul>
+      <li>The first message of the year was "<span class="recap-stat first_message">{{ recap.first_message.message }}</span>" sent by {{ recap.first_message.creator.display_name }}</li>
+      <li>The last message of the year was "<span class="recap-stat last_message">{{ recap.last_message.message }}</span>" sent by {{ recap.last_message.creator.display_name }}</li>
+    </div>
   </div>
 </div>
 {% endblock %}
