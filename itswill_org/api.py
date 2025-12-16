@@ -10,7 +10,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonRespons
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import *
-from .tasks import get_last_message, get_random_message, post_random_message
+from .tasks import get_random_message, post_random_message
 
 
 @csrf_exempt
@@ -60,55 +60,6 @@ def get_random_user_api(request):
 
     user_id = TwitchUser.objects.all().values_list("user_id", flat=True)
     return HttpResponse(TwitchUser.objects.get(user_id=choice(user_id)).login, 200)
-
-
-@csrf_exempt
-def get_last_message_api(request):
-    if request.method != "GET":
-        return HttpResponse("Invalid request type.", 501)
-
-    altuser = request.GET.get("user", "")
-    altuser = altuser.strip("@")
-
-    user = None
-    if altuser == "":
-        user = None
-    elif altuser != "" and altuser != "null" and altuser is not None:
-        try:
-            user = TwitchUser.objects.get(login=altuser)
-        except TwitchUser.DoesNotExist:
-            return HttpResponse(f'User "{altuser}" does not exist.', 404)
-
-    return HttpResponse(get_last_message(user))
-
-
-@csrf_exempt
-def get_last_message_2024_api(request):
-    if request.method != "GET":
-        return HttpResponse("Invalid request type.", 501)
-
-    altuser = request.GET.get("user", "")
-    altuser = altuser.strip("@")
-
-    user = None
-    if altuser == "":
-        user = None
-    elif altuser != "" and altuser != "null" and altuser is not None:
-        try:
-            user = TwitchUser.objects.get(login=altuser)
-        except TwitchUser.DoesNotExist:
-            return HttpResponse(f'User "{altuser}" does not exist.', 404)
-
-    return JsonResponse(
-        get_last_message(
-            user,
-            (
-                datetime.datetime(2024, 1, 1, 0, 0, 0, 1, TIMEZONE),
-                datetime.datetime(2025, 1, 1, 0, 0, 0, 1, TIMEZONE),
-            ),
-            True,
-        )
-    )
 
 
 @csrf_exempt
@@ -277,6 +228,19 @@ def get_recap_data(request):
     else:
         recap = RecapData.objects.get(year=year, month=month, twitch_user=None)
 
+    fragment_group_counters = (
+        FragmentGroupCounter.objects.filter(recap=recap)
+        .select_related("fragment_group")
+        .values_list("fragment_group__group_id", "count")
+        .all()
+    )
+    fragment_counters = (
+        FragmentCounter.objects.filter(recap=recap)
+        .select_related("fragment")
+        .values_list("fragment__group__group_id", "fragment__pretty_name", "count")
+        .all()
+    )
+
     data = {
         "count_messages": recap.count_messages,
         "count_characters": recap.count_characters,
@@ -285,19 +249,19 @@ def get_recap_data(request):
         "count_clip_views": recap.count_clip_views,
         "count_chatters": recap.count_chatters,
         "count_video": recap.count_videos,
-        "first_message": recap.first_message,
-        "last_message": recap.last_message,
+        "first_message": None if recap.first_message is None else recap.first_message.to_json(),
+        "last_message": None if recap.last_message is None else recap.last_message.to_json(),
         "counters": {
-            fgc.fragment_group.group_id: {
-                "total": fgc.count,
+            group_id: {
+                "total": count,
                 "members": {
-                    fc.fragment.pretty_name: fc.count
-                    for fc in recap.fragmentcounter_set.filter(
-                        fragment__group=fgc.fragment_group
-                    ).all()
+                    pretty_name: count
+                    for _, pretty_name, count in filter(
+                        lambda fcd: fcd[0] == group_id, fragment_counters
+                    )
                 },
             }
-            for fgc in recap.fragmentgroupcounter_set.all()
+            for group_id, count in fragment_group_counters
         },
     }
 

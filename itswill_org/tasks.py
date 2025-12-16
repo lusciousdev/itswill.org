@@ -56,32 +56,6 @@ def get_random_message(user):
     return response_str
 
 
-def get_last_message(user, range=None, return_json=False):
-    if user != None:
-        user_message_set = ChatMessage.objects.filter(commenter=user).order_by(
-            "created_at"
-        )
-    else:
-        user_message_set = ChatMessage.objects.order_by("created_at")
-
-    if range:
-        user_message_set = user_message_set.filter(created_at__range=range)
-
-    last_message = user_message_set.last()
-
-    if return_json:
-        return {
-            "message": last_message.message,
-            "commenter": last_message.commenter.display_name,
-            "timestamp": last_message.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            "prettytime": last_message.created_at.astimezone(TIMEZONE).strftime(
-                "%b %d, %Y"
-            ),
-        }
-    else:
-        return last_message.localtz_str()
-
-
 @shared_task(name="post_random_message", queue="short_tasks")
 def post_random_message(user_id, response_url):
     if user_id != -1:
@@ -472,10 +446,8 @@ def get_all_first_and_last_messages():
 
         chat_messages = chat_messages.order_by("created_at")
 
-        firstmsg = chat_messages.first()
-        recap.first_message = "" if firstmsg is None else firstmsg.message
-        lastmsg = chat_messages.last()
-        recap.last_message = "" if lastmsg is None else lastmsg.message
+        recap.first_message = chat_messages.first()
+        recap.last_message = chat_messages.last()
 
         recap.save()
 
@@ -637,10 +609,8 @@ def create_recap(
 
     chat_messages = chat_messages.order_by("created_at")
 
-    firstmsg = chat_messages.first()
-    recap.first_message = "" if firstmsg is None else firstmsg.message
-    lastmsg = chat_messages.last()
-    recap.last_message = "" if lastmsg is None else lastmsg.message
+    recap.first_message = chat_messages.first()
+    recap.last_message = chat_messages.last()
 
     if count_messages > 10_000:
         recap.count_characters = chat_messages.annotate(
@@ -782,10 +752,8 @@ def calculate_recap(
 
     chat_messages = chat_messages.order_by("created_at")
 
-    firstmsg = chat_messages.first()
-    recap.first_message = "" if firstmsg is None else firstmsg.message
-    lastmsg = chat_messages.last()
-    recap.last_message = "" if lastmsg is None else lastmsg.message
+    recap.first_message = chat_messages.first()
+    recap.last_message = chat_messages.last()
 
     if count_messages > 10_000:
         recap.count_characters = chat_messages.annotate(
@@ -921,10 +889,8 @@ def create_sum(
     if user_id is None:
         recap.count_chatters = chat_messages.values("commenter").distinct().count()
 
-    firstmsg = chat_messages.order_by("created_at").first()
-    recap.first_message = "" if firstmsg is None else firstmsg.message
-    lastmsg = chat_messages.order_by("created_at").last()
-    recap.last_message = "" if lastmsg is None else lastmsg.message
+    recap.first_message = chat_messages.first()
+    recap.last_message = chat_messages.last()
 
     if perf:
         print(f"\tfirst & last messages: {time.perf_counter() - start:.3f} seconds")
@@ -1055,10 +1021,8 @@ def sum_recap(
     if user_id is None:
         recap.count_chatters = chat_messages.values("commenter").distinct().count()
 
-    firstmsg = chat_messages.order_by("created_at").first()
-    recap.first_message = "" if firstmsg is None else firstmsg.message
-    lastmsg = chat_messages.order_by("created_at").last()
-    recap.last_message = "" if lastmsg is None else lastmsg.message
+    recap.first_message = chat_messages.first()
+    recap.last_message = chat_messages.last()
 
     if perf:
         print(f"\tfirst & last messages: {time.perf_counter() - start:.3f} seconds")
@@ -1743,6 +1707,10 @@ def get_fragment_group_counts(
     )
 
 
+def stat_span(stat_name, stat_value):
+    return f"<span class='recap-stat {stat_name}' id='hl-{stat_name}'>{stat_value:,}</span>"
+
+
 @shared_task(name="create_2025_wrapped_data", queue="long_tasks")
 def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
     create_general_wrapped_data(2025, perf)
@@ -1787,6 +1755,29 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
         year, "-2", user_id=None, fragment_group=False
     )
 
+    bird_frag = Fragment.objects.get(pretty_name="hummingbird")
+    bald_frag = Fragment.objects.get(pretty_name="bald")
+
+    bird_leaderboard = list(
+        FragmentCounter.objects.filter(fragment=bird_frag, year=year, month=0)
+        .exclude(twitch_user=None)
+        .values_list("twitch_user__display_name", "count", "twitch_user__is_bot")
+        .order_by("-count")
+        .all()
+    )[:250]
+
+    bald_leaderboard = list(
+        FragmentCounter.objects.filter(fragment=bald_frag, year=year, month=0)
+        .exclude(twitch_user=None)
+        .values_list("twitch_user__display_name", "count", "twitch_user__is_bot")
+        .all()
+    )[:250]
+
+    overall_dict["extra_leaderboards"] = {
+        "bird": bird_leaderboard[:10],
+        "bald": bald_leaderboard[:10],
+    }
+
     overall_wrapped.extra_data = overall_dict
     overall_wrapped.save()
 
@@ -1819,20 +1810,27 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
             .leaderboard_data
         )
 
+    leaderboards["bird"] = bird_leaderboard
+    leaderboards["bald"] = bald_leaderboard
+
     start_year = overall_recap.start_date
     end_year = overall_recap.end_date
-        
+
     all_vip_regex_str = r"@([A-Za-z0-9_]+) Picked ([1-5]|12429) and rolled a ([1-5])\.\.\.\. (Luck|You).*"
     all_vip_regex = re.compile(
         all_vip_regex_str,
         re.IGNORECASE,
     )
 
-    vip_messages = ChatMessage.objects.filter(
-        created_at__range=(start_year, end_year),
-        commenter_id=920105724,
-        message__iregex=all_vip_regex_str,
-    ).order_by("created_at").all()
+    vip_messages = (
+        ChatMessage.objects.filter(
+            created_at__range=(start_year, end_year),
+            commenter_id=920105724,
+            message__iregex=all_vip_regex_str,
+        )
+        .order_by("created_at")
+        .all()
+    )
 
     vip_stats = {}
     for message in vip_messages:
@@ -1841,7 +1839,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
         username = msg_match.group(1).lower()
 
         if username not in vip_stats:
-            vip_stats[username] = { "count": 0, "wins": 0, "cheats": 0 }
+            vip_stats[username] = {"count": 0, "wins": 0, "cheats": 0}
 
         vip_stats[username]["count"] += 1
         if msg_match.group(4) == "Luck":
@@ -1849,7 +1847,6 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
 
             if msg_match.group(2) == "12429":
                 vip_stats[username]["cheats"] += 1
-
 
     user_recap: RecapData
     for user_recap in user_recap_set:
@@ -1871,8 +1868,9 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
 
         user_wrapped.vip_gambles = vip_stats.get(user.login.lower(), {}).get("count", 0)
         user_wrapped.vip_wins = vip_stats.get(user.login.lower(), {}).get("wins", 0)
+        vip_cheats = vip_stats.get(user.login.lower(), {}).get("cheats", 0)
 
-        user_dict["vip_cheats"] = vip_stats.get(user.login.lower(), {}).get("cheats", 0)
+        user_dict["vip_cheats"] = vip_cheats
 
         month_recaps = (
             RecapData.objects.filter(year=year, twitch_user=user_recap.twitch_user_id)
@@ -1923,13 +1921,33 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
 
         if user_wrapped.vip_gambles >= 5:
             record = user_wrapped.vip_wins / user_wrapped.vip_gambles
+            description = []
+            vip_win_text = f"{user_wrapped.vip_wins} times"
+            if user_wrapped.vip_wins == 0:
+                vip_win_text = "none of them"
+            elif user_wrapped.vip_wins == 1:
+                vip_win_text = "once"
+            elif user_wrapped.vip_wins == 2:
+                vip_win_text = "twice"
 
+            description.append(
+                f"You gambled for VIP {user_wrapped.vip_gambles:,} times this year, winning {vip_win_text}."
+            )
             if record > 0.25:
-                record_note = f"You may need to be investigated. You won {record:.1%} of your VIP gambles."
+                description.append(
+                    f"You're truly skilled at gambling. You won {record:.1%} of your VIP gambles."
+                )
             elif record < 0.15:
-                record_note = f"I think MrNice scammed you. You only won {record:.1%} of your VIP gambles."
+                description.append(
+                    f"You're due for a win. You only won {record:.1%} of your VIP gambles."
+                )
             else:
-                record_note = f"You won {record:.1%} of your VIP gambles."
+                description.append(f"You won {record:.1%} of your VIP gambles.")
+
+            if vip_cheats > 0:
+                description.append(
+                    f"(you did get {vip_cheats:,} win{'s' if vip_cheats > 1 else ''} from the easter egg MrNice put in)"
+                )
 
             vip_highlight = {
                 "title": "VIP Gambler",
@@ -1954,7 +1972,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                 "title": "CAW",
                 "description": [
                     f"CAW RANK {caw_rank} CAWs (it wasn't even close) CAW",
-                    f"CAW {user_caws:,} CAWs CAW",
+                    f"CAW {stat_span('caw', user_caws)} CAWs CAW",
                     f"CAW CAW made up {percent_caws:.1%} of your total chat output CAW",
                 ],
             }
@@ -1970,7 +1988,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
             leaderboard_highlight = {
                 "title": "Queen of the glorpers",
                 "description": [
-                    f"You sent a total of {user_glorps:,} glorps in 2025.",
+                    f"You sent a total of {stat_span('glorp', user_glorps)} glorps in 2025.",
                     f"This accounts for {user_glorps/total_glorps:.1%} of the total glorps.",
                 ],
             }
@@ -1983,8 +2001,32 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
             leaderboard_highlight = {
                 "title": "#1 (human) chatter",
                 "description": [
-                    f"You sent {user_recap.count_messages:,} messages in 2025.",
+                    f"You sent {stat_span('messages', user_recap.count_messages)} messages in 2025.",
                     f"You chatted more than itswillChat, but didn't quite out-yap Nightbot.",
+                ],
+            }
+        elif user.user_id == 131113324: # BigRobbiesBBQ
+            leaderboard_highlight = {
+                "title": "So many clips, edited for time only",
+                "description": [
+                    f"You clipped {stat_span('clips', user_recap.count_clips)} moments in 2025.",
+                    f"Even though Will insists he doesn't qualify for BaldStreamerClips",
+                ]
+            }
+        elif user.user_id == 763657466: # asparagusnightmare
+            top_clip = Clip.objects.get(clip_id="AgreeableAverageHorseDAESuppy-NQ6DJmSrmBfLXfPI")
+            leaderboard_highlight = {
+                "title": "New most viewed clip of all time",
+                "description": [
+                    f"You clipped the infamous hummingbird nectar moment this year.",
+                    f"That clip earned {top_clip.view_count:,} views, {top_clip.view_count/user_recap.count_clip_views:.1%} of your views this year."
+                ]
+            }
+        elif user.user_id == 82920215:  # lusciousdev
+            leaderboard_highlight = {
+                "title": "nerd",
+                "description": [
+                    "you made this website you already have all the info."
                 ],
             }
         else:
@@ -1996,35 +2038,36 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     leaderboard_highlight = {
                         "title": "You chatted a whole lot this year.",
                         "description": [
-                            f"You sent a total of {count:,} messages over the course of this year.",
+                            f"You sent a total of {stat_span('messages', count)} messages over the course of this year.",
                             f"This placed you at rank {rank} among the entire itswill chat.",
                         ],
                     }
                     break
                 elif category == "clips":
                     leaderboard_highlight = {
-                        "title": "Are you Clipper?",
+                        "title": "Clip connoisseur",
                         "description": [
-                            f"Wait, no, you just created {count} clips this year."
+                            f"You created {stat_span('clips', count)} clips this year."
                             f"You managed to reach rank #{rank} on the clipper leaderboards!"
                         ],
                     }
                     break
-                elif category == "clip_views":
+                elif category == "views":
                     leaderboard_highlight = {
-                        "title": ".",
+                        "title": "Viral sensation",
                         "description": [
-                            f"Your clips got a total of {count:,} views over this past year.",
-                            f"That kind of mass appeal secured you rank {rank:,} on the clip view leaderboards.",
+                            f"Your clips got a total of {stat_span('views', count)} views over this past year.",
+                            f"Your directorial talent earned you rank {rank:,} on the clip view leaderboards.",
                         ],
                     }
                     break
                 elif category == "ascii":
                     leaderboard_highlight = {
-                        "title": "All pictures of Garfield I hope",
+                        "title": "Rabbits galore",
                         "description": [
-                            f"You posted {count:,} ASCIIs this year.",
+                            f"You posted {stat_span('ascii', count)} ASCIIs this year.",
                             f"All that beautiful art earned you the #{rank} spot on the ASCII leaderboard.",
+                            f"1",
                         ],
                     }
                     break
@@ -2032,7 +2075,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     leaderboard_highlight = {
                         "title": "Salutations o7",
                         "description": [
-                            f"You sent {count:,} itswill7s in the chat this year.",
+                            f"You sent {stat_span('seven', count)} itswill7s in the chat this year.",
                             f"All those salutes put you at #{rank} on the leaderboard.",
                         ],
                     }
@@ -2041,34 +2084,34 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     leaderboard_highlight = {
                         "title": "Any pounders in the chat?",
                         "description": [
-                            f"You pounded your fellow chatters a total of {count:,} times this past year.",
-                            f"That amount of pounding earned you rank {rank} among the itswill chat.",
+                            f"You pounded your fellow chatters a total of {stat_span('pound', count)} times this past year.",
+                            f"That was enough pounding to earn you rank {rank} pounder.",
                         ],
                     }
                     break
                 elif category == "love":
                     leaderboard_highlight = {
-                        "title": "Love is in the air",
+                        "title": "<3<3<3",
                         "description": [
-                            f"You typed itswilL, itswillLove, etc. {count:,} times this year.",
-                            f"You're lovely chatting got you rank {rank:,} in love emotes for 2024.",
+                            f"You typed love emotes {stat_span('love', count)} times this year.",
+                            f"You're lovely chatting got you rank {rank:,} for 2025.",
                         ],
                     }
                     break
                 elif category == "pog":
                     leaderboard_highlight = {
-                        "title": "You had an exciting year",
+                        "title": "PogChampion",
                         "description": [
-                            f"You typed the various Pog emotes {count:,} times this year",
+                            f"You typed the various Pog emotes {stat_span('pog', count)} times this year",
                             f"That makes you the #{rank:,} most pogged chatter!",
                         ],
                     }
                     break
                 elif category == "shoop":
                     leaderboard_highlight = {
-                        "title": "ShoopDaWhoop supremacy",
+                        "title": "ShoopDaWhoop > Pog",
                         "description": [
-                            f"You typed ShoopDaWhoop {count:,} times this year. Fuck PogChamp am I right?",
+                            f"You typed ShoopDaWhoop {stat_span('shoop', count)} times this year.",
                             f"You were the #{rank:,} ShoopDaWhooper of the year.",
                         ],
                     }
@@ -2077,8 +2120,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     leaderboard_highlight = {
                         "title": "AROUND THE WORLD",
                         "description": [
-                            f"You posted {count:,} borpaSpin and other spin related emotes this year",
-                            f"That's a lot of piss breaks listening to Daft Punk.",
+                            f"You posted {stat_span('spin', count)} borpaSpin and other spinning emotes this year",
                             f"You snagged rank {rank:,} on the leaderboard!",
                         ],
                     }
@@ -2087,8 +2129,8 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     leaderboard_highlight = {
                         "title": "We chicken we walk",
                         "description": [
-                            f"You posted {count:,} chickenWalks this year",
-                            f"NO BORPA YEP COCK am I right?",
+                            f"You posted {stat_span('chicken', count)} chickenWalks this year",
+                            f"NO BORPA YEP COCK",
                             f"You earned yourself rank {rank:,} on the chickenWalk leaderboard!",
                         ],
                     }
@@ -2097,7 +2139,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     leaderboard_highlight = {
                         "title": "Paging all glorps 📡",
                         "description": [
-                            f"You glorped {count:,} times this year.",
+                            f"You glorped {stat_span('glorp', count)} times this year.",
                             f"That was sufficient glorping to lock in rank {rank:,} overall on the glorp leaderboards.",
                         ],
                     }
@@ -2320,7 +2362,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                     highlight = {
                         "title": "You chatted a whole lot this year.",
                         "description": [
-                            f"You sent a total of {count:,} messages over the course of this year.",
+                            f"You sent a total of {stat_span('messages', count)} messages over the course of this year.",
                             f"This placed you at rank {rank} among the entire itswill chat.",
                         ],
                     }
@@ -2329,16 +2371,16 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                     highlight = {
                         "title": "Are you Clipper?",
                         "description": [
-                            f"Wait, no, you just created {count} clips this year."
+                            f"Wait, no, you just created {stat_span('clips', count)} clips this year."
                             f"You managed to reach rank #{rank} on the clipper leaderboards!"
                         ],
                     }
                     break
-                elif category == "clip_views":
+                elif category == "views":
                     highlight = {
                         "title": "All eyes on you.",
                         "description": [
-                            f"Your clips got a total of {count:,} views over this past year.",
+                            f"Your clips got a total of {stat_span('views', count)} views over this past year.",
                             f"That kind of mass appeal secured you rank {rank:,} on the clip view leaderboards.",
                         ],
                     }
@@ -2347,7 +2389,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                     highlight = {
                         "title": "All pictures of Garfield I hope",
                         "description": [
-                            f"You posted {count:,} ASCIIs this year.",
+                            f"You posted {stat_span('ascii', count)} ASCIIs this year.",
                             f"All that beautiful art earned you the #{rank} spot on the ASCII leaderboard.",
                         ],
                     }
@@ -2356,7 +2398,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                     highlight = {
                         "title": "Salutations o7",
                         "description": [
-                            f"You sent {count:,} itswill7s in the chat this year.",
+                            f"You sent {stat_span('seven', count)} itswill7s in the chat this year.",
                             f"All those salutes put you at #{rank} on the leaderboard.",
                         ],
                     }
@@ -2365,7 +2407,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                     highlight = {
                         "title": "Any pounders in the chat?",
                         "description": [
-                            f"You pounded your fellow chatters a total of {count:,} times this past year.",
+                            f"You pounded your fellow chatters a total of {stat_span('pound', count)} times this past year.",
                             f"That amount of pounding earned you rank {rank} among the itswill chat.",
                         ],
                     }
@@ -2374,7 +2416,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                     highlight = {
                         "title": "Love is in the air",
                         "description": [
-                            f"You typed itswilL, itswillLove, etc. {count:,} times this year.",
+                            f"You typed itswilL, itswillLove, etc. {stat_span('love', count)} times this year.",
                             f"You're lovely chatting got you rank {rank:,} in love emotes for 2024.",
                         ],
                     }
@@ -2383,7 +2425,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                     highlight = {
                         "title": "You had an exciting year",
                         "description": [
-                            f"You typed the various Pog emotes {count:,} times this year",
+                            f"You typed the various Pog emotes {stat_span('pog', count)} times this year",
                             f"That makes you the #{rank:,} most pogged chatter!",
                         ],
                     }
@@ -2392,7 +2434,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                     highlight = {
                         "title": "ShoopDaWhoop supremacy",
                         "description": [
-                            f"You typed ShoopDaWhoop {count:,} times this year. Fuck PogChamp am I right?",
+                            f"You typed ShoopDaWhoop {stat_span('shoop', count)} times this year. Fuck PogChamp am I right?",
                             f"You were the #{rank:,} ShoopDaWhooper of the year.",
                         ],
                     }
@@ -2401,7 +2443,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                     highlight = {
                         "title": "AROUND THE WORLD",
                         "description": [
-                            f"You posted {count:,} borpaSpin and other spin related emotes this year",
+                            f"You posted {stat_span('spin', count)} borpaSpin and other spin related emotes this year",
                             f"That's a lot of piss breaks listening to Daft Punk.",
                             f"You snagged rank {rank:,} on the leaderboard!",
                         ],
@@ -2411,7 +2453,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                     highlight = {
                         "title": "We chicken we walk",
                         "description": [
-                            f"You posted {count:,} chickenWalks this year",
+                            f"You posted {stat_span('chicken', count)} chickenWalks this year",
                             f"NO BORPA YEP COCK am I right?",
                             f"You earned yourself rank {rank:,} on the chickenWalk leaderboard!",
                         ],
@@ -2421,7 +2463,7 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
                     highlight = {
                         "title": "Paging all glorps 📡",
                         "description": [
-                            f"You glorped {count:,} times this year.",
+                            f"You glorped {stat_span('glorp', count)} times this year.",
                             f"That was sufficient glorping to lock in rank {rank:,} overall on the glorp leaderboards.",
                         ],
                     }

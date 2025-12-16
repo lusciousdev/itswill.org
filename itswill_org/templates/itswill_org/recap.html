@@ -17,6 +17,7 @@
   {% else %}
   data-getrecapdataurl="{% url 'itswill_org:api_get_recap_data' %}?year={{ recap.year }}&month={{ recap.month }}&user={{ recap.twitch_user.user_id }}"
   {% endif %}
+  data-overallrecap="{% if overall_recap %}1{% else %}0{% endif %}"
 >
 </script>
 {% endblock %}
@@ -111,7 +112,11 @@
                   <td class="stat-label" id="first-msg-label">First message:</td>
                 </tr>
                 <tr>
-                  <td colspan="2" class="stat-value" id="first-msg-value">"{{ recap.first_message }}"</td>
+                  {% if recap.first_message %}
+                  <td colspan="2" class="stat-value" id="first-msg-value">"{{ recap.first_message.message }}"</td>
+                  {% else %}
+                  <td colspan="2" class="stat-value" id="first-msg-value"><i>None</i></td>
+                  {% endif %}
                 </tr>
               </table>
             </div>
@@ -127,7 +132,11 @@
                   <td class="stat-label" id="last-msg-label">Last message:</td>
                 </tr>
                 <tr>
-                  <td colspan="2" class="stat-value" id="last-msg-value">"{{ recap.last_message }}"</td>
+                  {% if recap.last_message %}
+                  <td colspan="2" class="stat-value" id="last-msg-value">"{{ recap.last_message.message }}"</td>
+                  {% else %}
+                  <td colspan="2" class="stat-value" id="last-msg-value"><i>None</i></td>
+                  {% endif %}
                 </tr>
               </table>
             </div>

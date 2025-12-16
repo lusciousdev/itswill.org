@@ -161,7 +161,7 @@ class LoggerBot(twitchio_commands.Bot):
                 await recaps.aupdate(
                     count_messages=F("count_messages") + 1,
                     count_characters=F("count_characters") + len(message.message),
-                    last_message=message.message,
+                    last_message=message,
                     count_chatters=(
                         F("count_chatters") + 1 if new_chatter else F("count_chatters")
                     ),
@@ -176,7 +176,7 @@ class LoggerBot(twitchio_commands.Bot):
                 for recap in recaps:
                     recap.count_messages += 1
                     recap.count_characters += len(message.message)
-                    recap.last_message = message.message
+                    recap.last_message = message
                     if new_chatter:
                         recap.count_chatters += 1
 

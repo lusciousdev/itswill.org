@@ -1,5 +1,6 @@
 const scriptData = document.currentScript.dataset;
 
+const overallRecap = scriptData.overallrecap;
 const recapApiURL = scriptData.getrecapdataurl;
 
 var g_ExpandedStat = undefined;
@@ -70,8 +71,33 @@ function handleRecapData(respData)
   $("#clip-views-value").html(respData["count_clip_views"].toLocaleString());
   $("#clip-watch-value").html(timeToPrettyString(respData["count_clip_watch"], true));
 
-  $("#first-msg-value").html("\"" + respData["first_message"] + "\"");
-  $("#last-msg-value").html("\"" + respData["last_message"] + "\"");
+  if (respData["first_message"] !== null)
+  {
+    var msg = "\"" + respData["first_message"]["message"] + "\"";
+    if (overallRecap == "1")
+    {
+      msg += " - " + respData["first_message"]["commenter"]["display_name"]
+    }
+    $("#first-msg-value").html(msg);
+  }
+  else
+  {
+    $("#first-msg-value").html("<i>None</i>");
+  }
+
+  if (respData["last_message"] !== null)
+  {
+    var msg = "\"" + respData["last_message"]["message"] + "\"";
+    if (overallRecap == "1")
+    {
+      msg += " - " + respData["last_message"]["commenter"]["display_name"]
+    }
+    $("#last-msg-value").html(msg);
+  }
+  else
+  {
+    $("#last-msg-value").html("<i>None</i>");
+  }
 
   for (const [key, val] of Object.entries(respData["counters"]))
   {
@@ -79,7 +105,8 @@ function handleRecapData(respData)
 
     for (const [fragKey, fragVal] of Object.entries(val["members"]))
     {
-      $("#" + fragKey + "-value").html(fragVal.toLocaleString());
+      cleanKey = fragKey.replace("+", "\\+");
+      $("#" + cleanKey + "-value").html(fragVal.toLocaleString());
     }
   }
 }

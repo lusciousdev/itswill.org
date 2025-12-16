@@ -440,13 +440,9 @@ class RecapData(models.Model):
         unit="video",
         default=0,
     )
-
-    first_message = models.CharField(
-        verbose_name="First message:", max_length=1024, default=""
-    )
-    last_message = models.CharField(
-        verbose_name="Last message:", max_length=1024, default=""
-    )
+    
+    first_message = models.ForeignKey(ChatMessage, on_delete = models.SET_NULL, null=True, related_name="first_message_set")
+    last_message  = models.ForeignKey(ChatMessage, on_delete = models.SET_NULL, null=True, related_name="last_message_set")
 
     @property
     def start_date(self) -> datetime.datetime:
