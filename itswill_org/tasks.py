@@ -1717,7 +1717,7 @@ def get_fragment_group_members_chart_data(
 ):
     datasets = []
     colors = ["#5EBE65", "#D63F41", "#35778C", "#35778C", "#35778C", "#EDC35F"]
-    fragments = FragmentGroup.objects.get(group_id=group_id).fragment_set.all()
+    fragments = FragmentGroup.objects.get(group_id=group_id).fragment_set.order_by("id").all()
 
     for i, frag in enumerate(fragments):
         data = {
