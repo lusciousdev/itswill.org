@@ -2047,7 +2047,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                 else all_leaderboard_positions["glorp"][0]
             )
             user_glorps, total_glorps = get_fragment_group_counts(
-                user_recap, overall_recap, "glorp"
+                user_recap, overall_recap, "glorp_group"
             )
             leaderboard_highlight = {
                 "title": "Queen of the glorpers",
