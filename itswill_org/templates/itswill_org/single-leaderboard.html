@@ -19,7 +19,7 @@
         {% if fragment_group.use_images %}
           {% for frag in fragment_group.fragment_set.all %}
             {% if frag.image %}
-              <img class="emote-img" id="{{ frag.pretty_name }}-img" src="{{ frag.image.url }}" title="{{ frag.match }}">
+              <img class="emote-img" id="{{ frag.fragment_id }}-img" src="{{ frag.image.url }}" title="{{ frag.match }}">
             {% endif %}
           {% endfor %}
         {% else %}

@@ -64,7 +64,7 @@ function timeToPrettyString(timeInt, abbreviate = false)
 
 function handleRecapData(respData)
 {
-  $("#msg-count-value").html(respData["count_messages"].toLocaleString());
+  $(".recap-stat .messages").html(respData["count_messages"].toLocaleString());
   $("#char-count-value").html(respData["count_characters"].toLocaleString());
   $("#char-time-value").html(timeToPrettyString(Math.floor(respData["count_characters"] / 5), true));
   $("#clip-count-value").html(respData["count_clips"].toLocaleString());

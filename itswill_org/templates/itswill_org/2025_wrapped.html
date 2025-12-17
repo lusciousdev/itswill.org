@@ -20,14 +20,99 @@
   <div class="section" id="section-1">
     <div class="section-title">Chat statistics</div>
     <div class="section-list">
-      <li><b><span class="recap-stat messages">{{ recap.count_messages|intcomma }}</span></b> messages were sent by <span class="recap-stat chatters">{{ recap.count_chatters|intcomma }}</span> chatters in 2025.</li>
-      <li>The total length of the 2025 chat logs is <b><span class="recap-stat characters">{{ recap.count_characters|intcomma }}</span></b> characters.</li>
       <ul>
-        <li>At 60 WPM, the itswill community spent approximately <b><span class="recap-stat typing-time">{{ recap.count_characters|typing_time }}</span></b> typing in chat.</li>
+        <li><b><span class="recap-stat messages">{{ recap.count_messages|intcomma }}</span></b> messages were sent by <span class="recap-stat chatters">{{ recap.count_chatters|intcomma }}</span> chatters in 2025.</li>
+        <li>The total length of the 2025 chat logs is <b><span class="recap-stat characters">{{ recap.count_characters|intcomma }}</span></b> characters.</li>
+        <ul>
+          <li>At 60 WPM, the itswill community spent approximately <b><span class="recap-stat typing-time">{{ recap.count_characters|typing_time }}</span></b> typing in chat.</li>
+        </ul>
+        <li>The first message of the year was "<span class="recap-stat first_message">{{ recap.first_message.message }}</span>" sent by <span class="recap-stat first_chatter">{{ recap.first_message.commenter.display_name }}</span></li>
+        <li>The last message of the year was "<span class="recap-stat last_message">{{ recap.last_message.message }}</span>" sent by <span class="recap-stat last_chatter">{{ recap.last_message.commenter.display_name }}</span></li>
       </ul>
-      <li>The first message of the year was "<span class="recap-stat first_message">{{ recap.first_message.message }}</span>" sent by {{ recap.first_message.creator.display_name }}</li>
-      <li>The last message of the year was "<span class="recap-stat last_message">{{ recap.last_message.message }}</span>" sent by {{ recap.last_message.creator.display_name }}</li>
     </div>
+    <div class="section-content">
+      <div class="chart-container">
+        <div class="chart-title" id="messages-chart-title">Messages sent:</div>
+        <div class="inner-chart-container">
+          <canvas class='chart' id="messages-chart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="section-list">
+      <ul>
+        <li>itswillChat was @ed by the chat <b><span class="recap-stat at_bot">{{ fragment_data.at_bot.total|intcomma }}</span></b> times.</li>
+        <li>Chat has spammed +1 <b>{{ wrapped.jackass_count|intcomma }}</b> times, jackass.</li>
+        <li>There have been <b><span class="recap-stat ascii">{{ fragment_data.ascii.total|intcomma }}</span> ASCIIs sent.</b></li>
+        <li><b><span class="recap-stat q">{{ fragment_data.q.total|intcomma }}</span></b> messages were just ???.</li>
+        <li>Will received <b><span class="recap-stat plus2">{{ fragment_data.plus_minus_2.members.plus2|intcomma }}</span></b> +2s and <b><span class="recap-stat minus2">{{ fragment_data.plus_minus_2.members.minus2|intcomma }}</span></b> -2s.</li>
+      </ul>
+    </div>
+    <div class="section-content">
+      <div class="chart-container">
+        <div class="chart-title" id="plus2-chart-title">+2/-2s:</div>
+        <div class="inner-chart-container">
+          <canvas class="chart" id="plus_minus_2-chart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section" id="section-2">
+    <div class="section-title">Emote streaks</div>
+    <div class="subsection">
+      <div class="subsection-title">Longest streaks</div>
+      <ol>
+        {% for emote, combo_length, broken_by in wrapped.extra_data.longest_combos %}
+          <li>{{ combo_length|intcomma }} {{ emote }} streak {% if broken_by %}(broken by {{ broken_by }}){% endif %}</li>
+        {% endfor %}
+      </ol>
+    </div>
+    <div class="subsection">
+      <div class="subsection-title">Most common streaks</div>
+      <ol>
+        {% for emote, streak_count in wrapped.extra_data.most_common_combos %}
+        <li>{{ streak_count|intcomma }} {{ emote }} streaks</li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+  <div class="section" id="section-3">
+    <div class="section-title">Clip statistics</div>
+    <div class="section-list">
+      <ul>
+        <li><b><span class="recap-stat clips">{{ recap.count_clips|intcomma }}</span></b> clips were made this year.</li>
+        <li>Those clips were viewed <b><span class="recap-stat views">{{ recap.count_clip_views|intcomma }}</span></b> times.</li>
+        <li>The total watch time on this year's clips was <b><span class="recap-stat clip_views">{{ wrapped.clip_watch_time }}</span></b>.</li>
+      </ul>
+    </div>
+    <div class="section-content">
+      <div class="chart-container">
+        <div class="chart-title" id="views-chart-title">Clip views:</div>
+        <div class="inner-chart-container">
+          <canvas class="chart" id="views-chart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section" id="section-4">
+    {% with top_clip=wrapped.extra_data.top_clips.0.0 %}
+    <div class="section-title">Most viewed clip of the year (and of all time)</div>
+    <div class="section-list">
+      <ul>
+        <li>Created by {{ top_clip.creator }}, this clip received <b>{{ top_clip.view_count|intcomma }}</b> views.</li>
+        <li>It is the most viewed itswill clip of all time</li>
+      </ul>
+    </div>
+    <div class="clip-container">
+      <iframe src="https://clips.twitch.tv/embed?clip={{ wrapped.extra_data.top_clips.0.0.clip_id }}&parent=localhost" style="width: 75%; aspect-ratio: 16/9;"allowfullscreen>
+      </iframe>
+    </div>
+    <div class="chart-container" style="padding-top: 2rem;">
+      <div class="chart-title" id="hummingbird-chart-title">Number of bird references in chat:</div>
+      <div class="inner-chart-container">
+        <canvas class="chart" id="hummingbird-chart"></canvas>
+      </div>
+    </div>
+    {% endwith %}
   </div>
 </div>
 {% endblock %}

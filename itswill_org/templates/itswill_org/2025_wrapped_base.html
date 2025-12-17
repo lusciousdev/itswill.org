@@ -8,5 +8,19 @@
 {% endblock %}
 
 {% block scripts %}    
-<script src="{% static 'itswill_org/2025_wrapped.js' %}"></script>
+<script src="{% static 'util.js' %}"></script>
+<script src="{% static 'ajaxhelpers.js' %}"></script>
+<script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+  var extraData = JSON.parse("{{ extra_json|escapejs }}");
+</script>
+<script src="{% static 'itswill_org/2025_wrapped.js' %}"
+  defer
+  {% if overall_recap %}
+  data-getrecapdataurl="{% url 'itswill_org:api_get_recap_data' %}?year={{ recap.year }}&month={{ recap.month }}"
+  {% else %}
+  data-getrecapdataurl="{% url 'itswill_org:api_get_recap_data' %}?year={{ recap.year }}&month={{ recap.month }}&user={{ recap.twitch_user.user_id }}"
+  {% endif %}
+></script>
 {% endblock %}

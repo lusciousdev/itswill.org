@@ -1,9 +1,11 @@
 html, body {
   min-height: 100vh !important;
   font-family: "Work Sans", "Roboto Mono", sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-.big-title, .subtitle, .section-title {
+.big-title, .subtitle, .section-title, .chart-title {
   font-family: Provicali, sans-serif;
 }
 
@@ -11,12 +13,12 @@ html, body {
   font-size: 2rem;
 }
 
-.subtitle {
+.subtitle, .section-title {
   font-size: 1.5rem;
 }
 
-.section-title {
-  font-size: 1.5rem;
+.chart-title {
+  font-size: 1.33rem;
 }
 
 body {
@@ -24,7 +26,7 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  margin: 0;
+  margin: 0 !important;
   padding: 0;
 }
 
@@ -33,13 +35,46 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-
+  background-color: var(--bg-light);
   box-sizing: border-box;
+}
+
+.section {
+  width: 100%;
+  padding-top: 80px;
+  padding-bottom: 80px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 500px) {
+  .container {
+    width: 100%;
+  }
+  .section {
+    padding: 25px;
+  }
+}
+@media (min-width: 500px) and (max-width: 1000px) {
+  .container {
+    min-width: 500px;
+    width: 80%;
+  }
+  .section {
+    padding: 35px;
+  }
+}
+@media (min-width: 1000px) {
+  .container {
+    width: 1000px;
+  }
+  .section {
+    padding: 50px;
+  }
 }
 
 .full-page-section-container {
   height: 100vh !important;
-  width: 100vw !important;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -55,4 +90,17 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
+}
+
+.chart-container, .clip-container {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.inner-chart-container {
+  width: 75%;
 }

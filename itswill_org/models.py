@@ -253,6 +253,7 @@ class FragmentGroup(models.Model):
 class Fragment(models.Model):
     group = models.ForeignKey(FragmentGroup, on_delete=models.CASCADE)
 
+    fragment_id = models.CharField(max_length=512, blank=False)
     pretty_name = models.CharField(max_length=512, blank=False)
     match = models.CharField(max_length=512, blank=False)
     image = models.FileField(upload_to="fragments/", blank=True)
@@ -272,7 +273,7 @@ class Fragment(models.Model):
     class Meta:
         unique_together = (
             "group",
-            "pretty_name",
+            "fragment_id",
         )
 
 

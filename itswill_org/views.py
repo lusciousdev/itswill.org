@@ -1,14 +1,17 @@
 import calendar
 import datetime
+import json
 import logging
 import typing
 
 from dateutil import tz
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import FieldDoesNotExist
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
+from django.utils.decorators import classonlymethod, method_decorator
 from django.views import generic
 from django.views.decorators.csrf import csrf_exempt
 
@@ -247,7 +250,7 @@ class RecapView(generic.TemplateView):
         fragment_counters = (
             FragmentCounter.objects.filter(recap=recap)
             .select_related("fragment")
-            .values_list("fragment__group__group_id", "fragment__pretty_name", "count")
+            .values_list("fragment__group__group_id", "fragment__fragment_id", "count")
             .all()
         )
 
@@ -258,8 +261,8 @@ class RecapView(generic.TemplateView):
             group_id: {
                 "total": count,
                 "members": {
-                    pretty_name: count
-                    for _, pretty_name, count in filter(
+                    fragment_id: count
+                    for _, fragment_id, count in filter(
                         lambda fcd: fcd[0] == group_id, fragment_counters
                     )
                 },
@@ -410,21 +413,62 @@ class Wrapped2024UserView(generic.TemplateView):
 class Wrapped2025View(generic.TemplateView):
     template_name = "itswill_org/2025_wrapped.html"
 
+    def dispatch(self, *args, **kwargs):
+        if not self.request.user or not self.request.user.is_staff:
+            return HttpResponseRedirect(reverse("itswill_org:index"))
+        return super(Wrapped2025View, self).dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
 
         try:
-            overall_recap = RecapData.objects.select_related("first_message", "last_message", "twitch_user").get(year=2025, month=0, twitch_user=None)
+            recap = RecapData.objects.select_related(
+                "first_message", "last_message", "twitch_user"
+            ).get(year=2025, month=0, twitch_user=None)
         except RecapData.DoesNotExist:
             raise Http404("That recap does not exist (yet?).")
 
         try:
-            overall_wrapped = WrappedData.objects.get(recap=overall_recap)
+            wrapped = WrappedData.objects.get(recap=recap)
         except WrappedData.DoesNotExist:
             raise Http404("That recap does not exist (yet?).")
 
-        data["wrapped"] = overall_wrapped
-        data["recap"] = overall_recap
+        data["overall_recap"] = True
+        data["wrapped"] = wrapped
+        data["recap"] = recap
+        data["extra_json"] = json.dumps(wrapped.extra_data)
+
+        fragment_group_counters = (
+            FragmentGroupCounter.objects.filter(recap=recap)
+            .select_related("fragment_group")
+            .values_list("fragment_group__group_id", "count")
+            .all()
+        )
+        fragment_counters = (
+            FragmentCounter.objects.filter(recap=recap)
+            .select_related("fragment")
+            .values_list("fragment__group__group_id", "fragment__fragment_id", "count")
+            .all()
+        )
+
+        data["fragment_data"] = {
+            group_id: {
+                "total": count,
+                "members": {
+                    fragment_id: count
+                    for _, fragment_id, count in filter(
+                        lambda fcd: fcd[0] == group_id, fragment_counters
+                    )
+                },
+            }
+            for group_id, count in fragment_group_counters
+        }
+
+        data["fragment_groups"] = (
+            FragmentGroup.objects.order_by("ordering")
+            .prefetch_related("fragment_set")
+            .all()
+        )
 
         return data
 

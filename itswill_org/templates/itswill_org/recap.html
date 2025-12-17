@@ -113,7 +113,7 @@
                 </tr>
                 <tr>
                   {% if recap.first_message %}
-                  <td colspan="2" class="stat-value" id="first-msg-value">"{{ recap.first_message.message }}"</td>
+                  <td colspan="2" class="stat-value" id="first-msg-value">"{{ recap.first_message.message }}"{% if overall_recap %} - {{ recap.first_message.commenter.display_name }}{% endif %}</td>
                   {% else %}
                   <td colspan="2" class="stat-value" id="first-msg-value"><i>None</i></td>
                   {% endif %}
@@ -133,7 +133,7 @@
                 </tr>
                 <tr>
                   {% if recap.last_message %}
-                  <td colspan="2" class="stat-value" id="last-msg-value">"{{ recap.last_message.message }}"</td>
+                  <td colspan="2" class="stat-value" id="last-msg-value">"{{ recap.last_message.message }}"{% if overall_recap %} - {{ recap.last_message.commenter.display_name }}{% endif %}</td>
                   {% else %}
                   <td colspan="2" class="stat-value" id="last-msg-value"><i>None</i></td>
                   {% endif %}
@@ -153,7 +153,7 @@
               {% if fg.use_images %}
               {% for frag in fg.fragment_set.all %}
                 {% if frag.image %}
-                  <img class="emote-img" id="{{ frag.pretty_name }}-img" src="{{ frag.image.url }}" title="{{ frag.match }}">
+                  <img class="emote-img" id="{{ frag.fragment_id }}-img" src="{{ frag.image.url }}" title="{{ frag.match }}">
                 {% endif %}
               {% endfor %}
               {% else %}
@@ -182,27 +182,27 @@
               <div class="stat-breakdown-container">
                 <table class="stat-breakdown-table">
                   {% for frag in fg.fragment_set.all %}
-                  <tr class="stat-item" id="{{ frag.pretty_name }}">
-                    <td class="stat-label" id="{{ frag.pretty_name }}-label">
+                  <tr class="stat-item" id="{{ frag.fragment_id }}">
+                    <td class="stat-label" id="{{ frag.fragment_id }}-label">
                       {% if fg.use_images and frag.image %}
-                        <img class="emote-img" id="{{ frag.pretty_name }}-img" src="{{ frag.image.url }}" title="{{ frag.match }}">
+                        <img class="emote-img" id="{{ frag.fragment_id }}-img" src="{{ frag.image.url }}" title="{{ frag.match }}">
                       {% else %}
-                        <span class="stat-label" id="{{ frag.pretty_name }}-label">{{ frag.pretty_name }}:</span>
+                        <span class="stat-label" id="{{ frag.fragment_id }}-label">{{ frag.pretty_name }}:</span>
                       {% endif %}
                     </td>
 
                     {% if fg.group_id in fragment_data %}
                       {% with counterobj=fragment_data|keyvalue:fg.group_id %}
-                      {% if frag.pretty_name in counterobj.members %}
-                        {% with fragval=counterobj.members|keyvalue:frag.pretty_name %}
-                        <td class="stat-value" id="{{ frag.pretty_name }}-value">{{ fragval|intcomma }}</td>
+                      {% if frag.fragment_id in counterobj.members %}
+                        {% with fragval=counterobj.members|keyvalue:frag.fragment_id %}
+                        <td class="stat-value" id="{{ frag.fragment_id }}-value">{{ fragval|intcomma }}</td>
                         {% endwith %}
                       {% else %}
-                        <td class="stat-value" id="{{ frag.pretty_name }}-value">0</td>
+                        <td class="stat-value" id="{{ frag.fragment_id }}-value">0</td>
                       {% endif %}
                       {% endwith %}
                     {% else %}
-                      <td class="stat-value" id="{{ frag.pretty_name }}-value">0</td>
+                      <td class="stat-value" id="{{ frag.fragment_id }}-value">0</td>
                     {% endif %}
                   </tr>
                   {% endfor %}

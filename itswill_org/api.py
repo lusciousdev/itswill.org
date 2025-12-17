@@ -237,7 +237,7 @@ def get_recap_data(request):
     fragment_counters = (
         FragmentCounter.objects.filter(recap=recap)
         .select_related("fragment")
-        .values_list("fragment__group__group_id", "fragment__pretty_name", "count")
+        .values_list("fragment__group__group_id", "fragment__fragment_id", "count")
         .all()
     )
 
@@ -255,8 +255,8 @@ def get_recap_data(request):
             group_id: {
                 "total": count,
                 "members": {
-                    pretty_name: count
-                    for _, pretty_name, count in filter(
+                    fragment_id: count
+                    for _, fragment_id, count in filter(
                         lambda fcd: fcd[0] == group_id, fragment_counters
                     )
                 },

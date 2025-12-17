@@ -523,7 +523,7 @@ def find_fragment_matches(period=30, perf: bool = True):
     paginator = Paginator(queryset, 500_000)
 
     fragments = Fragment.objects.all()
-    fragment_regex = {f.pretty_name: f.match_regex for f in fragments}
+    fragment_regex = {f.fragment_id: f.match_regex for f in fragments}
 
     message_count = 0
     for pgnum in paginator.page_range:
@@ -535,7 +535,7 @@ def find_fragment_matches(period=30, perf: bool = True):
             message_count += 1
             f: Fragment
             for f in fragments:
-                frag_count = len(fragment_regex[f.pretty_name].findall(message))
+                frag_count = len(fragment_regex[f.fragment_id].findall(message))
                 if frag_count > 0:
                     fm = FragmentMatch(
                         fragment=f,
@@ -688,7 +688,7 @@ def create_recap(
             total += f_count
 
             if perf:
-                print(f"\t{f.pretty_name}: {time.perf_counter() - start:.3f} seconds")
+                print(f"\t{f.fragment_id}: {time.perf_counter() - start:.3f} seconds")
 
         fg_counter = FragmentGroupCounter(
             recap=recap,
@@ -1556,7 +1556,7 @@ def create_general_wrapped_data(year: int = None, perf: bool = True):
     overall_wrapped.jackass_count = jackass_count
 
     all_combo_regex_str = r".*combo.*"
-    reg_combo_regex_str = r"((.+) ruined the )?([0-9]+)x ([A-Za-z0-9:\)\(</]+) combo.*"
+    reg_combo_regex_str = r"(\x01ACTION)?((.+) ruined the )?([0-9]+)x ([A-Za-z0-9:\)\(</]+) combo.*"
     big_combo_regex_str = (
         r"you don't ruin ([0-9]+)x ([A-Za-z0-9:\)\(</]+) combos ([A-Za-z0-9_\-\.]+).*"
     )
@@ -1584,12 +1584,12 @@ def create_general_wrapped_data(year: int = None, perf: bool = True):
             emote = msg_match.group(2)
             broken_by = msg_match.group(3)
         else:
-            combo_length = int(msg_match.group(3))
-            emote = msg_match.group(4)
+            combo_length = int(msg_match.group(4))
+            emote = msg_match.group(5)
 
             broken_by = None
-            if msg_match.group(2):
-                broken_by = msg_match.group(2)
+            if msg_match.group(3):
+                broken_by = msg_match.group(3)
 
         combos.append((emote, combo_length, broken_by))
 
@@ -1671,26 +1671,94 @@ def get_fragment_chart_data(
     year: int, id: str, user_id: int = None, fragment_group: bool = True
 ):
     if fragment_group:
-        return list(
-            FragmentGroupCounter.objects.filter(
-                year=year,
-                month__gt=0,
-                fragment_group__group_id=id,
-                twitch_user_id=user_id,
+        data = {
+            m: c
+            for m, c in list(
+                FragmentGroupCounter.objects.filter(
+                    year=year,
+                    month__gt=0,
+                    fragment_group__group_id=id,
+                    twitch_user_id=user_id,
+                )
+                .order_by("month")
+                .values_list("month", "count")
+                .all()
             )
-            .order_by("month")
-            .values_list("month", "count")
-            .all()
-        )
+        }
     else:
-        return list(
-            FragmentCounter.objects.filter(
-                year=year, month__gt=0, fragment__pretty_name=id, twitch_user_id=user_id
+        data = {
+            m: c
+            for m, c in list(
+                FragmentCounter.objects.filter(
+                    year=year,
+                    month__gt=0,
+                    fragment__fragment_id=id,
+                    twitch_user_id=user_id,
+                )
+                .order_by("month")
+                .values_list("month", "count")
+                .all()
             )
-            .order_by("month")
-            .values_list("month", "count")
-            .all()
+        }
+    return {
+        "labels": [calendar.month_abbr[i] for i in range(1, 13)],
+        "datasets": [
+            {
+                "label": "",
+                "backgroundColor": "#5EBE65",
+                "data": [0 if i not in data else data[i] for i in range(1, 13)],
+            }
+        ],
+    }
+
+
+def get_fragment_group_members_chart_data(
+    year: int, group_id: str, user_id: int = None
+):
+    datasets = []
+    colors = ["#5EBE65", "#D63F41", "#35778C", "#35778C", "#35778C", "#EDC35F"]
+    fragments = FragmentGroup.objects.get(group_id=group_id).fragment_set.all()
+
+    for i, frag in enumerate(fragments):
+        data = {
+            m: c
+            for m, c in list(
+                FragmentCounter.objects.filter(
+                    year=year, month__gt=0, fragment=frag, twitch_user_id=user_id
+                )
+                .order_by("month")
+                .values_list("month", "count")
+                .all()
+            )
+        }
+        datasets.append(
+            {
+                "label": frag.pretty_name,
+                "backgroundColor": colors[i],
+                "data": [0 if j not in data else data[j] for j in range(1, 13)],
+            }
         )
+
+    return {
+        "labels": [calendar.month_abbr[i] for i in range(1, 13)],
+        "datasets": datasets,
+    }
+
+
+def get_recap_field_chart_data(month_recaps, field_name: str):
+    data = {
+        m: c for m, c in month_recaps.values_list("month", field_name).all()
+    }
+    return {
+        "labels": [calendar.month_abbr[i] for i in range(1, 13)],
+        "datasets": [
+            {
+                "label": "",
+                "backgroundColor": "#5EBE65",
+                "data": [0 if i not in data else data[i] for i in range(1, 13)],
+            }
+        ],
+    }
 
 
 def get_fragment_group_counts(
@@ -1739,24 +1807,21 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
     overall_dict = overall_wrapped.extra_data
     overall_dict["chart_data"] = {}
 
-    overall_dict["chart_data"]["clip_views"] = list(
-        month_recaps.values_list("month", "count_clip_views").all()
-    )
+    overall_dict["chart_data"]["messages"] = get_recap_field_chart_data(month_recaps, "count_messages")
+    overall_dict["chart_data"]["views"] = get_recap_field_chart_data(month_recaps, "count_clip_views")
+
     overall_dict["chart_data"]["cum"] = get_fragment_chart_data(
         year, "cum", user_id=None, fragment_group=True
     )
     overall_dict["chart_data"]["hummingbird"] = get_fragment_chart_data(
         year, "hummingbird", user_id=None, fragment_group=False
     )
-    overall_dict["chart_data"]["+2"] = get_fragment_chart_data(
-        year, "+2", user_id=None, fragment_group=False
-    )
-    overall_dict["chart_data"]["-2"] = get_fragment_chart_data(
-        year, "-2", user_id=None, fragment_group=False
+    overall_dict["chart_data"]["plus_minus_2"] = get_fragment_group_members_chart_data(
+        year, "plus_minus_2", user_id=None
     )
 
-    bird_frag = Fragment.objects.get(pretty_name="hummingbird")
-    bald_frag = Fragment.objects.get(pretty_name="bald")
+    bird_frag = Fragment.objects.get(fragment_id="hummingbird")
+    bald_frag = Fragment.objects.get(fragment_id="bald")
 
     bird_leaderboard = list(
         FragmentCounter.objects.filter(fragment=bird_frag, year=year, month=0)
