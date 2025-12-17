@@ -1826,14 +1826,15 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
     bird_leaderboard = list(
         FragmentCounter.objects.filter(fragment=bird_frag, year=year, month=0)
         .exclude(twitch_user=None)
-        .values_list("twitch_user__display_name", "count", "twitch_user__is_bot")
         .order_by("-count")
+        .values_list("twitch_user__display_name", "count", "twitch_user__is_bot")
         .all()
     )[:250]
 
     bald_leaderboard = list(
         FragmentCounter.objects.filter(fragment=bald_frag, year=year, month=0)
         .exclude(twitch_user=None)
+        .order_by("-count")
         .values_list("twitch_user__display_name", "count", "twitch_user__is_bot")
         .all()
     )[:250]
