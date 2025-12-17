@@ -103,7 +103,7 @@
       </ul>
     </div>
     <div class="clip-container">
-      <iframe src="https://clips.twitch.tv/embed?clip={{ wrapped.extra_data.top_clips.0.0.clip_id }}&parent=localhost" style="width: 75%; aspect-ratio: 16/9;"allowfullscreen>
+      <iframe src="https://clips.twitch.tv/embed?clip={{ top_clip.clip_id }}&parent={{ request.get_host }}" style="width: 75%; aspect-ratio: 16/9;"allowfullscreen>
       </iframe>
     </div>
     <div class="chart-container" style="padding-top: 2rem;">
