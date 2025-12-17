@@ -101,3 +101,7 @@ def divide(numerator: int, divisor: int):
 @register.filter
 def intdivide(numerator: int, divisor: int):
     return numerator // divisor
+
+@register.filter
+def remove_port(host: str):
+    return host.split(":")[0]

@@ -21,6 +21,18 @@ html, body {
   font-size: 1.33rem;
 }
 
+a {
+  color: var(--twitch-purple);
+}
+
+a:visited {
+  color: var(--twitch-purple);
+}
+
+b {
+  color: var(--accent-color);
+}
+
 body {
   display: flex;
   flex-direction: column;

@@ -42,7 +42,7 @@
       <ul>
         <li>itswillChat was @ed by the chat <b><span class="recap-stat at_bot">{{ fragment_data.at_bot.total|intcomma }}</span></b> times.</li>
         <li>Chat has spammed +1 <b>{{ wrapped.jackass_count|intcomma }}</b> times, jackass.</li>
-        <li>There have been <b><span class="recap-stat ascii">{{ fragment_data.ascii.total|intcomma }}</span> ASCIIs sent.</b></li>
+        <li>There have been <b><span class="recap-stat ascii">{{ fragment_data.ascii.total|intcomma }}</span></b> ASCIIs posted.</b></li>
         <li><b><span class="recap-stat q">{{ fragment_data.q.total|intcomma }}</span></b> messages were just ???.</li>
         <li>Will received <b><span class="recap-stat plus2">{{ fragment_data.plus_minus_2.members.plus2|intcomma }}</span></b> +2s and <b><span class="recap-stat minus2">{{ fragment_data.plus_minus_2.members.minus2|intcomma }}</span></b> -2s.</li>
       </ul>
@@ -99,11 +99,11 @@
     <div class="section-list">
       <ul>
         <li>Created by {{ top_clip.creator }}, this clip received <b>{{ top_clip.view_count|intcomma }}</b> views.</li>
-        <li>It is the most viewed itswill clip of all time</li>
+        <li>It is currently the most viewed itswill clip of all time</li>
       </ul>
     </div>
     <div class="clip-container">
-      <iframe src="https://clips.twitch.tv/embed?clip={{ top_clip.clip_id }}&parent={{ request.get_host }}" style="width: 75%; aspect-ratio: 16/9;"allowfullscreen>
+      <iframe src="https://clips.twitch.tv/embed?clip={{ top_clip.clip_id }}&parent={{ request.get_host|remove_port }}" style="width: 75%; aspect-ratio: 16/9;"allowfullscreen>
       </iframe>
     </div>
     <div class="chart-container" style="padding-top: 2rem;">
@@ -113,6 +113,87 @@
       </div>
     </div>
     {% endwith %}
+  </div>
+  <div class="section" id="section-5">
+    <div class="section-title">Top Clips</div>
+    <div class="subsection">
+      <div class="subsection-title">Top Clips of 2025</div>
+      <ol>
+        {% for clip in wrapped.extra_data.top_clips.0 %}
+        <li>By {{ clip.creator }} ({{ clip.view_count|intcomma }} views)<br><iframe src="https://clips.twitch.tv/embed?clip={{ clip.clip_id }}&parent={{ request.get_host|remove_port }}" style="width: 60%; aspect-ratio: 16/9;"></iframe></li>
+        {% endfor %}
+      </ol>
+    </div>
+    <div class="subsection">
+      <div class="subsection-title">Top Clips by month</div>
+      <ul>
+        {% for top_clips in wrapped.extra_data.top_clips %}
+        {% if forloop.counter0 != 0 %}
+        <li>
+          {{ forloop.counter0|month_name }}:
+          {% with clip=top_clips.0 %}
+          <a href="{{ clip.url }}"><i>{{ clip.title }}</i></a> by {{ clip.creator }} ({{ clip.view_count|intcomma }} views)
+          {% endwith %}
+        </li>
+        {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="section" id="section-6">
+    <div class="section-title">The itswill Community Census</div>
+    <p class="section-content">
+      This year included the first ever itswill community census! 
+      <b>2,630</b> people took the survey and gave Will all of their personal information.
+      Some of the highlights include:
+    </p>
+    <div class="section-list">
+      <ul>
+        <li><b>66.4%</b> of respondents rated their viewing experience "Extremely Positive"</li>
+        <li><b>11%</b> of chatters have been banned</li>
+        <li><b>10.6%</b> of the chat is bisexual</li>
+        <li><b>33.8%</b> of the chat is over 30</li>
+        <li><b>31</b> people said their hobby is jerking off</li>
+        <ul>
+          <li>and they said so in <b>21</b> different ways #freakystyyle</li>
+        </ul>
+        <li><b>60.2%</b> of chat has graduated with at least a bachelor's degree</li>
+        <li><b>59.9%</b> of chat claims to be a Norwood 1</li>
+        <br>
+        <li>Favorite variety stream: <b>Poop Killer</b></li>
+        <li>Favorite emote: <b>itswill7</b></li>
+        <li>Favorite chatter: <b>hello_snoopy</b></li>
+        <li>Least favorite chatter: <b>BigRobbiesBBQ</b></li>
+        <li>Favorite mod: <b>All mods are bastards</b> (hello_snoopy in close second)</li>
+      </ul>
+    </div>
+  </div>
+  <div class="section" id="section-7">
+    <div class="section-title">Mr. Live at Five?</div>
+    <div class="subsection">
+      <div class="subsection-title">The 2025 Record</div>
+      <ul id="five-record">
+        <li id="early">Will went live early <b>36</b> times (12.2% of streams)</li>
+        <li id="on-time">He went live on-time <b>135</b> times (45.8% of streams)</li>
+        <li id="late">He was late for <b>124</b> streams (42% of streams)</li>
+        <li id="total-streams">That puts us at <b>295</b> days streamed in 2025</li>
+      </ul>
+      (2024 stats: 13% early, 31% on-time, 56% late)
+    </div>
+  </div>
+  <div class="section" id="section-8">
+    <div class="section-title">Bald(ing) Streamer Clips</div>
+    <div class="section-list">
+      <ul>
+        <li>This year, the chat has mentioned Will's hairline/minoxidil/etc. <b><span class="recap-stat bald">{{ fragment_data.miscellaneous.members.bald|intcomma }}</span></b> times</li>
+        <li>The worst offenders are:</li>
+        <ol>
+          {% for chatter, count, is_bot in wrapped.extra_data.extra_leaderboards.bald %}
+          <li>{{ chatter }}: <b>{{ count }}</b> mentions
+          {% endfor %}
+        </ol>
+      </ul>
+    </div>
   </div>
 </div>
 {% endblock %}

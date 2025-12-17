@@ -131,7 +131,12 @@ def get_live_at_five_record(request):
     if request.method != "GET":
         return HttpResponse("Invalid request type.", 501)
 
-    record = requests.get("https://liveatfive.net/api/v1/record/?year=2024")
+    year = request.GET.get("year", None)
+
+    if year is None:
+        year = datetime.datetime.now(TIMEZONE).year
+
+    record = requests.get(f"https://liveatfive.net/api/v1/record/?period={year}")
 
     return JsonResponse(record.json())
 

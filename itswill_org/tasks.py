@@ -1946,9 +1946,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
 
         user_dict["chart_data"] = {}
 
-        user_dict["chart_data"]["messages"] = list(
-            month_recaps.values_list("month", "count_messages").all()
-        )
+        user_dict["chart_data"]["messages"] = get_recap_field_chart_data(month_recaps, "count_messages")
 
         user_dict["top_clips"] = (
             [clip.to_json() for clip in userclips[:5]] if len(userclips) > 1 else None

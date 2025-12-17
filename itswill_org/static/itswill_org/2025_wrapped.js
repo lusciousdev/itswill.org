@@ -2,6 +2,7 @@ const scriptData = document.currentScript.dataset;
 
 const overallRecap = scriptData.overallrecap;
 const recapApiURL = scriptData.getrecapdataurl;
+const fiveRecordURL = scriptData.fiverecordurl;
 
 function timeToPrettyString(timeInt, abbreviate = false)
 {
@@ -103,6 +104,26 @@ function handleRecapData(respData)
   }
 }
 
+function handleFiveRecord(data)
+{
+  ontimePerc = data["on-time"] / data["total"];
+  earlyPerc = data["early"] / data["total"];
+  latePerc = 1 - ontimePerc - earlyPerc;
+
+  if ($("#five-record").length != 0)
+  {
+    $("#early").html("Will went live early <b>{0}</b> times ({1} of streams)".format(data["early"], earlyPerc.toLocaleString(undefined, {style: "percent", maximumFractionDigits: 1})));
+    $("#on-time").html("He went live on-time <b>{0}</b> times ({1} of streams)".format(data["on-time"], ontimePerc.toLocaleString(undefined, {style: "percent", maximumFractionDigits: 1})));
+    $("#late").html("He was late for <b>{0}</b> streams ({1} of streams)".format(data["total"] - data["early"] - data["on-time"], latePerc.toLocaleString(undefined, {style: "percent", maximumFractionDigits: 1})));
+    $("#total-streams").html("That puts us at <b>{0}</b> days streamed in 2025".format(data["total"]));
+  }
+}
+
+function getFiveRecord()
+{
+  AjaxGet(fiveRecordURL, {}, handleFiveRecord, handleAjaxError);
+}
+
 function handleAjaxError(data)
 {
   console.log("~~~~~~~~~~~ERROR~~~~~~~~~~~~~~~~~~~")
@@ -140,4 +161,9 @@ $(window).on("load", function () {
   
   requestRecapData();
   setInterval(requestRecapData, 5000);
+  if ($("#five-record").length != 0)
+  {
+    getFiveRecord();
+    var fiveRecordInterval = setInterval(getFiveRecord, 300000);
+  }
 });

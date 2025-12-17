@@ -17,10 +17,12 @@
 </script>
 <script src="{% static 'itswill_org/2025_wrapped.js' %}"
   defer
+  data-fiverecordurl="{% url 'itswill_org:api_five_record' %}?year=2025"
   {% if overall_recap %}
   data-getrecapdataurl="{% url 'itswill_org:api_get_recap_data' %}?year={{ recap.year }}&month={{ recap.month }}"
   {% else %}
   data-getrecapdataurl="{% url 'itswill_org:api_get_recap_data' %}?year={{ recap.year }}&month={{ recap.month }}&user={{ recap.twitch_user.user_id }}"
   {% endif %}
+  data-overallrecap="{% if overall_recap %}1{% else %}0{% endif %}"
 ></script>
 {% endblock %}
