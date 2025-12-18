@@ -1979,7 +1979,6 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     )
                     leaderboard_positions[field] = pos
 
-        print(leaderboard_positions)
         sorted_leaderboard_positions = [
             (k, v)
             for k, v in sorted(
