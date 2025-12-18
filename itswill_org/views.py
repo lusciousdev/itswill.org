@@ -96,7 +96,7 @@ class MonthView(generic.TemplateView):
 
         start_date = datetime.datetime(year, month, 1, 0, 0, 0, 1, localtz)
         end_date = datetime.datetime(
-            year, month, monthrange[1], 23, 59, 59, 999, localtz
+            year, month, monthrange[1], 23, 59, 59, 999999, localtz
         )
 
         data["start_date"] = start_date.strftime("%Y/%m/%d")
@@ -359,57 +359,6 @@ class Wrapped2024View(generic.TemplateView):
         return data
 
 
-class Wrapped2024UserView(generic.TemplateView):
-    template_name = "itswill_org/2024-wrapped-user.html"
-
-    def get_context_data(self, username: str, **kwargs):
-        data = super().get_context_data(**kwargs)
-
-        try:
-            overall_wrapped = WrappedData.objects.get(year=2024, twitch_user=None)
-        except WrappedData.DoesNotExist:
-            raise Http404("That recap does not exist (yet?).")
-
-        try:
-            twitchuser = TwitchUser.objects.get(display_name__iexact=username)
-        except TwitchUser.DoesNotExist:
-            try:
-                twitchuser = TwitchUser.objects.get(login__iexact=username)
-            except:
-                raise Http404("That user does not exist or has not chatted.")
-
-        try:
-            user_wrapped = WrappedData.objects.get(year=2024, twitch_user=twitchuser)
-        except WrappedData.DoesNotExist:
-            raise Http404("No data for that user in this period.")
-
-        data["wrapped"] = {}
-        data["wrapped"]["overall"] = overall_wrapped
-        data["wrapped"]["user"] = user_wrapped
-
-        top_boards = {}
-        for field_name, (position, count) in user_wrapped.extra_data[
-            "top_leaderboard_positions"
-        ]:
-            field = user_wrapped.recap._meta.get_field(field_name)
-            if (
-                field.get_internal_type() == "IntegerField"
-                or field.get_internal_type() == "BigIntegerField"
-            ):
-                top_boards[field.name] = {}
-                top_boards[field.name]["label"] = field.verbose_name
-                top_boards[field.name]["position"] = position
-                top_boards[field.name]["count"] = count
-                if (type(field) == StringCountField) and field.use_images:
-                    top_boards[field.name]["image_list"] = field.emote_list
-                else:
-                    top_boards[field.name]["image_list"] = None
-
-        data["wrapped"]["top_leaderboards"] = top_boards
-
-        return data
-
-
 class Wrapped2025View(generic.TemplateView):
     template_name = "itswill_org/2025_wrapped.html"
 
@@ -473,8 +422,127 @@ class Wrapped2025View(generic.TemplateView):
         return data
 
 
+class Wrapped2024UserView(generic.TemplateView):
+    template_name = "itswill_org/2024-wrapped-user.html"
+
+    def get_context_data(self, username: str, **kwargs):
+        data = super().get_context_data(**kwargs)
+
+        try:
+            overall_wrapped = WrappedData.objects.get(year=2024, twitch_user=None)
+        except WrappedData.DoesNotExist:
+            raise Http404("That recap does not exist (yet?).")
+
+        try:
+            twitchuser = TwitchUser.objects.get(display_name__iexact=username)
+        except TwitchUser.DoesNotExist:
+            try:
+                twitchuser = TwitchUser.objects.get(login__iexact=username)
+            except:
+                raise Http404("That user does not exist or has not chatted.")
+
+        try:
+            user_wrapped = WrappedData.objects.get(year=2024, twitch_user=twitchuser)
+        except WrappedData.DoesNotExist:
+            raise Http404("No data for that user in this period.")
+
+        data["wrapped"] = {}
+        data["wrapped"]["overall"] = overall_wrapped
+        data["wrapped"]["user"] = user_wrapped
+
+        top_boards = {}
+        for field_name, (position, count) in user_wrapped.extra_data[
+            "top_leaderboard_positions"
+        ]:
+            field = user_wrapped.recap._meta.get_field(field_name)
+            if (
+                field.get_internal_type() == "IntegerField"
+                or field.get_internal_type() == "BigIntegerField"
+            ):
+                top_boards[field.name] = {}
+                top_boards[field.name]["label"] = field.verbose_name
+                top_boards[field.name]["position"] = position
+                top_boards[field.name]["count"] = count
+                if (type(field) == StringCountField) and field.use_images:
+                    top_boards[field.name]["image_list"] = field.emote_list
+                else:
+                    top_boards[field.name]["image_list"] = None
+
+        data["wrapped"]["top_leaderboards"] = top_boards
+
+        return data
+
+
 class Wrapped2025UserView(generic.TemplateView):
     template_name = "itswill_org/2025_wrapped_user.html"
+
+    def dispatch(self, *args, **kwargs):
+        if not self.request.user or not self.request.user.is_staff:
+            return HttpResponseRedirect(reverse("itswill_org:index"))
+        return super(Wrapped2025UserView, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, username: str, **kwargs):
+        data = super().get_context_data(**kwargs)
+
+        try:
+            twitch_user = TwitchUser.objects.get(display_name__iexact=username)
+        except TwitchUser.DoesNotExist:
+            try:
+                twitch_user = TwitchUser.objects.get(login__iexact=username)
+            except:
+                raise Http404("That user does not exist or has not chatted.")
+
+        try:
+            recap = RecapData.objects.select_related(
+                "first_message", "last_message", "twitch_user"
+            ).get(year=2025, month=0, twitch_user=twitch_user)
+        except RecapData.DoesNotExist:
+            raise Http404("That recap does not exist (yet?).")
+
+        try:
+            wrapped = WrappedData.objects.get(recap=recap)
+        except WrappedData.DoesNotExist:
+            raise Http404("That recap does not exist (yet?).")
+
+        data["overall_recap"] = False
+        data["wrapped"] = wrapped
+        data["recap"] = recap
+        data["extra_json"] = json.dumps(wrapped.extra_data)
+
+        fragment_group_counters = (
+            FragmentGroupCounter.objects.filter(recap=recap)
+            .select_related("fragment_group")
+            .values_list("fragment_group__group_id", "count")
+            .all()
+        )
+        fragment_counters = (
+            FragmentCounter.objects.filter(recap=recap)
+            .select_related("fragment")
+            .values_list("fragment__group__group_id", "fragment__fragment_id", "count")
+            .all()
+        )
+
+        data["fragment_data"] = {
+            group_id: {
+                "total": count,
+                "members": {
+                    fragment_id: count
+                    for _, fragment_id, count in filter(
+                        lambda fcd: fcd[0] == group_id, fragment_counters
+                    )
+                },
+            }
+            for group_id, count in fragment_group_counters
+        }
+
+        data["fragment_groups"] = {
+            fg.group_id: fg
+            for fg in FragmentGroup.objects.order_by("ordering")
+            .prefetch_related("fragment_set")
+            .all()
+        }
+
+        return data
 
 
 @csrf_exempt

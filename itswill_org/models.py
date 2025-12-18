@@ -462,7 +462,7 @@ class RecapData(models.Model):
         end_month = self.month if self.month > 0 else 12
         monthrange = calendar.monthrange(self.year, end_month)
         return datetime.datetime(
-            self.year, end_month, monthrange[1], 23, 59, 59, 999, TIMEZONE
+            self.year, end_month, monthrange[1], 23, 59, 59, 999999, TIMEZONE
         )
 
     class Meta:

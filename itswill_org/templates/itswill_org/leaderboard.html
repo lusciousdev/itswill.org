@@ -3,7 +3,7 @@
 {% load humanize %}
 
 <div class="leaderboard-item" id="{{ leaderboard_id }}">
-  <div class="leaderboard-label" id="itswillPound-label">
+  <div class="leaderboard-label" id="{{ leaderboard_id }}-label">
     {% if fg and fg.use_images %}
       {% for frag in fg.fragment_set.all %}
         {% if frag.image %}

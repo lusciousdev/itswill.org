@@ -195,5 +195,27 @@
       </ul>
     </div>
   </div>
+  <div class="full-page-section-container" id="outro">
+    <div class="section" id="final-section">
+      <div class="big-title centered">
+        Thanks for chatting in 2025!
+      </div>
+      <div class="centered" style="margin-top: 1em; margin-bottom: 1em;"></div>
+      <div class="section-subtitle centered">
+        Find your personal 2025 Wrapped
+      </div>
+      <div class="page-section centered" id="lookup-form">
+        <form class="recap-form" action="{% url 'itswill_org:wrapped_redirect' %}" method="post">
+          <label class="entry-label" id="username-entry-label" for="id_username">Username:</label>
+          <input type="text" id="id_username" name="username">
+          <input type="submit" class="form-button" id="lookup-submit" value="Find user">
+        </form>
+      </div>
+      <div class="centered" style="margin-top: 0.4em; margin-bottom: 0.4em;">or</div>
+      <div class="section-subtitle centered">
+        Check out the <a href="{% url 'itswill_org:recap_year' 2025 %}">2025 stats</a>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

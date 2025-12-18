@@ -1,0 +1,144 @@
+{% extends "itswill_org/2025_wrapped_base.html" %}
+
+{% load static %}
+{% load tz %}
+{% load humanize %}
+{% load index %}
+
+{% block page_title %}itswill Community Wrapped - 2025{% endblock %}
+
+{% block content %}
+<div class='container'>
+  <div class="full-page-section-container">
+    <div class="section" id="intro">
+      <div class="big-title" id="page-title">{{ recap.twitch_user.display_name }}'s</div>
+      <div class="big-title" id="page-title">itswill Community Wrapped</div>
+      <div class="subtitle" id="page-subtitle">2025</div>
+    </div>
+  </div>
+  <div class="section" id="section-1">
+    <div class="section-title">Chat statistics</div>
+    <div class="section-list">
+      <ul>
+        <li>You sent <b><span class="recap-stat messages">{{ recap.count_messages|intcomma }}</span></b> messages in 2025.</li>
+        <li>The total length of your 2025 chat logs is <b><span class="recap-stat characters">{{ recap.count_characters|intcomma }}</span></b> characters.</li>
+        <ul>
+          <li>At 60 WPM, you spent approximately <b><span class="recap-stat typing-time">{{ recap.count_characters|typing_time }}</span></b> typing in chat.</li>
+        </ul>
+        <li>Your first message of the year was "<span class="recap-stat first_message">{{ recap.first_message.message }}</span>"</li>
+        <li>Your last message of the year was "<span class="recap-stat last_message">{{ recap.last_message.message }}</span>"</li>
+      </ul>
+    </div>
+    <div class="section-content">
+      <div class="chart-container">
+        <div class="chart-title" id="messages-chart-title">Messages sent:</div>
+        <div class="inner-chart-container">
+          <canvas class='chart' id="messages-chart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="section-list">
+      <ul>
+        <li>You chatted with itswillChat <b><span class="recap-stat at_bot">{{ fragment_data.at_bot.total|intcomma }}</span></b> times in 2025.</li>
+        <li>You posted <b><span class="recap-stat ascii">{{ fragment_data.ascii.total|intcomma }}</span></b> ASCIIs.</b></li>
+        <li><b><span class="recap-stat q">{{ fragment_data.q.total|intcomma }}</span></b> of your messages were just ???.</li>
+        <li>You gave Will <b><span class="recap-stat plus2">{{ fragment_data.plus_minus_2.members.plus2|intcomma }}</span></b> +2s and <b><span class="recap-stat minus2">{{ fragment_data.plus_minus_2.members.minus2|intcomma }}</span></b> -2s.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="section" id="section-2">
+    <div class="section-title">Clip statistics</div>
+    <div class="section-list">
+      <ul>
+        <li>You clipped <b><span class="recap-stat clips">{{ recap.count_clips|intcomma }}</span></b> moments over the course of this past year.</li>
+        <li>Your clips were viewed a total of <b><span class="recap-stat views">{{ recap.count_clip_views|intcomma }}</span></b> times.</li>
+        <li>The total watch time on your clips was <b><span class="recap-stat clip_views">{{ wrapped.clip_watch_time }}</span></b>.</li>
+      </ul>
+    </div>
+    <div class="subsection">
+      <div class="subsection-title">Your Top Clips of 2025</div>
+      <ol>
+        {% for clip in wrapped.extra_data.top_clips %}
+        <li><a href="{{ clip.url }}"><i>{{ clip.title }}</i></a> ({{ clip.view_count|intcomma }} views)</li>
+        {% empty %}
+        You didn't clip anything this year :(
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+  {% for highlight in wrapped.extra_data.highlights %}
+  <div class="section" id="section-3-{{ forloop.counter0 }}">
+    <div class="section-title">{{ highlight.title }}</div>
+    <div class="section-list">
+      <ul>
+      {% for line in highlight.description %}
+        <li>{{ line }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% empty %}
+  {% endfor %}
+  <div class="section" id="section-4">
+    <div class="section-title">Top Leaderboard Spots</div>
+    <div class="section-content" id="leaderboards-wrap">
+      {% for key, value in wrapped.extra_data.top_leaderboard_positions %}
+      <div class="stat-item" id="{{ key }}">
+      {% if key in fragment_groups.keys %}
+      <span class="{{ key }}-label" id="{{ leaderboard_id }}-label">
+      {% with fg=fragment_groups|keyvalue:key %}
+      {% if fg and fg.use_images %}
+        {% for frag in fg.fragment_set.all %}
+          {% if frag.image %}
+            <img class="emote-img" id="{{ frag.fragment_id }}-img" src="{{ frag.image.url }}" title="{{ frag.fragment_id }}">
+          {% endif %}
+        {% endfor %}
+      {% else %}
+      {{ unit }}
+      {% endif %}
+      {% endwith %}
+      </span>
+      {% else %}
+      {% if key == "messages" %}
+      <span class="stat-label" id="{{ key }}-label">Messages sent:</span>
+      {% elif key == "characters" %}
+      <span class="stat-label" id="{{ key }}-label">Characters sent:</span>
+      {% elif key == "clips" %}
+      <span class="stat-label" id="{{ key }}-label">Clips created:</span>
+      {% elif key == "views" %}
+      <span class="stat-label" id="{{ key }}-label">Clip views:</span>
+      {% else %}
+      <span class="stat-label" id="{{ key }}-label">{{ key }}</span>
+      {% endif %}
+      {% endif %}
+      <span class="stat-value" id="{{ key }}-value">#{{ value.0 }}</span>
+      </div>
+      {% empty %}
+      You didn't make it onto any leaderboards this year. Gotta spam more in 2026.
+      {% endfor %}
+    </div>
+  </div>
+  <div class="full-page-section-container" id="outro">
+    <div class="section" id="final-section">
+      <div class="big-title centered">
+        Thanks for chatting in 2025!
+      </div>
+      <div class="centered" style="margin-top: 1em; margin-bottom: 1em;"></div>
+      <div class="section-subtitle centered">
+        Find your personal 2025 Wrapped
+      </div>
+      <div class="page-section centered" id="lookup-form">
+        <form class="recap-form" action="{% url 'itswill_org:wrapped_redirect' %}" method="post">
+          <label class="entry-label" id="username-entry-label" for="id_username">Username:</label>
+          <input type="text" id="id_username" name="username">
+          <input type="submit" class="form-button" id="lookup-submit" value="Find user">
+        </form>
+      </div>
+      <div class="centered" style="margin-top: 0.4em; margin-bottom: 0.4em;">or</div>
+      <div class="section-subtitle centered">
+        Check out the <a href="{% url 'itswill_org:recap_year' 2025 %}">2025 stats</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

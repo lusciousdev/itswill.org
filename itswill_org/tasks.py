@@ -1205,11 +1205,11 @@ def process_recap_period(
             monthrange = calendar.monthrange(year, month)
             start_date = datetime.datetime(year, month, 1, 0, 0, 0, 1, localtz)
             end_date = datetime.datetime(
-                year, month, monthrange[1], 23, 59, 59, 999, localtz
+                year, month, monthrange[1], 23, 59, 59, 999999, localtz
             )
         else:
             start_date = datetime.datetime(year, 1, 1, 0, 0, 0, 1, localtz)
-            end_date = datetime.datetime(year, 12, 31, 23, 59, 59, 999, localtz)
+            end_date = datetime.datetime(year, 12, 31, 23, 59, 59, 999999, localtz)
 
         user_set = list(
             set(
@@ -1556,7 +1556,9 @@ def create_general_wrapped_data(year: int = None, perf: bool = True):
     overall_wrapped.jackass_count = jackass_count
 
     all_combo_regex_str = r".*combo.*"
-    reg_combo_regex_str = r"(\x01ACTION)?((.+) ruined the )?([0-9]+)x ([A-Za-z0-9:\)\(</]+) combo.*"
+    reg_combo_regex_str = (
+        r"(\x01ACTION)?((.+) ruined the )?([0-9]+)x ([A-Za-z0-9:\)\(</]+) combo.*"
+    )
     big_combo_regex_str = (
         r"you don't ruin ([0-9]+)x ([A-Za-z0-9:\)\(</]+) combos ([A-Za-z0-9_\-\.]+).*"
     )
@@ -1717,7 +1719,9 @@ def get_fragment_group_members_chart_data(
 ):
     datasets = []
     colors = ["#5EBE65", "#D63F41", "#35778C", "#35778C", "#35778C", "#EDC35F"]
-    fragments = FragmentGroup.objects.get(group_id=group_id).fragment_set.order_by("id").all()
+    fragments = (
+        FragmentGroup.objects.get(group_id=group_id).fragment_set.order_by("id").all()
+    )
 
     for i, frag in enumerate(fragments):
         data = {
@@ -1746,9 +1750,7 @@ def get_fragment_group_members_chart_data(
 
 
 def get_recap_field_chart_data(month_recaps, field_name: str):
-    data = {
-        m: c for m, c in month_recaps.values_list("month", field_name).all()
-    }
+    data = {m: c for m, c in month_recaps.values_list("month", field_name).all()}
     return {
         "labels": [calendar.month_abbr[i] for i in range(1, 13)],
         "datasets": [
@@ -1807,8 +1809,12 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
     overall_dict = overall_wrapped.extra_data
     overall_dict["chart_data"] = {}
 
-    overall_dict["chart_data"]["messages"] = get_recap_field_chart_data(month_recaps, "count_messages")
-    overall_dict["chart_data"]["views"] = get_recap_field_chart_data(month_recaps, "count_clip_views")
+    overall_dict["chart_data"]["messages"] = get_recap_field_chart_data(
+        month_recaps, "count_messages"
+    )
+    overall_dict["chart_data"]["views"] = get_recap_field_chart_data(
+        month_recaps, "count_clip_views"
+    )
 
     overall_dict["chart_data"]["cum"] = get_fragment_chart_data(
         year, "cum", user_id=None, fragment_group=True
@@ -1875,6 +1881,14 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
             .first()
             .leaderboard_data
         )
+
+    leaderboard_dicts = {
+        field: {
+            ld[0]: {"position": i, "count": ld[1]}
+            for i, ld in enumerate(leaderboards[field])
+        }
+        for field in leaderboards.keys()
+    }
 
     leaderboards["bird"] = bird_leaderboard
     leaderboards["bald"] = bald_leaderboard
@@ -1947,35 +1961,29 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
 
         user_dict["chart_data"] = {}
 
-        user_dict["chart_data"]["messages"] = get_recap_field_chart_data(month_recaps, "count_messages")
+        user_dict["chart_data"]["messages"] = get_recap_field_chart_data(
+            month_recaps, "count_messages"
+        )
 
         user_dict["top_clips"] = (
             [clip.to_json() for clip in userclips[:5]] if len(userclips) > 1 else None
         )
 
         leaderboard_positions = {}
-        all_leaderboard_positions = {}
-        for field in leaderboards.keys():
-            if user.user_id in leaderboards[field]:
-                if leaderboards[field][user.user_id] > 0:
+        for field in leaderboard_dicts.keys():
+            if user.display_name in leaderboard_dicts[field]:
+                if leaderboard_dicts[field][user.display_name]["count"] > 0:
                     pos = (
-                        list(leaderboard[field].keys()).index(user.user_id) + 1,
-                        leaderboard[field][user.user_id],
+                        leaderboard_dicts[field][user.display_name]["position"] + 1,
+                        leaderboard_dicts[field][user.display_name]["count"],
                     )
-                    if field.name not in exclude_leaderboards:
-                        leaderboard_positions[field] = pos
-                    all_leaderboard_positions[field] = pos
+                    leaderboard_positions[field] = pos
 
+        print(leaderboard_positions)
         sorted_leaderboard_positions = [
             (k, v)
             for k, v in sorted(
                 leaderboard_positions.items(), key=lambda item: item[1][0]
-            )
-        ]
-        sorted_all_leaderboard_positions = [
-            (k, v)
-            for k, v in sorted(
-                all_leaderboard_positions.items(), key=lambda item: item[1][0]
             )
         ]
 
@@ -2020,13 +2028,13 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
 
             user_dict["highlights"].append(vip_highlight)
 
-        leaderboard_highlight = {}
+        leaderboard_highlight = None
 
         if user.user_id == 444861963:  # ACrowOutside
             caw_rank = (
                 -1
-                if "caw" not in all_leaderboard_positions
-                else all_leaderboard_positions["caw"][0]
+                if "caw" not in leaderboard_positions
+                else leaderboard_positions["caw"][0]
             )
             user_caws, total_caws = get_fragment_group_counts(
                 user_recap, overall_recap, "caw"
@@ -2043,8 +2051,8 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
         elif user.user_id == 28385144:  # wendyes
             glorp_rank = (
                 -1
-                if "glorp" not in all_leaderboard_positions
-                else all_leaderboard_positions["glorp"][0]
+                if "glorp" not in leaderboard_positions
+                else leaderboard_positions["glorp"][0]
             )
             user_glorps, total_glorps = get_fragment_group_counts(
                 user_recap, overall_recap, "glorp_group"
@@ -2059,8 +2067,8 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
         elif user.user_id == 855874334:  # TimotheeChalameth
             messages_rank = (
                 -1
-                if "messages" not in all_leaderboard_positions
-                else all_leaderboard_positions["messages"][0]
+                if "messages" not in leaderboard_positions
+                else leaderboard_positions["messages"][0]
             )
             leaderboard_highlight = {
                 "title": "#1 (human) chatter",
@@ -2208,6 +2216,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
+
         if leaderboard_highlight is not None:
             user_dict["highlights"].append(leaderboard_highlight)
 

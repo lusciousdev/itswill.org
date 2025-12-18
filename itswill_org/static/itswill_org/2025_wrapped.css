@@ -1,24 +1,36 @@
-html, body {
+html,
+body {
   min-height: 100vh !important;
   font-family: "Work Sans", "Roboto Mono", sans-serif;
   margin: 0;
   padding: 0;
 }
 
-.big-title, .subtitle, .section-title, .chart-title {
+.big-title,
+.subtitle,
+.section-title,
+.chart-title,
+.section-subtitle,
+.subsection-title {
   font-family: Provicali, sans-serif;
 }
 
 .big-title {
-  font-size: 2rem;
+  font-size: 2.25rem;
 }
 
-.subtitle, .section-title {
-  font-size: 1.5rem;
+.subtitle,
+.section-title {
+  font-size: 1.75rem;
 }
 
 .chart-title {
   font-size: 1.33rem;
+}
+
+.section-subtitle,
+.subsection-title {
+  font-size: 1.2rem;
 }
 
 a {
@@ -31,6 +43,18 @@ a:visited {
 
 b {
   color: var(--accent-color);
+}
+
+.emote-img {
+  height: 28px;
+  width: auto;
+  margin: 0 1px 0 1px;
+}
+
+.inline-emote-img {
+  height: 1.2em;
+  width: auto;
+  margin: 0 1px 0 1px;
 }
 
 body {
@@ -96,7 +120,8 @@ body {
   box-sizing: border-box;
 }
 
-#intro {
+#intro,
+#outro {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -104,7 +129,8 @@ body {
   text-align: center;
 }
 
-.chart-container, .clip-container {
+.chart-container,
+.clip-container {
   width: 100%;
 
   display: flex;
@@ -115,4 +141,24 @@ body {
 
 .inner-chart-container {
   width: 75%;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 5px 5px 5px;
+  width: 75%;
+}
+
+.stat-item:hover {
+  background-color: #ffffff20;
+}
+
+.stat-label {
+  margin-right: 25px;
+}
+
+.stat-value {
+  color: var(--accent-color);
 }
