@@ -57,6 +57,11 @@ b {
   margin: 0 1px 0 1px;
 }
 
+.wide-emote {
+  display: inline-block;
+  min-width: 112px;
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -173,4 +178,8 @@ body {
   padding-left: 25px;
   text-align: right;
   color: var(--accent-color);
+}
+
+#top-emotes td {
+  width: auto;
 }

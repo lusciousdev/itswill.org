@@ -75,13 +75,26 @@
       </ol>
     </div>
   </div>
+  <div class="section" id="section-2.4">
+    <div class="section-title">Top Emotes</div>
+    <table class="top-emote-table" id="top-emotes">
+    {% for fragment_id, pretty_name, image, count in wrapped.extra_data.top_emotes %}
+      <tr>
+        <td>#{{ forloop.counter }}</td>
+        <td style="text-align: left;"><img class="emote-img" id="{{ fragment_id }}-img" src="{% get_media_prefix %}{{ image }}" title="{{ pretty_name }}"></td>
+        <td style="text-align: right;">Count:</td>
+        <td style="text-align: left;"><b><span class="recap-stat {{ fragment_id }}">{{ count|intcomma }}</span></b></td>
+      </tr>
+    {% endfor %}
+    </table>
+  </div>
   <div class="section" id="section-2.5">
     <div class="section-title">VIPs</div>
     <div class="section-list">
       <ul>
-        <li>Chatters gambled for VIP {{ wrapped.vip_gambles|intcomma }} times in 2025.</li>
-        <li>Out of all of those 1/5s, {{ wrapped.vip_wins|intcomma }} picked correctly.</li>
-        <li>(MrNice's easter egg was used for a free win {{ wrapped.extra_data.vip_cheats|intcomma }} times)</li>
+        <li>Chatters gambled for VIP <b>{{ wrapped.vip_gambles|intcomma }}</b> times in 2025.</li>
+        <li>Out of all of those 1/5s, <b>{{ wrapped.vip_wins|intcomma }}</b> picked correctly.</li>
+        <li>(MrNice's easter egg was used for a free win <b>{{ wrapped.extra_data.vip_cheats|intcomma }}</b> times)</li>
       </ul>
     </div>
   </div>

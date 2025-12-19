@@ -1555,6 +1555,19 @@ def create_general_wrapped_data(year: int = None, perf: bool = True):
 
     overall_wrapped.jackass_count = jackass_count
 
+    most_popular_emotes = list(
+        FragmentCounter.objects.filter(
+            recap=overall_recap, fragment__group__use_images=True
+        )
+        .order_by("-count")
+        .values_list(
+            "fragment__fragment_id", "fragment__pretty_name", "fragment__image", "count"
+        )
+        .all()[:10]
+    )
+
+    overall_dict["top_emotes"] = most_popular_emotes
+
     all_combo_regex_str = r".*combo.*"
     reg_combo_regex_str = (
         r"(\x01ACTION)?((.+) ruined the )?([0-9]+)x ([A-Za-z0-9:\)\(</]+) combo.*"
