@@ -31,10 +31,12 @@ class RecapConsumer(WebsocketConsumer):
         self.accept()
 
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)(self.group_name, self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(
+            self.group_name, self.channel_name
+        )
 
-    def receive(self, text_data = None, bytes_data = None):
+    def receive(self, text_data=None, bytes_data=None):
         pass
 
-    def recap_update(self, event : dict):
-        self.send(text_data = json.dumps(event.get("data", {})))
+    def recap_update(self, event: dict):
+        self.send(text_data=json.dumps(event.get("data", {})))

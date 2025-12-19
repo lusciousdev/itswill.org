@@ -359,11 +359,16 @@ class Wrapped2024View(generic.TemplateView):
         return data
 
 
+def wrapped_open(user):
+    now = datetime.datetime.now(TIMEZONE)
+    open = datetime.datetime(2025, 12, 19, 16, 45, 0, 0, TIMEZONE)
+    return (now > open) or (user and user.is_staff)
+
 class Wrapped2025View(generic.TemplateView):
     template_name = "itswill_org/2025_wrapped.html"
 
     def dispatch(self, *args, **kwargs):
-        if not self.request.user or not self.request.user.is_staff:
+        if not wrapped_open(self.request.user):
             return HttpResponseRedirect(reverse("itswill_org:index"))
         return super(Wrapped2025View, self).dispatch(*args, **kwargs)
 
@@ -477,7 +482,7 @@ class Wrapped2025UserView(generic.TemplateView):
     template_name = "itswill_org/2025_wrapped_user.html"
 
     def dispatch(self, *args, **kwargs):
-        if not self.request.user or not self.request.user.is_staff:
+        if not wrapped_open(self.request.user):
             return HttpResponseRedirect(reverse("itswill_org:index"))
         return super(Wrapped2025UserView, self).dispatch(*args, **kwargs)
 

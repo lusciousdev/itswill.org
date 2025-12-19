@@ -36,6 +36,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     ".itswill.org",
+    "test.itswill.org",
     ".itswill.soy",
     "127.0.0.1",
     ".localhost",

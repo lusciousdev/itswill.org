@@ -1771,14 +1771,14 @@ def get_fragment_group_counts(
             Q(fragment_group__group_id=group_id)
             & (Q(recap=user_recap) | Q(recap=overall_recap))
         )
-        .order_by("twitch_user_id")
+        .order_by(F("twitch_user_id").desc(nulls_last=True))
         .values_list("count", flat=True)
         .all()
     )
 
 
 def stat_span(stat_name, stat_value):
-    return f"<span class='recap-stat {stat_name}' id='hl-{stat_name}'>{stat_value:,}</span>"
+    return f"<b><span class='recap-stat {stat_name}' id='hl-{stat_name}'>{stat_value:,}</span></b>"
 
 
 @shared_task(name="create_2025_wrapped_data", queue="long_tasks")
@@ -1885,7 +1885,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
     leaderboard_dicts = {
         field: {
             ld[0]: {"position": i, "count": ld[1]}
-            for i, ld in enumerate(leaderboards[field])
+            for i, ld in enumerate(filter(lambda ld: not ld[2], leaderboards[field]))
         }
         for field in leaderboards.keys()
     }
@@ -1986,7 +1986,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
             )
         ]
 
-        user_dict["top_leaderboard_positions"] = sorted_leaderboard_positions[:5]
+        user_dict["top_leaderboard_positions"] = sorted_leaderboard_positions[:12]
 
         user_dict["highlights"] = []
 
@@ -2002,27 +2002,27 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                 vip_win_text = "twice"
 
             description.append(
-                f"You gambled for VIP {user_wrapped.vip_gambles:,} times this year, winning {vip_win_text}."
+                f"You gambled for VIP <b>{user_wrapped.vip_gambles:,}</b> times this year, winning <b>{vip_win_text}</b>."
             )
             if record > 0.25:
                 description.append(
-                    f"You're truly skilled at gambling. You won {record:.1%} of your VIP gambles."
+                    f"You're truly skilled at gambling. You won <b>{record:.1%}</b> of your VIP gambles."
                 )
             elif record < 0.15:
                 description.append(
-                    f"You're due for a win. You only won {record:.1%} of your VIP gambles."
+                    f"You're due for a win. You only won <b>{record:.1%}</b> of your VIP gambles."
                 )
             else:
-                description.append(f"You won {record:.1%} of your VIP gambles.")
+                description.append(f"You won <b>{record:.1%}</b> of your VIP gambles.")
 
             if vip_cheats > 0:
                 description.append(
-                    f"(you did get {vip_cheats:,} win{'s' if vip_cheats > 1 else ''} from the easter egg MrNice put in)"
+                    f"(you did get <b>{vip_cheats:,}</b> win{'s' if vip_cheats > 1 else ''} from the easter egg MrNice put in)"
                 )
 
             vip_highlight = {
                 "title": "VIP Gambler",
-                "description": [],
+                "description": description,
             }
 
             user_dict["highlights"].append(vip_highlight)
@@ -2077,11 +2077,12 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                 ],
             }
         elif user.user_id == 131113324:  # BigRobbiesBBQ
+            clips_rank = (-1 if "clips" not in leaderboard_positions else leaderboard_positions["clips"][0])
             leaderboard_highlight = {
-                "title": "So many clips, edited for time only",
+                "title": "So many clips, all edited for time only",
                 "description": [
-                    f"You clipped {stat_span('clips', user_recap.count_clips)} moments in 2025.",
-                    f"Even though Will insists he doesn't qualify for BaldStreamerClips",
+                    f"You clipped {stat_span('clips', user_recap.count_clips)} moments (rank {clips_rank}) in 2025.",
+                    f"Despite Will insisting he doesn't qualify for BaldStreamerClips",
                 ],
             }
         elif user.user_id == 763657466:  # asparagusnightmare
@@ -2092,7 +2093,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                 "title": "New most viewed clip of all time",
                 "description": [
                     f"You clipped the infamous hummingbird nectar moment this year.",
-                    f"That clip earned {top_clip.view_count:,} views, {top_clip.view_count/user_recap.count_clip_views:.1%} of your views this year.",
+                    f"That clip earned <b>{top_clip.view_count:,}</b> views, {top_clip.view_count/user_recap.count_clip_views:.1%} of your views this year.",
                 ],
             }
         elif user.user_id == 82920215:  # lusciousdev

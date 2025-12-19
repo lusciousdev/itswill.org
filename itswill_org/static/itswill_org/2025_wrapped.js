@@ -228,7 +228,7 @@ $(window).on("load", function () {
 
   if (overallRecap == "1")
     connectWebsocket();
-  
+
   requestRecapData();
   setInterval(requestRecapData, 10000);
   if ($("#five-record").length != 0)

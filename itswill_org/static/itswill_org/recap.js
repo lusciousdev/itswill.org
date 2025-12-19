@@ -120,9 +120,15 @@ function attemptWebsocketReconnect(e) {
 function connectWebsocket() {
   var protocol = "ws:";
   if (window.location.protocol == "https:") protocol = "wss:";
-  g_Websocket = new WebSocket(
-    "{0}//{1}/ws/recap/{2}/{3}/".format(protocol, window.location.host, recapYear, recapMonth),
-  );
+
+  var wsUrl = "{0}//{1}/ws/recap/".format(protocol, window.location.host);
+  if (parseInt(recapYear) > 0)
+  { 
+    wsUrl = "{0}{1}/".format(wsUrl, recapYear);
+    if (parseInt(recapMonth) > 0)
+      wsUrl = "{0}{1}/".format(wsUrl, recapMonth);
+  }
+  g_Websocket = new WebSocket(wsUrl);
 
   g_Websocket.onopen = (e) => {};
   g_Websocket.onmessage = (e) => {

@@ -66,26 +66,28 @@
       </ol>
     </div>
   </div>
+  {% if wrapped.extra_data.highlights|length > 0 %}
+  <div class="section" id="section-3">
+    <div class="section-title">Highlights</div>
   {% for highlight in wrapped.extra_data.highlights %}
-  <div class="section" id="section-3-{{ forloop.counter0 }}">
-    <div class="section-title">{{ highlight.title }}</div>
-    <div class="section-list">
-      <ul>
+    <div class="subsection">
+      <div class="subsection-title">{{ highlight.title }}</div>
+      <ul class="subsection-list" style="margin-top: 0;">
       {% for line in highlight.description %}
-        <li>{{ line }}</li>
+        <li>{{ line|safe }}</li>
       {% endfor %}
       </ul>
     </div>
-  </div>
-  {% empty %}
   {% endfor %}
+  </div>
+  {% endif %}
   <div class="section" id="section-4">
     <div class="section-title">Top Leaderboard Spots</div>
-    <div class="section-content" id="leaderboards-wrap">
+    <table class="section-table" id="leaderboards-wrap">
       {% for key, value in wrapped.extra_data.top_leaderboard_positions %}
-      <div class="stat-item" id="{{ key }}">
+      <tr class="stat-item" id="{{ key }}" nowrap>
       {% if key in fragment_groups.keys %}
-      <span class="{{ key }}-label" id="{{ leaderboard_id }}-label">
+      <td class="{{ key }}-label" id="{{ key }}-label" nowrap>
       {% with fg=fragment_groups|keyvalue:key %}
       {% if fg and fg.use_images %}
         {% for frag in fg.fragment_set.all %}
@@ -94,29 +96,30 @@
           {% endif %}
         {% endfor %}
       {% else %}
-      {{ unit }}
+      {{ fg.unit }}
       {% endif %}
       {% endwith %}
-      </span>
+      </td>
       {% else %}
       {% if key == "messages" %}
-      <span class="stat-label" id="{{ key }}-label">Messages sent:</span>
+      <td class="stat-label" id="{{ key }}-label" nowrap>Messages sent:</td>
       {% elif key == "characters" %}
-      <span class="stat-label" id="{{ key }}-label">Characters sent:</span>
+      <td class="stat-label" id="{{ key }}-label" nowrap>Characters sent:</td>
       {% elif key == "clips" %}
-      <span class="stat-label" id="{{ key }}-label">Clips created:</span>
+      <td class="stat-label" id="{{ key }}-label" nowrap>Clips created:</td>
       {% elif key == "views" %}
-      <span class="stat-label" id="{{ key }}-label">Clip views:</span>
+      <td class="stat-label" id="{{ key }}-label" nowrap>Clip views:</td>
       {% else %}
-      <span class="stat-label" id="{{ key }}-label">{{ key }}</span>
+      <td class="stat-label" id="{{ key }}-label" nowrap>{{ key }}</td>
       {% endif %}
       {% endif %}
-      <span class="stat-value" id="{{ key }}-value">#{{ value.0 }}</span>
-      </div>
+      <td class="stat-value" id="{{ key }}-value">{{ value.1|intcomma }}</td>
+      <td class="stat-rank" id="{{ key }}-rank">#{{ value.0 }}</td>
+      </tr>
       {% empty %}
       You didn't make it onto any leaderboards this year. Gotta spam more in 2026.
       {% endfor %}
-    </div>
+    </table>
   </div>
   <div class="full-page-section-container" id="outro">
     <div class="section" id="final-section">
@@ -133,6 +136,10 @@
           <input type="text" id="id_username" name="username">
           <input type="submit" class="form-button" id="lookup-submit" value="Find user">
         </form>
+      </div>
+      <div class="centered" style="margin-top: 0.4em; margin-bottom: 0.4em;">or</div>
+      <div class="section-subtitle centered">
+        Check out the <a href="{% url 'itswill_org:wrapped' %}">full community wrapped</a>
       </div>
       <div class="centered" style="margin-top: 0.4em; margin-bottom: 0.4em;">or</div>
       <div class="section-subtitle centered">
