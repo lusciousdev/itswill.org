@@ -2256,7 +2256,7 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                         ],
                     }
                     break
-                elif category == "glorp":
+                elif category == "glorp_group":
                     leaderboard_highlight = {
                         "title": "Paging all glorps 📡",
                         "description": [
