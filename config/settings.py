@@ -284,6 +284,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://itswill.org",
     "http://www.itswill.org",
     "https://www.itswill.org",
+    "http://test.itswill.org",
+    "https://test.itswill.org",
     "http://itswill.soy",
     "https://itswill.soy",
     "http://www.itswill.soy",
