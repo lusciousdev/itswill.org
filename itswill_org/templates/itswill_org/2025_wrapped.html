@@ -26,8 +26,8 @@
         <ul>
           <li>At 60 WPM, the itswill community spent approximately <b><span class="recap-stat typing-time">{{ recap.count_characters|typing_time }}</span></b> typing in chat.</li>
         </ul>
-        <li>The first message of the year was "<span class="recap-stat first_message">{{ recap.first_message.message }}</span>" sent by <span class="recap-stat first_chatter">{{ recap.first_message.commenter.display_name }}</span></li>
-        <li>The last message of the year was "<span class="recap-stat last_message">{{ recap.last_message.message }}</span>" sent by <span class="recap-stat last_chatter">{{ recap.last_message.commenter.display_name }}</span></li>
+        <li style="max-height: 4rem;">The first message of the year was "<span class="recap-stat first_message">{{ recap.first_message.message|truncstring:200 }}</span>" sent by <span class="recap-stat first_chatter">{{ recap.first_message.commenter.display_name }}</span></li>
+        <li style="height: 5rem;">The last message of the year was "<span class="recap-stat last_message">{{ recap.last_message.message|truncstring:200 }}</span>" sent by <span class="recap-stat last_chatter">{{ recap.last_message.commenter.display_name }}</span></li>
       </ul>
     </div>
     <div class="section-content">

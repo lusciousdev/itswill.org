@@ -22,6 +22,12 @@ def firstn(indexable, n):
 def keyvalue(dictionary, key):
     return dictionary[key]
 
+@register.filter
+def truncstring(obj, length):
+    if len(obj) > length:
+        return f"{obj[:length]}..."
+    else:
+        return obj
 
 @register.filter
 def to_percent(obj, sigdigits):

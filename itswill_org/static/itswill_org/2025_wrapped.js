@@ -75,7 +75,12 @@ function handleWebsocketMessage(e)
   
   if (eventData["last_message"] !== null)
   {
-    $(".last_message").html(eventData["last_message"]["message"]);
+    var msg = eventData["last_message"]["message"];
+    if (msg.length > 200)
+    {
+      msg = msg.substring(0, 200) + "...";
+    }
+    $(".last_message").html(msg);
     $(".last_chatter").html(eventData["last_message"]["commenter"]["display_name"]);
   }
   else
@@ -139,7 +144,13 @@ function handleRecapData(respData)
 
   if (respData["first_message"] !== null)
   {
-    $(".first_message").html(respData["first_message"]["message"]);
+    var msg = respData["first_message"]["message"];
+    if (msg.length > 200)
+    {
+      msg = msg.substring(0, 200) + "...";
+    }
+    
+    $(".first_message").html(msg);
     $(".first_chatter").html(respData["first_message"]["commenter"]["display_name"]);
   }
   else
@@ -150,7 +161,12 @@ function handleRecapData(respData)
 
   if (respData["last_message"] !== null)
   {
-    $(".last_message").html(respData["last_message"]["message"]);
+    var msg = respData["last_message"]["message"];
+    if (msg.length > 200)
+    {
+      msg = msg.substring(0, 200) + "...";
+    }
+    $(".last_message").html(msg);
     $(".last_chatter").html(respData["last_message"]["commenter"]["display_name"]);
   }
   else
