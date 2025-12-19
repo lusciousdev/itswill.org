@@ -2077,7 +2077,11 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                 ],
             }
         elif user.user_id == 131113324:  # BigRobbiesBBQ
-            clips_rank = (-1 if "clips" not in leaderboard_positions else leaderboard_positions["clips"][0])
+            clips_rank = (
+                -1
+                if "clips" not in leaderboard_positions
+                else leaderboard_positions["clips"][0]
+            )
             leaderboard_highlight = {
                 "title": "So many clips, all edited for time only",
                 "description": [
@@ -2096,10 +2100,42 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     f"That clip earned <b>{top_clip.view_count:,}</b> views, {top_clip.view_count/user_recap.count_clip_views:.1%} of your views this year.",
                 ],
             }
+        elif user.user_id == 185681366:  # Brettdog_
+            gg_frag = Fragment.objects.get(fragment_id="GriddyGoose")
+            count_gg_2024 = FragmentCounter.objects.get(
+                year=2024, month=0, twitch_user=None, fragment=gg_frag
+            )
+            count_gg_2025 = FragmentCounter.objects.get(
+                year=2025, month=0, twitch_user=None, fragment=gg_frag
+            )
+            leaderboard_highlight = {
+                "title": "This is so... happy?",
+                "description": [
+                    f"In 2024, a measly <b>{count_gg_2024.count:,}</b> GriddyGoose were sent in the chat",
+                    f"but after months of effort to make this world a better place, we end 2025 with {stat_span('overall-GriddyGoose', count_gg_2025.count)} GriddyGoose sent.",
+                    f"I still don't think everyone has access to the exclusive tier 5 emote GriddyGoose yet though...",
+                ],
+            }
         elif user.user_id == 82920215:  # lusciousdev
             leaderboard_highlight = {
                 "title": "nerd",
                 "description": ["you made this website you already have all the info."],
+            }
+        elif user.user_id == 43246220:  # itswill
+            letterboxd_length = sum(
+                [
+                    len(lbr.description)
+                    for lbr in LetterboxdReview.objects.filter(
+                        pub_date__range=(user_recap.start_date, user_recap.end_date)
+                    ).all()
+                ]
+            )
+            leaderboard_highlight = {
+                "title": "!job",
+                "description": [
+                    f"In 2025, you wrote a total of <b>{letterboxd_length:,}</b> characters across all your letterboxd reviews.",
+                    f"In the same time span, you only wrote <b>{user_recap.count_characters:,}</b> characters in your own Twitch chat.",
+                ],
             }
         else:
             for category, (rank, count) in sorted_leaderboard_positions:
