@@ -2119,8 +2119,8 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
                     leaderboard_highlight = {
                         "title": "Clip connoisseur",
                         "description": [
-                            f"You created {stat_span('clips', count)} clips this year."
-                            f"You managed to reach rank #{rank} on the clipper leaderboards!"
+                            f"You created {stat_span('clips', count)} clips this year.",
+                            f"You managed to reach rank #{rank} on the clipper leaderboards!",
                         ],
                     }
                     break

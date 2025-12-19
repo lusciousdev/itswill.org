@@ -122,7 +122,7 @@ function connectWebsocket()
     protocol = "wss:"
   g_Websocket = new WebSocket("{0}//{1}/ws/recap/{2}/".format(protocol, window.location.host, 2025));
 
-  g_Websocket.onopen = (e) => {};
+  g_Websocket.onopen = (e) => { g_Websocket.send("hello"); };
   g_Websocket.onmessage = (e) => { handleWebsocketMessage(e); };
   g_Websocket.onclose = (e) => { attemptWebsocketReconnect(e); };
 }
