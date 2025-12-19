@@ -45,6 +45,8 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
+    "channels",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -119,8 +121,24 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http" if DEBUG else "https"
 LOGIN_URL = reverse_lazy("account_login")
 SIGNUP_URL = reverse_lazy("account_signup")
 LOGOUT_URL = reverse_lazy("account_logout")
+
 LOGIN_REDIRECT_URL = "/"
+
 WSGI_APPLICATION = "config.wsgi.application"
+ASGI_APPLICATION = "config.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/{CELERY_DATABASE}"
+            ],
+            "symmetric_encryption_keys": [SECRET_KEY],
+        },
+    }
+}
+
 
 SOCIALACCOUNT_PROVIDERS = {
     "twitch": {

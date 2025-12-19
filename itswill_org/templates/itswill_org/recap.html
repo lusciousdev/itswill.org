@@ -12,6 +12,8 @@
 <script src="{% static 'jquery-3.7.1.min.js' %}"></script>
 <script src="{% static 'itswill_org/recap.js' %}"
   defer
+  data-year="{{ recap.year }}"
+  data-month="{{ recap.month }}"
   {% if overall_recap %}
   data-getrecapdataurl="{% url 'itswill_org:api_get_recap_data' %}?year={{ recap.year }}&month={{ recap.month }}"
   {% else %}

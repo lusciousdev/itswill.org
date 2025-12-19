@@ -12,6 +12,8 @@ import twitchio
 import twitchio.authentication
 import twitchio.eventsub
 from asgiref.sync import async_to_sync, sync_to_async
+from channels.layers import get_channel_layer
+from channels_redis.core import RedisChannelLayer
 from django.db.utils import IntegrityError
 from twitchio.ext import commands as twitchio_commands
 from twitchio.ext import routines as twitchio_routines
@@ -36,9 +38,13 @@ BROADCASTER_ID = "43246220"
 
 
 class LoggerBot(twitchio_commands.Bot):
+    channel_layer: RedisChannelLayer
+
     fragments: list[Fragment] = []
 
     def __init__(self):
+        self.channel_layer = get_channel_layer()
+
         super().__init__(
             client_id=settings.TWITCH_API_CLIENT_ID,
             client_secret=settings.TWITCH_API_CLIENT_SECRET,
@@ -100,6 +106,13 @@ class LoggerBot(twitchio_commands.Bot):
         if resp is None:
             LOGGER.error("Failed to subscribe to chat messages.")
             raise twitchio.TwitchioException("Failed to subscribe")
+
+    async def send_recap_update_message(
+        self, year: int, month: int, data: dict[str, typing.Any]
+    ):
+        await self.channel_layer.group_send(
+            f"{year}{month:02}", {"type": "recap_update", "data": data}
+        )
 
     async def event_message(self, payload: twitchio.ChatMessage) -> None:
         try:
@@ -188,9 +201,12 @@ class LoggerBot(twitchio_commands.Bot):
             fragment_regex = {f.pretty_name: f.match_regex for f in fragments}
             new_matches: list[FragmentMatch] = []
 
+            fragmentgroups_updated = set()
             for f in fragments:
                 frag_count = len(fragment_regex[f.pretty_name].findall(message.message))
                 if frag_count > 0:
+                    fragmentgroups_updated.add(f.group)
+
                     fm = FragmentMatch(
                         fragment=f,
                         message=message,
@@ -258,6 +274,57 @@ class LoggerBot(twitchio_commands.Bot):
                     "last_message",
                 ],
             )
+
+            overall_recaps = filter(lambda r: r.twitch_user is None, recaps)
+
+            for recap in overall_recaps:
+                fragment_group_counters = await sync_to_async(list)(
+                    await sync_to_async(
+                        FragmentGroupCounter.objects.filter(
+                            Q(recap=recap)
+                            & Q(fragment_group__in=fragmentgroups_updated)
+                        )
+                        .values_list("fragment_group__group_id", "count")
+                        .all
+                    )()
+                )
+                fragment_counters = await sync_to_async(list)(
+                    await sync_to_async(
+                        FragmentCounter.objects.filter(
+                            Q(recap=recap)
+                            & Q(fragment__group__in=fragmentgroups_updated)
+                        )
+                        .values_list(
+                            "fragment__group__group_id",
+                            "fragment__fragment_id",
+                            "count",
+                        )
+                        .all
+                    )()
+                )
+                await self.send_recap_update_message(
+                    recap.year,
+                    recap.month,
+                    {
+                        "count_messages": recap.count_messages,
+                        "count_characters": recap.count_characters,
+                        "count_chatters": recap.count_chatters,
+                        "last_message": message.to_json(),
+                        "counters": {
+                            group_id: {
+                                "total": count,
+                                "members": {
+                                    fragment_id: count
+                                    for _, fragment_id, count in filter(
+                                        lambda fcd: fcd[0] == group_id,
+                                        fragment_counters,
+                                    )
+                                },
+                            }
+                            for group_id, count in fragment_group_counters
+                        },
+                    },
+                )
 
 
 def main() -> None:
