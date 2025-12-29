@@ -469,27 +469,27 @@ def message_recap_queryset(year, month, commenter_id):
 
 
 def get_message_recaps(created_at, commenter_id):
-    alltime_recap, _ = RecapData.objects.get_or_create(
+    alltime_recap, _ = RecapData.objects.select_related("twitch_user").get_or_create(
         year=0, month=0, twitch_user=None
     )
-    alltime_user_recap, _ = RecapData.objects.get_or_create(
+    alltime_user_recap, _ = RecapData.objects.select_related("twitch_user").get_or_create(
         year=0, month=0, twitch_user_id=commenter_id
     )
 
     year = created_at.astimezone(TIMEZONE).year
     month = created_at.astimezone(TIMEZONE).month
 
-    year_recap, _ = RecapData.objects.get_or_create(
+    year_recap, _ = RecapData.objects.select_related("twitch_user").get_or_create(
         year=year, month=0, twitch_user=None
     )
-    year_user_recap, _ = RecapData.objects.get_or_create(
+    year_user_recap, _ = RecapData.objects.select_related("twitch_user").get_or_create(
         year=year, month=0, twitch_user_id=commenter_id
     )
 
-    month_recap, _ = RecapData.objects.get_or_create(
+    month_recap, _ = RecapData.objects.select_related("twitch_user").get_or_create(
         year=year, month=month, twitch_user=None
     )
-    month_user_recap, _ = RecapData.objects.get_or_create(
+    month_user_recap, _ = RecapData.objects.select_related("twitch_user").get_or_create(
         year=year, month=month, twitch_user_id=commenter_id
     )
 

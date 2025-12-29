@@ -144,16 +144,13 @@ CHANNEL_LAYERS = {
 SOCIALACCOUNT_PROVIDERS = {
     "twitch": {
         "SCOPE": [
-            "user:bot",
-            "user:read:chat",
-            "user:write:chat",
             "channel:bot",
+            "user:read:chat",
             "channel:read:polls",
-            "channel:manage:polls",
             "channel:read:redemptions",
-            "channel:manage:redemptions",
             "channel:read:predictions",
-            "channel:manage:predictions",
+            "channel:read:vips",
+            "moderation:read",
         ],
         "APP": {
             "client_id": TWITCH_API_CLIENT_ID,
@@ -162,7 +159,17 @@ SOCIALACCOUNT_PROVIDERS = {
         "AUTH_PARAMS": {
             "access_type": "offline",
         },
-    }
+    },
+    "twitch_chatbot": {
+        "SCOPE": ["user:read:chat", "user:write:chat", "user:bot"],
+        "APP": {
+            "client_id": TWITCH_API_CLIENT_ID,
+            "secret": TWITCH_API_CLIENT_SECRET,
+        },
+        "AUTH_PARAMS": {
+            "access_type": "offline",
+        },
+    },
 }
 
 SOCIALACCOUNT_STORE_TOKENS = True

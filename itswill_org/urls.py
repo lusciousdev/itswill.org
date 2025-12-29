@@ -1,10 +1,13 @@
 from django.urls import path
 from django.views.decorators.cache import cache_page
+from allauth.socialaccount.providers.oauth2.urls import default_urlpatterns
 
 import datetime
 
 from . import views
 from . import api
+
+from .provider import TwitchChatbotProvider
 
 app_name = 'itswill_org'
 urlpatterns = [
@@ -56,4 +59,4 @@ urlpatterns = [
   path("api/v1/totalkc/",      cache_page(10 * 60)(api.get_boss_count), name = "api_total_boss_kc"),
   path("api/v1/recap/",        api.get_recap_data,                      name = "api_get_recap_data"),
   path("api/v1/test/",         api.test_endpoint,                       name = "api_test"),
-]
+] + default_urlpatterns(TwitchChatbotProvider)

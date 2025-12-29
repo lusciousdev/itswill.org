@@ -4,6 +4,14 @@ import json
 import logging
 import typing
 
+from allauth.socialaccount.adapter import get_adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Error
+from allauth.socialaccount.providers.oauth2.views import (
+    OAuth2Adapter,
+    OAuth2CallbackView,
+    OAuth2LoginView,
+)
+from allauth.socialaccount.providers.twitch.views import TwitchOAuth2Adapter
 from dateutil import tz
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -364,6 +372,7 @@ def wrapped_open(user):
     open = datetime.datetime(2025, 12, 19, 16, 45, 0, 0, TIMEZONE)
     return (now > open) or (user and user.is_staff)
 
+
 class Wrapped2025View(generic.TemplateView):
     template_name = "itswill_org/2025_wrapped.html"
 
@@ -468,7 +477,7 @@ class Wrapped2024UserView(generic.TemplateView):
                 top_boards[field.name]["label"] = field.verbose_name
                 top_boards[field.name]["position"] = position
                 top_boards[field.name]["count"] = count
-                if (type(field) == StringCountField) and field.use_images:
+                if type(field) == None:  # StringCountField) and field.use_images:
                     top_boards[field.name]["image_list"] = field.emote_list
                 else:
                     top_boards[field.name]["image_list"] = None
@@ -718,3 +727,9 @@ class AsciiView(generic.ListView):
     template_name = "itswill_org/ascii.html"
 
     ordering = ["title"]
+
+class TwitchChatbotOAuth2Adapter(TwitchOAuth2Adapter):
+    provider_id = "twitch_chatbot"
+
+oauth2_login = OAuth2LoginView.adapter_view(TwitchChatbotOAuth2Adapter)
+oauth2_callback = OAuth2CallbackView.adapter_view(TwitchChatbotOAuth2Adapter)

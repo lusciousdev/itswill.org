@@ -17,6 +17,10 @@ ASCII_REGEX = re.compile(r"[\u2800-\u28ff \r\n]{10,}")
 # Create your models here.
 
 
+def default_json_field():
+    return []
+
+
 class StatField(models.IntegerField):
     show_recap: bool = True
     show_leaderboard: bool = True
@@ -69,35 +73,6 @@ class BigStatField(models.BigIntegerField):
     @property
     def non_db_attrs(self):
         return super().non_db_attrs + ("show_recap", "show_leaderboard")
-
-
-class StringCountField(StatField):
-    match_list: typing.List[str] = []
-    match_regex: re.Pattern = None
-    use_images: bool = True
-
-    def __init__(
-        self, match_list=[], emote_list=None, use_images=True, *args, **kwargs
-    ):
-        self.match_list = match_list
-        self.match_regex = re.compile(
-            re.compile(
-                rf"(?<![^\s_-]){'|'.join(self.match_list)}(?![^\s_-])", re.IGNORECASE
-            )
-        )
-        self.emote_list = self.match_list if emote_list is None else emote_list
-        self.use_images = use_images
-
-        super().__init__(*args, **kwargs)
-
-    @property
-    def non_db_attrs(self):
-        return super().non_db_attrs + (
-            "match_list",
-            "match_regex",
-            "use_images",
-            "show_recap",
-        )
 
 
 class TwitchUser(models.Model):
@@ -213,80 +188,105 @@ class ChatMessage(models.Model):
         }
 
 
-def default_json_field():
-    return []
+PREDICTION_STATUS = [
+    ("ACTIVE", "Active"),
+    ("CANCELLED", "Cancelled"),
+    ("LOCKED", "Locked"),
+    ("RESOLVED", "Resolved"),
+]
 
 
-class FragmentGroup(models.Model):
-    name = models.CharField(max_length=256, blank=False)
-    group_id = models.CharField(max_length=256, blank=False)
-    unit = models.CharField(max_length=256, blank=False)
+class Prediction(models.Model):
+    id = models.CharField(max_length=255, primary_key=True, editable=False)
 
-    count_multiples = models.BooleanField(default=True)
-    use_images = models.BooleanField(default=True)
-    show_in_recap = models.BooleanField(default=True)
-    show_leaderboard = models.BooleanField(default=True)
-    expandable = models.BooleanField(default=True)
-
-    ordering = models.IntegerField(default=0)
-
-    @property
-    def match_list(self):
-        return [frag.match for frag in self.fragment_set]
-
-    @property
-    def emote_list(self):
-        return [frag.emote for frag in self.fragment_set]
-
-    @property
-    def match_regex(self):
-        return re.compile(
-            re.compile(
-                rf"(?<![^\s_-]){'|'.join(self.match_list)}(?![^\s_-])", re.IGNORECASE
-            )
-        )
-
-    class Meta:
-        ordering = ("ordering",)
+    broadcaster_id = models.IntegerField()
+    broadcaster_name = models.CharField(max_length=64)
+    broadcaster_login = models.CharField(max_length=64)
+    title = models.CharField(max_length=64)
+    winning_outcome = models.ForeignKey(
+        "PredictionOutcome",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="winning_set",
+    )
+    prediction_window = models.IntegerField()
+    status = models.CharField(max_length=255, choices=PREDICTION_STATUS)
+    created_at = models.DateTimeField(default=DEFAULT_DATETIME)
+    ended_at = models.DateTimeField(null=True)
+    locked_at = models.DateTimeField(null=True)
 
 
-class Fragment(models.Model):
-    group = models.ForeignKey(FragmentGroup, on_delete=models.CASCADE)
+class PredictionOutcome(models.Model):
+    id = models.CharField(max_length=255, primary_key=True, editable=False)
 
-    fragment_id = models.CharField(max_length=512, blank=False)
-    pretty_name = models.CharField(max_length=512, blank=False)
-    match = models.CharField(max_length=512, blank=False)
-    image = models.FileField(upload_to="fragments/", blank=True)
+    prediction = models.ForeignKey(Prediction, on_delete=models.CASCADE)
 
-    case_sensitive = models.BooleanField(default=False)
-
-    @property
-    def match_regex(self):
-        return re.compile(
-            rf"(?<![^\s_-]){self.match}(?![^\s_-])",
-            re.NOFLAG if self.case_sensitive else re.IGNORECASE,
-        )
-
-    def __str__(self):
-        return f"{self.pretty_name} ({self.match})"
-
-    class Meta:
-        unique_together = (
-            "group",
-            "fragment_id",
-        )
+    title = models.CharField(max_length=64)
+    users = models.IntegerField(default=0)
+    channel_points = models.BigIntegerField(default=0)
+    color = models.CharField(max_length=255, default="BLUE")
 
 
-class FragmentInline(admin.TabularInline):
-    model = Fragment
-    extra = 1
+class Predictor(models.Model):
+    prediction_outcome = models.ForeignKey(
+        PredictionOutcome, on_delete=models.SET_NULL, null=True
+    )
+    twitch_user = models.ForeignKey(TwitchUser, on_delete=models.CASCADE)
+
+    channel_points_used = models.IntegerField(default=0)
+    channel_points_won = models.IntegerField(default=0)
 
 
-class FragmentGroupAdmin(admin.ModelAdmin):
-    list_display = ("name",)
-    search_fields = ["name", "unit"]
-    inlines = (FragmentInline,)
-    ordering = ("ordering",)
+class CustomReward(models.Model):
+    id = models.CharField(max_length=255, primary_key=True, editable=False)
+
+    broadcaster_id = models.IntegerField()
+    broadcaster_name = models.CharField(max_length=64)
+    broadcaster_login = models.CharField(max_length=64)
+
+    title = models.CharField(max_length=64)
+    prompt = models.CharField(max_length=255, null=True)
+    cost = models.IntegerField()
+    image = models.JSONField(default=dict)
+    default_image = models.JSONField(default=dict)
+    background_color = models.CharField(max_length=64)
+    is_enabled = models.BooleanField()
+    is_user_input_required = models.BooleanField()
+    max_per_stream_setting_is_enabled = models.BooleanField()
+    max_per_stream_setting_max_per_stream = models.IntegerField()
+    max_per_user_per_stream_setting_is_enabled = models.BooleanField()
+    max_per_user_per_stream_setting_max_per_stream = models.IntegerField()
+    global_cooldown_setting_is_enabled = models.BooleanField()
+    global_cooldown_setting_global_cooldown_seconds = models.IntegerField()
+    is_paused = models.BooleanField()
+    is_in_stock = models.BooleanField()
+    should_redemptions_skip_request_queue = models.BooleanField()
+    redemptions_redeemed_current_stream = models.IntegerField(null=True)
+    cooldown_expires_at = models.DateTimeField(default=DEFAULT_DATETIME, null=True)
+
+
+class CustomRewardRedemption(models.Model):
+    id = models.CharField(max_length=255, primary_key=True, editable=False)
+
+    reward = models.ForeignKey(CustomReward, on_delete=models.CASCADE)
+
+    broadcaster_id = models.IntegerField()
+    broadcaster_name = models.CharField(max_length=64)
+    broadcaster_login = models.CharField(max_length=64)
+
+    user = models.ForeignKey(TwitchUser, on_delete=models.SET_NULL, null=True)
+    user_input = models.CharField(max_length=500)
+    status = models.CharField(
+        max_length=64,
+        choices={
+            "CANCELED": "Canceled",
+            "FULFILLED": "Fulfilled",
+            "UNFULFILLED": "Unfulfilled",
+        },
+    )
+    redeemed_at = models.DateTimeField(default=DEFAULT_DATETIME)
+
+    cost = models.IntegerField()
 
 
 class Clip(models.Model):
@@ -441,9 +441,19 @@ class RecapData(models.Model):
         unit="video",
         default=0,
     )
-    
-    first_message = models.ForeignKey(ChatMessage, on_delete = models.SET_NULL, null=True, related_name="first_message_set")
-    last_message  = models.ForeignKey(ChatMessage, on_delete = models.SET_NULL, null=True, related_name="last_message_set")
+
+    first_message = models.ForeignKey(
+        ChatMessage,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="first_message_set",
+    )
+    last_message = models.ForeignKey(
+        ChatMessage,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="last_message_set",
+    )
 
     @property
     def start_date(self) -> datetime.datetime:
@@ -479,6 +489,78 @@ class LeaderboardCache(models.Model):
     recap = models.ForeignKey(RecapData, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
     leaderboard_data = models.JSONField(default=dict)
+
+
+class FragmentGroup(models.Model):
+    name = models.CharField(max_length=256, blank=False)
+    group_id = models.CharField(max_length=256, blank=False)
+    unit = models.CharField(max_length=256, blank=False)
+
+    count_multiples = models.BooleanField(default=True)
+    use_images = models.BooleanField(default=True)
+    show_in_recap = models.BooleanField(default=True)
+    show_leaderboard = models.BooleanField(default=True)
+    expandable = models.BooleanField(default=True)
+
+    ordering = models.IntegerField(default=0)
+
+    @property
+    def match_list(self):
+        return [frag.match for frag in self.fragment_set]
+
+    @property
+    def emote_list(self):
+        return [frag.emote for frag in self.fragment_set]
+
+    @property
+    def match_regex(self):
+        return re.compile(
+            re.compile(
+                rf"(?<![^\s_-]){'|'.join(self.match_list)}(?![^\s_-])", re.IGNORECASE
+            )
+        )
+
+    class Meta:
+        ordering = ("ordering",)
+
+
+class Fragment(models.Model):
+    group = models.ForeignKey(FragmentGroup, on_delete=models.CASCADE)
+
+    fragment_id = models.CharField(max_length=512, blank=False)
+    pretty_name = models.CharField(max_length=512, blank=False)
+    match = models.CharField(max_length=512, blank=False)
+    image = models.FileField(upload_to="fragments/", blank=True)
+
+    case_sensitive = models.BooleanField(default=False)
+
+    @property
+    def match_regex(self):
+        return re.compile(
+            rf"(?<![^\s_-]){self.match}(?![^\s_-])",
+            re.NOFLAG if self.case_sensitive else re.IGNORECASE,
+        )
+
+    def __str__(self):
+        return f"{self.pretty_name} ({self.match})"
+
+    class Meta:
+        unique_together = (
+            "group",
+            "fragment_id",
+        )
+
+
+class FragmentInline(admin.TabularInline):
+    model = Fragment
+    extra = 1
+
+
+class FragmentGroupAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    search_fields = ["name", "unit"]
+    inlines = (FragmentInline,)
+    ordering = ("ordering",)
 
 
 class FragmentMatch(models.Model):
