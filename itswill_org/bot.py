@@ -63,7 +63,7 @@ class LoggerBot(twitchio_commands.Bot):
         account = None
         try:
             account = await SocialAccount.objects.aget(
-                provider="twitch", uid=resp.user_id
+                provider="twitch_chatbot", uid=resp.user_id
             )
         except SocialAccount.DoesNotExist:
             LOGGER.debug(f"Token added for unknown user: {resp.user_id}")
@@ -84,7 +84,7 @@ class LoggerBot(twitchio_commands.Bot):
 
     async def load_tokens(self, path: str | None = None) -> None:
         bot_account = await SocialAccount.objects.aget(
-            provider="twitch", uid=self.bot_id
+            provider="twitch_chatbot", uid=self.bot_id
         )
         bot_token = await SocialToken.objects.aget(account=bot_account)
 
