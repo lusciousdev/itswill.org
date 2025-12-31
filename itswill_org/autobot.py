@@ -753,7 +753,7 @@ class LoggerBot(twitchio_commands.AutoBot):
                     },
                 )
 
-        prediction.winning_outcome_id = payload.winning_outcome.id
+        prediction.winning_outcome_id = None if payload.winning_outcome is None else payload.winning_outcome.id
         await prediction.asave()
 
 
