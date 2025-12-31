@@ -150,6 +150,7 @@ SOCIALACCOUNT_PROVIDERS = {
             "channel:read:redemptions",
             "channel:read:predictions",
             "channel:read:vips",
+            "channel:moderate",
             "moderation:read",
         ],
         "APP": {

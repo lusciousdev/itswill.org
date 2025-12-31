@@ -122,6 +122,20 @@ class TwitchUser(models.Model):
             ),
         }
 
+class TwitchBan(models.Model):
+    twitch_user = models.ForeignKey(TwitchUser, on_delete=models.CASCADE)
+    moderator = models.ForeignKey(TwitchUser, on_delete=models.SET_NULL, null=True, related_name="mod_ban_set")
+
+    reason = models.CharField(max_length=255)
+    banned_at = models.DateTimeField()
+    duration = models.IntegerField(null=True, default=None)
+    permanent = models.BooleanField()
+
+class TwitchUnban(models.Model):
+    twitch_user = models.ForeignKey(TwitchUser, on_delete=models.CASCADE)
+    moderator = models.ForeignKey(TwitchUser, on_delete=models.SET_NULL, null=True, related_name="mod_unban_set")
+
+    unbanned_at = models.DateTimeField(default=timezone.now)
 
 class TwitchEmote(models.Model):
     id = models.AutoField(primary_key=True, serialize=False)
@@ -140,6 +154,7 @@ class ChatMessage(models.Model):
     logged_at = models.DateTimeField("logged at", default=timezone.now)
     message = models.CharField(max_length=1024, default="")
     emotes = models.ManyToManyField(TwitchEmote)
+    deleted = models.BooleanField(default=False)
 
     class Meta:
         ordering = ("created_at",)
@@ -190,7 +205,7 @@ class ChatMessage(models.Model):
 
 PREDICTION_STATUS = [
     ("ACTIVE", "Active"),
-    ("CANCELLED", "Cancelled"),
+    ("CANCELED", "Canceled"),
     ("LOCKED", "Locked"),
     ("RESOLVED", "Resolved"),
 ]
@@ -206,14 +221,15 @@ class Prediction(models.Model):
     winning_outcome = models.ForeignKey(
         "PredictionOutcome",
         on_delete=models.SET_NULL,
+        default=None,
         null=True,
         related_name="winning_set",
     )
-    prediction_window = models.IntegerField()
+    prediction_window = models.IntegerField(default=-1)
     status = models.CharField(max_length=255, choices=PREDICTION_STATUS)
     created_at = models.DateTimeField(default=DEFAULT_DATETIME)
-    ended_at = models.DateTimeField(null=True)
-    locked_at = models.DateTimeField(null=True)
+    ended_at = models.DateTimeField(default=None, null=True)
+    locked_at = models.DateTimeField(default=None, null=True)
 
 
 class PredictionOutcome(models.Model):
@@ -234,8 +250,10 @@ class Predictor(models.Model):
     twitch_user = models.ForeignKey(TwitchUser, on_delete=models.CASCADE)
 
     channel_points_used = models.IntegerField(default=0)
-    channel_points_won = models.IntegerField(default=0)
+    channel_points_won = models.IntegerField(default=None, null=True)
 
+    class Meta:
+        unique_together = ("prediction_outcome", "twitch_user")
 
 class CustomReward(models.Model):
     id = models.CharField(max_length=255, primary_key=True, editable=False)
@@ -247,22 +265,21 @@ class CustomReward(models.Model):
     title = models.CharField(max_length=64)
     prompt = models.CharField(max_length=255, null=True)
     cost = models.IntegerField()
-    image = models.JSONField(default=dict)
-    default_image = models.JSONField(default=dict)
-    background_color = models.CharField(max_length=64)
-    is_enabled = models.BooleanField()
-    is_user_input_required = models.BooleanField()
-    max_per_stream_setting_is_enabled = models.BooleanField()
-    max_per_stream_setting_max_per_stream = models.IntegerField()
-    max_per_user_per_stream_setting_is_enabled = models.BooleanField()
-    max_per_user_per_stream_setting_max_per_stream = models.IntegerField()
-    global_cooldown_setting_is_enabled = models.BooleanField()
-    global_cooldown_setting_global_cooldown_seconds = models.IntegerField()
-    is_paused = models.BooleanField()
-    is_in_stock = models.BooleanField()
-    should_redemptions_skip_request_queue = models.BooleanField()
+    image = models.JSONField(default=None, null=True)
+    default_image = models.JSONField(default=None, null=True)
+    background_color = models.CharField(max_length=64, null=True)
+    is_enabled = models.BooleanField(default=True)
+    is_user_input_required = models.BooleanField(default=False)
+    max_per_stream_setting = models.JSONField(default=dict, null=True)
+    max_per_user_per_stream_setting = models.JSONField(default=dict, null=True)
+    global_cooldown_setting = models.JSONField(default=dict, null=True)
+    is_paused = models.BooleanField(default=False)
+    is_in_stock = models.BooleanField(default=True)
+    should_redemptions_skip_request_queue = models.BooleanField(default=False)
     redemptions_redeemed_current_stream = models.IntegerField(null=True)
     cooldown_expires_at = models.DateTimeField(default=DEFAULT_DATETIME, null=True)
+
+    removed = models.BooleanField(default=False)
 
 
 class CustomRewardRedemption(models.Model):
@@ -279,6 +296,7 @@ class CustomRewardRedemption(models.Model):
     status = models.CharField(
         max_length=64,
         choices={
+            "UNKNOWN": "Unknown",
             "CANCELED": "Canceled",
             "FULFILLED": "Fulfilled",
             "UNFULFILLED": "Unfulfilled",
