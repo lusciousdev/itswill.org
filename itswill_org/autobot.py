@@ -422,7 +422,7 @@ class LoggerBot(twitchio_commands.AutoBot):
             banned_at=payload.banned_at,
             defaults={
                 "reason": payload.reason,
-                "duration": (payload.ends_at - payload.banned_at).total_seconds(),
+                "duration": None if payload.ends_at is None else (payload.ends_at - payload.banned_at).total_seconds(),
                 "permanent": payload.permanent,
             },
         )
