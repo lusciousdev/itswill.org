@@ -222,7 +222,8 @@ def get_recap_data(request):
     if type(month) == str:
         month = int(month)
 
-    year = 0 if year <= 0 else max(2023, min(2025, year))
+    current_year = datetime.datetime.now(TIMEZONE).year
+    year = 0 if year <= 0 else max(2023, min(current_year, year))
     month = 0 if year == 0 else max(0, min(12, month))
 
     if user is not None:
