@@ -122,20 +122,27 @@ class TwitchUser(models.Model):
             ),
         }
 
+
 class TwitchBan(models.Model):
     twitch_user = models.ForeignKey(TwitchUser, on_delete=models.CASCADE)
-    moderator = models.ForeignKey(TwitchUser, on_delete=models.SET_NULL, null=True, related_name="mod_ban_set")
+    moderator = models.ForeignKey(
+        TwitchUser, on_delete=models.SET_NULL, null=True, related_name="mod_ban_set"
+    )
 
     reason = models.CharField(max_length=255)
     banned_at = models.DateTimeField()
     duration = models.IntegerField(null=True, default=None)
     permanent = models.BooleanField()
 
+
 class TwitchUnban(models.Model):
     twitch_user = models.ForeignKey(TwitchUser, on_delete=models.CASCADE)
-    moderator = models.ForeignKey(TwitchUser, on_delete=models.SET_NULL, null=True, related_name="mod_unban_set")
+    moderator = models.ForeignKey(
+        TwitchUser, on_delete=models.SET_NULL, null=True, related_name="mod_unban_set"
+    )
 
     unbanned_at = models.DateTimeField(default=timezone.now)
+
 
 class TwitchEmote(models.Model):
     id = models.AutoField(primary_key=True, serialize=False)
@@ -254,6 +261,7 @@ class Predictor(models.Model):
 
     class Meta:
         unique_together = ("prediction_outcome", "twitch_user")
+
 
 class CustomReward(models.Model):
     id = models.CharField(max_length=255, primary_key=True, editable=False)
@@ -457,6 +465,20 @@ class RecapData(models.Model):
         show_leaderboard=False,
         verbose_name="Number of videos:",
         unit="video",
+        default=0,
+    )
+    count_predictions = StatField(
+        short_name="predictions",
+        show_leaderboard=False,
+        verbose_name="Predictions run:",
+        unit="prediction",
+        default=0,
+    )
+    count_points_gambled = BigStatField(
+        short_name="channel points",
+        show_leaderboard=False,
+        verbose_name="Channel points gambled:",
+        unit="channel point",
         default=0,
     )
 

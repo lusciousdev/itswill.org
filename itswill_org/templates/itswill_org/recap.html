@@ -106,6 +106,18 @@
           <td class="stat-value" id="clip-watch-value">{{ recap.count_clip_watch|time_to_pretty_string:True }}</td>
           <td></td>
         </tr>
+        {% if overall_recap %}
+        <tr class="stat-item" id="predictions">
+          <td class="stat-label" id="predictions-label">Predictions run:</td>
+          <td class="stat-value" id="predictions-value">{{ recap.count_predictions|intcomma }}</td>
+          <td></td>
+        </tr>
+        <tr class="stat-item" id="points-gambled">
+          <td class="stat-label" id="points-gambled-label">Channelp points gambled:</td>
+          <td class="stat-value" id="points-gambled-value">{{ recap.count_points_gambled|intcomma }}</td>
+          <td></td>
+        </tr>
+        {% endif %}
         <tr class="stat-item" id="first-msg-row">
           <td colspan="3">
             <div>

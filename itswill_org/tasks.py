@@ -472,9 +472,9 @@ def get_message_recaps(created_at, commenter_id):
     alltime_recap, _ = RecapData.objects.select_related("twitch_user").get_or_create(
         year=0, month=0, twitch_user=None
     )
-    alltime_user_recap, _ = RecapData.objects.select_related("twitch_user").get_or_create(
-        year=0, month=0, twitch_user_id=commenter_id
-    )
+    alltime_user_recap, _ = RecapData.objects.select_related(
+        "twitch_user"
+    ).get_or_create(year=0, month=0, twitch_user_id=commenter_id)
 
     year = created_at.astimezone(TIMEZONE).year
     month = created_at.astimezone(TIMEZONE).month
@@ -641,16 +641,32 @@ def create_recap(
         recap.count_clip_views = 0
         recap.count_clip_watch = 0
 
-    if user_id is None:
-        recap.count_videos = videos.count()
-        recap.count_chatters = chat_messages.values("commenter").distinct().count()
-
     if perf:
         print(f"\tclips: {time.perf_counter() - start:.3f} seconds")
 
     if user_id is None:
         recap.count_videos = videos.count()
         recap.count_chatters = chat_messages.values("commenter").distinct().count()
+
+        predictions = (
+            Prediction.objects.filter(
+                created_at__range=(recap.start_date, recap.end_date)
+            )
+            .exclude(status="CANCELED")
+            .all()
+        )
+        recap.count_predictions = predictions.count()
+
+        prediction_outcomes = (
+            PredictionOutcome.objects.filter(
+                prediction__created_at__range=(recap.start_date, recap.end_date)
+            )
+            .exclude(prediction__status="CANCELED")
+            .all()
+        )
+        recap.count_points_gambled = sum(
+            [po.channel_points for po in prediction_outcomes]
+        )
 
     if count_messages == 0:
         if perf:
@@ -793,6 +809,26 @@ def calculate_recap(
         recap.count_videos = videos.count()
         recap.count_chatters = chat_messages.values("commenter").distinct().count()
 
+        predictions = (
+            Prediction.objects.filter(
+                created_at__range=(recap.start_date, recap.end_date)
+            )
+            .exclude(status="CANCELED")
+            .all()
+        )
+        recap.count_predictions = predictions.count()
+
+        prediction_outcomes = (
+            PredictionOutcome.objects.filter(
+                prediction__created_at__range=(recap.start_date, recap.end_date)
+            )
+            .exclude(prediction__status="CANCELED")
+            .all()
+        )
+        recap.count_points_gambled = sum(
+            [po.channel_points for po in prediction_outcomes]
+        )
+
     if count_messages == 0:
         if perf:
             print("\tskipping fragments")
@@ -902,6 +938,8 @@ def create_sum(
     recap.count_clip_watch = 0
     recap.count_clip_views = 0
     recap.count_videos = 0
+    recap.count_predictions = 0
+    recap.count_points_gambled = 0
 
     for mr in monthrecaps:
         recap.count_messages += mr.count_messages
@@ -910,6 +948,8 @@ def create_sum(
         recap.count_clip_watch += mr.count_clip_watch
         recap.count_clip_views += mr.count_clip_views
         recap.count_videos += mr.count_videos
+        recap.count_predictions += mr.count_predictions
+        recap.count_points_gambled += mr.count_points_gambled
 
     if perf:
         print(f"\tnon-frag counts: {time.perf_counter() - start:.3f} seconds")
@@ -1034,6 +1074,8 @@ def sum_recap(
     recap.count_clip_watch = 0
     recap.count_clip_views = 0
     recap.count_videos = 0
+    recap.count_predictions = 0
+    recap.count_points_gambled = 0
 
     for mr in monthrecaps:
         recap.count_messages += mr.count_messages
@@ -1042,6 +1084,8 @@ def sum_recap(
         recap.count_clip_watch += mr.count_clip_watch
         recap.count_clip_views += mr.count_clip_views
         recap.count_videos += mr.count_videos
+        recap.count_predictions += mr.count_predictions
+        recap.count_points_gambled += mr.count_points_gambled
 
     if perf:
         print(f"\tnon-frag counts: {time.perf_counter() - start:.3f} seconds")
@@ -1120,6 +1164,8 @@ def create_or_update_recaps(recap_list: list):
                     "count_clip_views",
                     "count_chatters",
                     "count_videos",
+                    "count_predictions",
+                    "count_points_gambled",
                     "first_message",
                     "last_message",
                 ],
@@ -1336,6 +1382,8 @@ def generate_leaderboard(recap: RecapData, perf: bool = False):
             "month",
             "count_chatters",
             "count_videos",
+            "count_predictions",
+            "count_points_gambled",
         ]:
             if not field.show_leaderboard:
                 continue
@@ -1879,7 +1927,14 @@ def create_2025_wrapped_data(skip_users: bool = False, perf: bool = True):
         .all()
     )
 
-    invalid_fields = ["year", "month", "count_chatters", "count_videos"]
+    invalid_fields = [
+        "year",
+        "month",
+        "count_chatters",
+        "count_videos",
+        "count_predictions",
+        "count_points_gambled",
+    ]
 
     leaderboard_cache = LeaderboardCache.objects.filter(recap=overall_recap).order_by(
         "-created_at"
@@ -2301,7 +2356,14 @@ def create_2024_wrapped_data(skip_users: bool = False, perf: bool = True):
 
     leaderboards = {}
 
-    invalid_fields = ["year", "month", "count_chatters", "count_videos"]
+    invalid_fields = [
+        "year",
+        "month",
+        "count_chatters",
+        "count_videos",
+        "count_predictions",
+        "count_points_gambled",
+    ]
 
     leaderboard_cache = (
         LeaderboardCache.objects.filter(recap=overall_recap)
