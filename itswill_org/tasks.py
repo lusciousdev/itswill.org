@@ -502,6 +502,29 @@ def get_message_recaps(created_at, commenter_id):
         month_user_recap,
     ]
 
+def prediction_recap_queryset(created_at):
+    year = created_at.astimezone(TIMEZONE).year
+    month = created_at.astimezone(TIMEZONE).month
+
+    return (
+        RecapData.objects.filter(
+            Q(year=0, month=0, twitch_user=None)
+            | Q(year=year, month=0, twitch_user=None)
+            | Q(year=year, month=month, twitch_user=None)
+        )
+        .all()
+    )
+
+def get_prediction_recaps(created_at):
+    year = created_at.astimezone(TIMEZONE).year
+    month = created_at.astimezone(TIMEZONE).month
+
+    alltime_recap, _ = RecapData.objects.get_or_create(year=0, month=0, twitch_user=None)
+    year_recap, _ = RecapData.objects.get_or_create(year=year, month=0, twitch_user=None)
+    month_recap, _ = RecapData.objects.get_or_create(year=year, month=month, twitch_user=None)
+
+    return [ alltime_recap, year_recap, month_recap ]
+
 
 @shared_task(name="find_fragment_matches", queue="long_tasks")
 def find_fragment_matches(period=30, perf: bool = True):

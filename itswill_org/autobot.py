@@ -724,6 +724,8 @@ class LoggerBot(twitchio_commands.AutoBot):
             },
         )
 
+        total_points_gambled: int = 0
+
         po: twitchio.PredictionOutcome
         for po in payload.outcomes:
             prediction_outcome, created = (
@@ -741,6 +743,8 @@ class LoggerBot(twitchio_commands.AutoBot):
                 )
             )
 
+            total_points_gambled += prediction_outcome.channel_points
+
             tp: twitchio.Predictor
             for tp in po.top_predictors:
                 twitch_user, new_chatter = await self.get_or_create_twitch_user(tp.user)
@@ -752,6 +756,14 @@ class LoggerBot(twitchio_commands.AutoBot):
                         "channel_points_won": tp.channel_points_won,
                     },
                 )
+
+        if prediction.status.upper() == "RESOLVED":
+            recaps = await sync_to_async(get_prediction_recaps)(prediction.created_at)
+
+            for recap in recaps:
+                recap.count_predictions += 1
+                recap.count_points_gambled += total_points_gambled 
+                await recap.asave()
 
         prediction.winning_outcome_id = None if payload.winning_outcome is None else payload.winning_outcome.id
         await prediction.asave()
