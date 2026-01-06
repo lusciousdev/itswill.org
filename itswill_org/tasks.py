@@ -479,7 +479,7 @@ def count_predictions():
                 .all()
             )
         else:
-            prediction_outcomes = PredictionOutcomes.objects.exclude(
+            prediction_outcomes = PredictionOutcome.objects.exclude(
                 prediction__status="CANCELED"
             ).all()
 
@@ -736,7 +736,7 @@ def create_recap(
                 .all()
             )
         else:
-            prediction_outcomes = PredictionOutcomes.objects.exclude(
+            prediction_outcomes = PredictionOutcome.objects.exclude(
                 prediction__status="CANCELED"
             ).all()
 
@@ -907,7 +907,7 @@ def calculate_recap(
                 .all()
             )
         else:
-            prediction_outcomes = PredictionOutcomes.objects.exclude(
+            prediction_outcomes = PredictionOutcome.objects.exclude(
                 prediction__status="CANCELED"
             ).all()
 
