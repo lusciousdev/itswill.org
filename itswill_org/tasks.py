@@ -451,6 +451,33 @@ def get_all_first_and_last_messages():
 
         recap.save()
 
+@shared_task(name="count_predictions", queue="long_tasks")
+def count_predictions():
+    recaps = RecapData.objects.filter(twitch_user=None).all()
+
+    for recap in recaps:
+        predictions = (
+            Prediction.objects.filter(
+                created_at__range=(recap.start_date, recap.end_date)
+            )
+            .exclude(status="CANCELED")
+            .all()
+        )
+        recap.count_predictions = predictions.count()
+
+        prediction_outcomes = (
+            PredictionOutcome.objects.filter(
+                prediction__created_at__range=(recap.start_date, recap.end_date)
+            )
+            .exclude(prediction__status="CANCELED")
+            .all()
+        )
+        recap.count_points_gambled = sum(
+            [po.channel_points for po in prediction_outcomes]
+        )
+
+        recap.save()
+
 
 def message_recap_queryset(year, month, commenter_id):
     return (
