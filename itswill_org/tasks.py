@@ -456,13 +456,17 @@ def count_predictions():
     recaps = RecapData.objects.filter(twitch_user=None).all()
 
     for recap in recaps:
-        predictions = (
-            Prediction.objects.filter(
-                created_at__range=(recap.start_date, recap.end_date)
+        if recap.year > 0:
+            predictions = (
+                Prediction.objects.filter(
+                    created_at__range=(recap.start_date, recap.end_date)
+                )
+                .exclude(status="CANCELED")
+                .all()
             )
-            .exclude(status="CANCELED")
-            .all()
-        )
+        else:
+            predictions = Prediction.objects.exclude(status="CANCELED").all()
+
         recap.count_predictions = predictions.count()
 
         prediction_outcomes = (
@@ -698,13 +702,17 @@ def create_recap(
         recap.count_videos = videos.count()
         recap.count_chatters = chat_messages.values("commenter").distinct().count()
 
-        predictions = (
-            Prediction.objects.filter(
-                created_at__range=(recap.start_date, recap.end_date)
+        if recap.year > 0:
+            predictions = (
+                Prediction.objects.filter(
+                    created_at__range=(recap.start_date, recap.end_date)
+                )
+                .exclude(status="CANCELED")
+                .all()
             )
-            .exclude(status="CANCELED")
-            .all()
-        )
+        else:
+            predictions = Prediction.objects.exclude(status="CANCELED").all()
+
         recap.count_predictions = predictions.count()
 
         prediction_outcomes = (
@@ -859,13 +867,17 @@ def calculate_recap(
         recap.count_videos = videos.count()
         recap.count_chatters = chat_messages.values("commenter").distinct().count()
 
-        predictions = (
-            Prediction.objects.filter(
-                created_at__range=(recap.start_date, recap.end_date)
+        if recap.year > 0:
+            predictions = (
+                Prediction.objects.filter(
+                    created_at__range=(recap.start_date, recap.end_date)
+                )
+                .exclude(status="CANCELED")
+                .all()
             )
-            .exclude(status="CANCELED")
-            .all()
-        )
+        else:
+            predictions = Prediction.objects.exclude(status="CANCELED").all()
+
         recap.count_predictions = predictions.count()
 
         prediction_outcomes = (
