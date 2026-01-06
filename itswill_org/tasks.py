@@ -451,6 +451,7 @@ def get_all_first_and_last_messages():
 
         recap.save()
 
+
 @shared_task(name="count_predictions", queue="long_tasks")
 def count_predictions():
     recaps = RecapData.objects.filter(twitch_user=None).all()
@@ -469,13 +470,19 @@ def count_predictions():
 
         recap.count_predictions = predictions.count()
 
-        prediction_outcomes = (
-            PredictionOutcome.objects.filter(
-                prediction__created_at__range=(recap.start_date, recap.end_date)
+        if recap.year > 0:
+            prediction_outcomes = (
+                PredictionOutcome.objects.filter(
+                    prediction__created_at__range=(recap.start_date, recap.end_date)
+                )
+                .exclude(prediction__status="CANCELED")
+                .all()
             )
-            .exclude(prediction__status="CANCELED")
-            .all()
-        )
+        else:
+            prediction_outcomes = PredictionOutcomes.objects.exclude(
+                prediction__status="CANCELED"
+            ).all()
+
         recap.count_points_gambled = sum(
             [po.channel_points for po in prediction_outcomes]
         )
@@ -533,28 +540,33 @@ def get_message_recaps(created_at, commenter_id):
         month_user_recap,
     ]
 
+
 def prediction_recap_queryset(created_at):
     year = created_at.astimezone(TIMEZONE).year
     month = created_at.astimezone(TIMEZONE).month
 
-    return (
-        RecapData.objects.filter(
-            Q(year=0, month=0, twitch_user=None)
-            | Q(year=year, month=0, twitch_user=None)
-            | Q(year=year, month=month, twitch_user=None)
-        )
-        .all()
-    )
+    return RecapData.objects.filter(
+        Q(year=0, month=0, twitch_user=None)
+        | Q(year=year, month=0, twitch_user=None)
+        | Q(year=year, month=month, twitch_user=None)
+    ).all()
+
 
 def get_prediction_recaps(created_at):
     year = created_at.astimezone(TIMEZONE).year
     month = created_at.astimezone(TIMEZONE).month
 
-    alltime_recap, _ = RecapData.objects.get_or_create(year=0, month=0, twitch_user=None)
-    year_recap, _ = RecapData.objects.get_or_create(year=year, month=0, twitch_user=None)
-    month_recap, _ = RecapData.objects.get_or_create(year=year, month=month, twitch_user=None)
+    alltime_recap, _ = RecapData.objects.get_or_create(
+        year=0, month=0, twitch_user=None
+    )
+    year_recap, _ = RecapData.objects.get_or_create(
+        year=year, month=0, twitch_user=None
+    )
+    month_recap, _ = RecapData.objects.get_or_create(
+        year=year, month=month, twitch_user=None
+    )
 
-    return [ alltime_recap, year_recap, month_recap ]
+    return [alltime_recap, year_recap, month_recap]
 
 
 @shared_task(name="find_fragment_matches", queue="long_tasks")
@@ -715,13 +727,19 @@ def create_recap(
 
         recap.count_predictions = predictions.count()
 
-        prediction_outcomes = (
-            PredictionOutcome.objects.filter(
-                prediction__created_at__range=(recap.start_date, recap.end_date)
+        if recap.year > 0:
+            prediction_outcomes = (
+                PredictionOutcome.objects.filter(
+                    prediction__created_at__range=(recap.start_date, recap.end_date)
+                )
+                .exclude(prediction__status="CANCELED")
+                .all()
             )
-            .exclude(prediction__status="CANCELED")
-            .all()
-        )
+        else:
+            prediction_outcomes = PredictionOutcomes.objects.exclude(
+                prediction__status="CANCELED"
+            ).all()
+
         recap.count_points_gambled = sum(
             [po.channel_points for po in prediction_outcomes]
         )
@@ -880,13 +898,19 @@ def calculate_recap(
 
         recap.count_predictions = predictions.count()
 
-        prediction_outcomes = (
-            PredictionOutcome.objects.filter(
-                prediction__created_at__range=(recap.start_date, recap.end_date)
+        if recap.year > 0:
+            prediction_outcomes = (
+                PredictionOutcome.objects.filter(
+                    prediction__created_at__range=(recap.start_date, recap.end_date)
+                )
+                .exclude(prediction__status="CANCELED")
+                .all()
             )
-            .exclude(prediction__status="CANCELED")
-            .all()
-        )
+        else:
+            prediction_outcomes = PredictionOutcomes.objects.exclude(
+                prediction__status="CANCELED"
+            ).all()
+
         recap.count_points_gambled = sum(
             [po.channel_points for po in prediction_outcomes]
         )
